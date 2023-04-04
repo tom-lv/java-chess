@@ -12,8 +12,8 @@ public class Pawn extends Piece {
 
     public Pawn(PieceColour pieceColour, double positionX, double positionY, Chessboard chessboard, ArrayList<Piece> pieceList) {
         super(pieceColour, positionX, positionY, chessboard, pieceList);
-        this.pieceType = PieceType.PAWN;
-        this.createPiece();
+        setPieceType(PieceType.PAWN);
+        createPiece();
     }
 
     @Override
@@ -23,11 +23,11 @@ public class Pawn extends Piece {
 
     @Override
     public void getLegalMoves() {
-        double oneSqrY = findSquareInFront(1, this.getPositionY());
-        double twoSqrY = findSquareInFront(2, this.getPositionY());
-        if (!hasMoved && !isSquareOccupied(this.getPositionX(), twoSqrY)) {
+        double oneSqrY = findSquareInFront(1, getPositionY());
+        double twoSqrY = findSquareInFront(2, getPositionY());
+        if (!hasMoved && !isSquareOccupied(getPositionX(), twoSqrY)) {
             System.out.println("2");
-        } else if (!isSquareOccupied(this.getPositionX(), oneSqrY)) {
+        } else if (!isSquareOccupied(getPositionX(), oneSqrY)) {
             System.out.println("1");
         } else {
             System.out.println("0");

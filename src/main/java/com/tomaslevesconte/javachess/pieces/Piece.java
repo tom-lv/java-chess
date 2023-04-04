@@ -12,13 +12,13 @@ import java.util.ArrayList;
 
 public abstract class Piece extends Rectangle {
     
-    protected PieceType pieceType;
-    protected PieceColour pieceColour;
-    protected double positionX;
-    protected double positionY;
-    protected Chessboard chessboard;
-    protected ArrayList<Piece> pieceList;
-    protected boolean isSelected;
+    private PieceType pieceType;
+    private final PieceColour pieceColour;
+    private double positionX;
+    private double positionY;
+    private final Chessboard chessboard;
+    private final ArrayList<Piece> pieceList;
+    private boolean isSelected;
 
     public Piece(PieceColour pieceColour, double positionX, double positionY, Chessboard chessboard, ArrayList<Piece> pieceList) {
         this.pieceColour = pieceColour;
@@ -29,12 +29,13 @@ public abstract class Piece extends Rectangle {
     }
 
     protected void createPiece() {
-        this.setWidth(chessboard.getSquareSize());
-        this.setHeight(chessboard.getSquareSize());
-        this.setLayoutX(positionX);
-        this.setLayoutY(positionY);
-        this.setFill(new ImagePattern(new Image("com/tomaslevesconte/javachess/pieces/" +
-                pieceColour.toString().toLowerCase().charAt(0) + pieceType.toString().toLowerCase().charAt(0) + ".png")));
+        setWidth(chessboard.getSquareSize());
+        setHeight(chessboard.getSquareSize());
+        setLayoutX(positionX);
+        setLayoutY(positionY);
+        setFill(new ImagePattern(new Image("com/tomaslevesconte/javachess/pieces/"
+                + pieceColour.toString().toLowerCase().charAt(0) + pieceType.toString().toLowerCase().charAt(0)
+                + ".png")));
     }
 
     public abstract void move();
@@ -87,6 +88,10 @@ public abstract class Piece extends Rectangle {
 
     public PieceType getPieceType() {
         return pieceType;
+    }
+
+    public void setPieceType(PieceType pieceType) {
+        this.pieceType = pieceType;
     }
 
     public PieceColour getPieceColour() {

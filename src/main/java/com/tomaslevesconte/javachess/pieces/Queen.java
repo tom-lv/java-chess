@@ -10,8 +10,8 @@ public class Queen extends Piece {
 
     public Queen(PieceColour pieceColour, double positionX, double positionY, Chessboard chessboard, ArrayList<Piece> pieceList) {
         super(pieceColour, positionX, positionY, chessboard, pieceList);
-        this.pieceType = PieceType.QUEEN;
-        this.createPiece();
+        setPieceType(PieceType.QUEEN);
+        createPiece();
     }
 
     @Override
