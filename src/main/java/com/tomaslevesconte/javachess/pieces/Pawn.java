@@ -7,8 +7,8 @@ import com.tomaslevesconte.javachess.PieceType;
 
 public class Pawn extends Piece {
 
-    public Pawn(PieceColour pieceColour, double x, double y, Chessboard chessboard) {
-        super(pieceColour, x, y, chessboard);
+    public Pawn(PieceColour pieceColour, double positionX, double positionY, Chessboard chessboard) {
+        super(pieceColour, positionX, positionY, chessboard);
         this.pieceType = PieceType.PAWN;
         createPiece();
     }

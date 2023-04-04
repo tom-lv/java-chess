@@ -7,41 +7,45 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
-public abstract class Piece {
+import java.util.ArrayList;
+
+public abstract class Piece extends Rectangle {
+    
     protected PieceType pieceType;
     protected PieceColour pieceColour;
     protected Rectangle pieceRect;
-    protected double x;
-    protected double y;
+    protected double positionX;
+    protected double positionY;
     protected Chessboard chessboard;
+    protected ArrayList<Piece> pieceList = new ArrayList<>();
     protected boolean isSelected;
 
 
     public Piece(PieceColour pieceColour, double positionX, double positionY, Chessboard chessboard) {
         this.pieceColour = pieceColour;
-        this.x = positionX;
-        this.y = positionY;
+        this.positionX = positionX;
+        this.positionY = positionY;
         this.chessboard = chessboard;
     }
 
     protected void createPiece() {
-        Rectangle piece = new Rectangle(chessboard.getSquareWidth(), chessboard.getSquareHeight());
-        piece.setSmooth(false);
-        piece.setLayoutX(x);
-        piece.setLayoutY(y);
-        piece.setFill(new ImagePattern(new Image("com/tomaslevesconte/javachess/pieces/" +
+        this.setWidth(chessboard.getSquareSize());
+        this.setHeight(chessboard.getSquareSize());
+        this.setSmooth(false);
+        this.setLayoutX(positionX);
+        this.setLayoutY(positionY);
+        this.setFill(new ImagePattern(new Image("com/tomaslevesconte/javachess/pieces/" +
                 pieceColour.toString().toLowerCase().charAt(0) + pieceType.toString().toLowerCase().charAt(0) + ".png")));
-        this.pieceRect = piece;
     }
 
     public abstract void legalMove();
 
-    public void setX(double x) {
-        this.x = x;
+    public void setPositionX(double positionX) {
+        this.positionX = positionX;
     }
 
-    public void setY(double y) {
-        this.y = y;
+    public void setPositionY(double positionY) {
+        this.positionY = positionY;
     }
 
     public PieceType getPieceType() {

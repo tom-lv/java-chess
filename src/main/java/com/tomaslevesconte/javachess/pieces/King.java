@@ -6,8 +6,8 @@ import com.tomaslevesconte.javachess.PieceType;
 
 public class King extends Piece {
 
-    public King(PieceColour pieceColour, double x, double y, Chessboard chessboard) {
-        super(pieceColour, x, y, chessboard);
+    public King(PieceColour pieceColour, double positionX, double positionY, Chessboard chessboard) {
+        super(pieceColour, positionX, positionY, chessboard);
         this.pieceType = PieceType.KING;
         createPiece();
     }

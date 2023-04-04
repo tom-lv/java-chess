@@ -2,7 +2,6 @@
 
 <?import javafx.scene.layout.AnchorPane?>
 
-
 <AnchorPane
         fx:controller="com.tomaslevesconte.javachess.ChessController"
         fx:id="anchorPane"

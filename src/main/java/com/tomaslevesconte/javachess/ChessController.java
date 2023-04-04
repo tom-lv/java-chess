@@ -5,7 +5,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.shape.Rectangle;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -21,18 +20,16 @@ public class ChessController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        chessboard = new Chessboard(anchorPane.getPrefWidth(), anchorPane.getPrefHeight(), anchorPane);
-        chessboard.createBoard();
-        addWhitePieces(chessboard.getSquareWidth(), chessboard.getSquareHeight());
-        addBlackPieces(chessboard.getSquareWidth(), chessboard.getSquareHeight());
+        chessboard = new Chessboard(ChessApplication.BOARD_SIZE, anchorPane);
+        addWhitePieces(chessboard.getSquareSize(), chessboard.getSquareSize());
+        addBlackPieces(chessboard.getSquareSize(), chessboard.getSquareSize());
     }
 
     private void addPiece(Piece piece) {
         int currentPieceIndex = pieceIndex++;
         pieceList.add(piece);
 
-        Rectangle rec = piece.getPieceRect();
-        rec.setCursor(Cursor.OPEN_HAND); // default open hand on hover
+        piece.setCursor(Cursor.OPEN_HAND); // default open hand on hover
 
 
 //        rec.setOnMouseClicked(mouseEvent -> {
@@ -49,29 +46,29 @@ public class ChessController implements Initializable {
 //        });
 
 
-        rec.setOnMousePressed(mouseEvent -> {
-            rec.setCursor(Cursor.CLOSED_HAND);
-            rec.toFront(); // Move rec in front of its siblings in terms of z-order
-            rec.setLayoutX(mouseEvent.getSceneX() - (rec.getWidth() / 2)); // - half the size of the image to find the center
-            rec.setLayoutY(mouseEvent.getSceneY() - (rec.getHeight() / 2));
+        piece.setOnMousePressed(mouseEvent -> {
+            piece.setCursor(Cursor.CLOSED_HAND);
+            piece.toFront(); // Move rec in front of its siblings in terms of z-order
+            piece.setLayoutX(mouseEvent.getSceneX() - (piece.getWidth() / 2)); // - half the size of the image to find the center
+            piece.setLayoutY(mouseEvent.getSceneY() - (piece.getHeight() / 2));
         });
 
-        rec.setOnMouseDragged(mouseEvent -> {
-            rec.setCursor(Cursor.CLOSED_HAND);
-            rec.setLayoutX(mouseEvent.getSceneX() - (rec.getWidth() / 2));
-            rec.setLayoutY(mouseEvent.getSceneY() - (rec.getHeight() / 2));
+        piece.setOnMouseDragged(mouseEvent -> {
+            piece.setCursor(Cursor.CLOSED_HAND);
+            piece.setLayoutX(mouseEvent.getSceneX() - (piece.getWidth() / 2)); // - half the size of the image to find the center
+            piece.setLayoutY(mouseEvent.getSceneY() - (piece.getHeight() / 2));
         });
 
-        rec.setOnMouseReleased(mouseEvent -> {
-            rec.setCursor(Cursor.OPEN_HAND);
-            rec.setLayoutX(chessboard.findClosestSquare(mouseEvent.getSceneX(), chessboard.getPossibleXAndYCoordinates())); // pos on board
-            rec.setLayoutY(chessboard.findClosestSquare(mouseEvent.getSceneY(), chessboard.getPossibleXAndYCoordinates())); // pos on board
-            pieceList.get(currentPieceIndex).setX(rec.getLayoutX());
-            pieceList.get(currentPieceIndex).setY(rec.getLayoutY());
-            System.out.println(piece.getPieceColour() + " " + piece.getPieceType() + " " + Square.findSquare(rec.getLayoutX(), rec.getLayoutY(), chessboard.getSquareWidth()) +
-                    " (x=" + rec.getLayoutX() + ", y=" + rec.getLayoutY() + ")");
+        piece.setOnMouseReleased(mouseEvent -> {
+            piece.setCursor(Cursor.OPEN_HAND);
+            piece.setLayoutX(chessboard.findClosestSquare(mouseEvent.getSceneX(), chessboard.getPossibleXAndYCoordinates())); // Update pos on board
+            piece.setLayoutY(chessboard.findClosestSquare(mouseEvent.getSceneY(), chessboard.getPossibleXAndYCoordinates())); // Update pos on board
+            pieceList.get(currentPieceIndex).setPositionX(piece.getLayoutX()); // Update pos in arraylist
+            pieceList.get(currentPieceIndex).setPositionY(piece.getLayoutY()); // Update pos in arraylist
+            System.out.println(piece.getPieceColour() + " " + piece.getPieceType() + " " + Square.findSquare(piece.getLayoutX(), piece.getLayoutY(), chessboard.getSquareSize()) +
+                    " (x=" + piece.getLayoutX() + ", y=" + piece.getLayoutY() + ")");
         });
-        anchorPane.getChildren().add(rec);
+        anchorPane.getChildren().add(piece);
     }
 
     private void addWhitePieces(double w, double h) {
