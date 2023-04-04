@@ -7,7 +7,7 @@ import javafx.scene.shape.Rectangle;
 public class Chessboard {
     // Constant
     public final static byte TOTAL_NUM_OF_SQUARES = 64;
-    public final static double TOTAL_NUM_OF_RANKS = 8;
+    public final static byte TOTAL_NUM_OF_RANKS = 8;
     public final static byte TOTAL_NUM_OF_FILES = 8;
     public static final Color LIGHT_SQUARE_COLOUR = Color.web("#F2D8B5");
     public static final Color DARK_SQUARE_COLOUR = Color.web("#B78B64");
@@ -21,10 +21,9 @@ public class Chessboard {
         this.squareWidth = boardWidth / Chessboard.TOTAL_NUM_OF_RANKS;
         this.squareHeight = boardHeight / Chessboard.TOTAL_NUM_OF_FILES;
         this.anchorPane = anchorPane;
-        createBoard();
     }
 
-    private void createBoard() {
+    public void createBoard() {
         double x = 0;
         double y = 0;
         for (int i = 0; i < Chessboard.TOTAL_NUM_OF_RANKS; i++) {
@@ -51,7 +50,7 @@ public class Chessboard {
                 result = possibleCoordinates[i];
                 break;
             } else if (input > possibleCoordinates[possibleCoordinates.length - 1]) {
-                result = possibleCoordinates[possibleCoordinates.length - 2];
+                result = possibleCoordinates[possibleCoordinates.length - 1];
                 break;
             }
         }
@@ -59,7 +58,7 @@ public class Chessboard {
     }
     
     public double[] getPossibleXAndYCoordinates() {
-        double[] possibleXAndYCoordinates = new double[(int) (Math.sqrt(Chessboard.TOTAL_NUM_OF_SQUARES) + 1)];
+        double[] possibleXAndYCoordinates = new double[(int) (Math.sqrt(Chessboard.TOTAL_NUM_OF_SQUARES))];
         for (int i = 0; i < possibleXAndYCoordinates.length; i++) {
             if (squareWidth == squareHeight) {
                 possibleXAndYCoordinates[i] = squareWidth * i;
@@ -74,5 +73,9 @@ public class Chessboard {
 
     public double getSquareHeight() {
         return squareHeight;
+    }
+
+    public AnchorPane getAnchorPane() {
+        return anchorPane;
     }
 }

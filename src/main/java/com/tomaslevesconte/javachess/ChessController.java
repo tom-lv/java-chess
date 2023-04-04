@@ -13,37 +13,61 @@ import java.util.ResourceBundle;
 public class ChessController implements Initializable {
 
     @FXML
-    AnchorPane anchorPane;
+    private AnchorPane anchorPane;
 
     private Chessboard chessboard;
     private final ArrayList<Piece> pieceList = new ArrayList<>();
+    private int pieceIndex = 0;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         chessboard = new Chessboard(anchorPane.getPrefWidth(), anchorPane.getPrefHeight(), anchorPane);
+        chessboard.createBoard();
         addWhitePieces(chessboard.getSquareWidth(), chessboard.getSquareHeight());
         addBlackPieces(chessboard.getSquareWidth(), chessboard.getSquareHeight());
     }
 
     private void addPiece(Piece piece) {
+        int currentPieceIndex = pieceIndex++;
         pieceList.add(piece);
-        Rectangle rec = piece.createPiece();
-        rec.setCursor(Cursor.OPEN_HAND);
+
+        Rectangle rec = piece.getPieceRect();
+        rec.setCursor(Cursor.OPEN_HAND); // default open hand on hover
+
+
+//        rec.setOnMouseClicked(mouseEvent -> {
+//            if (isPieceSelected()) {
+//                System.out.println("deselecting piece " + getSelectedPiece());
+//                pieceList.get(getSelectedPiece()).hideLegalMoves();
+//                pieceList.get(getSelectedPiece()).setSelected(false);
+//            }
+//            pieceList.get(currentPieceIndex).setSelected(true);
+//            System.out.println(getSelectedPiece() + " is now selected.");
+//            if (pieceList.get(currentPieceIndex).isSelected()) {
+//                pieceList.get(currentPieceIndex).showLegalMoves();
+//            }
+//        });
+
+
         rec.setOnMousePressed(mouseEvent -> {
             rec.setCursor(Cursor.CLOSED_HAND);
             rec.toFront(); // Move rec in front of its siblings in terms of z-order
             rec.setLayoutX(mouseEvent.getSceneX() - (rec.getWidth() / 2)); // - half the size of the image to find the center
             rec.setLayoutY(mouseEvent.getSceneY() - (rec.getHeight() / 2));
         });
+
         rec.setOnMouseDragged(mouseEvent -> {
             rec.setCursor(Cursor.CLOSED_HAND);
             rec.setLayoutX(mouseEvent.getSceneX() - (rec.getWidth() / 2));
             rec.setLayoutY(mouseEvent.getSceneY() - (rec.getHeight() / 2));
         });
+
         rec.setOnMouseReleased(mouseEvent -> {
             rec.setCursor(Cursor.OPEN_HAND);
-            rec.setLayoutX(chessboard.findClosestSquare(mouseEvent.getSceneX(), chessboard.getPossibleXAndYCoordinates()));
-            rec.setLayoutY(chessboard.findClosestSquare(mouseEvent.getSceneY(), chessboard.getPossibleXAndYCoordinates()));
+            rec.setLayoutX(chessboard.findClosestSquare(mouseEvent.getSceneX(), chessboard.getPossibleXAndYCoordinates())); // pos on board
+            rec.setLayoutY(chessboard.findClosestSquare(mouseEvent.getSceneY(), chessboard.getPossibleXAndYCoordinates())); // pos on board
+            pieceList.get(currentPieceIndex).setX(rec.getLayoutX());
+            pieceList.get(currentPieceIndex).setY(rec.getLayoutY());
             System.out.println(piece.getPieceColour() + " " + piece.getPieceType() + " " + Square.findSquare(rec.getLayoutX(), rec.getLayoutY(), chessboard.getSquareWidth()) +
                     " (x=" + rec.getLayoutX() + ", y=" + rec.getLayoutY() + ")");
         });
@@ -86,5 +110,27 @@ public class ChessController implements Initializable {
         addPiece(new Pawn(PieceColour.BLACK, Square.F7.getX(w), Square.F7.getY(h), chessboard));
         addPiece(new Pawn(PieceColour.BLACK, Square.G7.getX(w), Square.G7.getY(h), chessboard));
         addPiece(new Pawn(PieceColour.BLACK, Square.H7.getX(w), Square.H7.getY(h), chessboard));
+    }
+
+    private boolean isPieceSelected() {
+        boolean bool = false;
+        for (Piece piece : pieceList) {
+            if (piece.isSelected()) {
+                bool = true;
+                break;
+            }
+        }
+        return bool;
+    }
+
+    private int getSelectedPiece() {
+        int pieceIndex = 0;
+        for (int i = 0; i < pieceList.size(); i++) {
+            if (pieceList.get(i).isSelected()) {
+                pieceIndex = i;
+                break;
+            }
+        }
+        return pieceIndex;
     }
 }
