@@ -53,6 +53,7 @@ public abstract class Piece extends Rectangle {
         return isOccupied;
     }
 
+    // Stop out of bounds
     protected double findSquareInFront(int numOfSquares, double currentSquareY) {
         int index = pieceColour.equals(PieceColour.WHITE) ? -1 : 1;
         double[] possibleCoordinates = chessboard.getPossibleXAndYCoordinates();
@@ -70,20 +71,20 @@ public abstract class Piece extends Rectangle {
         }
     }
 
-    public void setPositionX(double positionX) {
-        this.positionX = positionX;
-    }
-
-    public void setPositionY(double positionY) {
-        this.positionY = positionY;
-    }
-
     public double getPositionX() {
         return positionX;
     }
 
     public double getPositionY() {
         return positionY;
+    }
+
+    public void setPositionX(double positionX) {
+        this.positionX = positionX;
+    }
+
+    public void setPositionY(double positionY) {
+        this.positionY = positionY;
     }
 
     public PieceType getPieceType() {

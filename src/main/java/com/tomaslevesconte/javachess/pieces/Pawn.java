@@ -23,11 +23,9 @@ public class Pawn extends Piece {
 
     @Override
     public void getLegalMoves() {
-        double oneSqrY = findSquareInFront(1, getPositionY());
-        double twoSqrY = findSquareInFront(2, getPositionY());
-        if (!hasMoved && !isSquareOccupied(getPositionX(), twoSqrY)) {
+        if (!hasMoved && !isSquareOccupied(getPositionX(), findSquareInFront(1, getPositionY()))) {
             System.out.println("2");
-        } else if (!isSquareOccupied(getPositionX(), oneSqrY)) {
+        } else if (!isSquareOccupied(getPositionX(), findSquareInFront(2, getPositionY()))) {
             System.out.println("1");
         } else {
             System.out.println("0");
