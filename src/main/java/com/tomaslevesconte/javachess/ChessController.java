@@ -65,48 +65,49 @@ public class ChessController implements Initializable {
             piece.setLayoutY(chessboard.findClosestSquare(mouseEvent.getSceneY(), chessboard.getPossibleXAndYCoordinates())); // Update pos on board
             pieceList.get(currentPieceIndex).setPositionX(piece.getLayoutX()); // Update pos in arraylist
             pieceList.get(currentPieceIndex).setPositionY(piece.getLayoutY()); // Update pos in arraylist
-            System.out.println(piece.getPieceColour() + " " + piece.getPieceType() + " " + Square.findSquare(piece.getLayoutX(), piece.getLayoutY(), chessboard.getSquareSize()) +
-                    " (x=" + piece.getLayoutX() + ", y=" + piece.getLayoutY() + ")");
+            piece.getLegalMoves();
+            System.out.println(piece.getPieceColour() + " " + piece.getPieceType() + " " + Square.findSquare(piece.getLayoutX(), piece.getLayoutY(), chessboard.getSquareSize())
+                    + " (x=" + piece.getLayoutX() + ", y=" + piece.getLayoutY() + ")");
         });
         anchorPane.getChildren().add(piece);
     }
 
     private void addWhitePieces(double w, double h) {
-        addPiece(new Rook(PieceColour.WHITE, Square.A1.getX(w), Square.A1.getY(h), chessboard));
-        addPiece(new Knight(PieceColour.WHITE, Square.B1.getX(w), Square.B1.getY(h), chessboard));
-        addPiece(new Bishop(PieceColour.WHITE, Square.C1.getX(w), Square.C1.getY(h), chessboard));
-        addPiece(new Queen(PieceColour.WHITE, Square.D1.getX(w), Square.D1.getY(h), chessboard));
-        addPiece(new King(PieceColour.WHITE, Square.E1.getX(w), Square.E1.getY(h), chessboard));
-        addPiece(new Bishop(PieceColour.WHITE, Square.F1.getX(w), Square.F1.getY(h), chessboard));
-        addPiece(new Knight(PieceColour.WHITE, Square.G1.getX(w), Square.G1.getY(h), chessboard));
-        addPiece(new Rook(PieceColour.WHITE, Square.H1.getX(w), Square.H1.getY(h), chessboard));
-        addPiece(new Pawn(PieceColour.WHITE, Square.A2.getX(w), Square.A2.getY(h), chessboard));
-        addPiece(new Pawn(PieceColour.WHITE, Square.B2.getX(w), Square.B2.getY(h), chessboard));
-        addPiece(new Pawn(PieceColour.WHITE, Square.C2.getX(w), Square.C2.getY(h), chessboard));
-        addPiece(new Pawn(PieceColour.WHITE, Square.D2.getX(w), Square.D2.getY(h), chessboard));
-        addPiece(new Pawn(PieceColour.WHITE, Square.E2.getX(w), Square.E2.getY(h), chessboard));
-        addPiece(new Pawn(PieceColour.WHITE, Square.F2.getX(w), Square.F2.getY(h), chessboard));
-        addPiece(new Pawn(PieceColour.WHITE, Square.G2.getX(w), Square.G2.getY(h), chessboard));
-        addPiece(new Pawn(PieceColour.WHITE, Square.H2.getX(w), Square.H2.getY(h), chessboard));
+        addPiece(new Rook(PieceColour.WHITE, Square.A1.getX(w), Square.A1.getY(h), chessboard, pieceList));
+        addPiece(new Knight(PieceColour.WHITE, Square.B1.getX(w), Square.B1.getY(h), chessboard, pieceList));
+        addPiece(new Bishop(PieceColour.WHITE, Square.C1.getX(w), Square.C1.getY(h), chessboard, pieceList));
+        addPiece(new Queen(PieceColour.WHITE, Square.D1.getX(w), Square.D1.getY(h), chessboard, pieceList));
+        addPiece(new King(PieceColour.WHITE, Square.E1.getX(w), Square.E1.getY(h), chessboard, pieceList));
+        addPiece(new Bishop(PieceColour.WHITE, Square.F1.getX(w), Square.F1.getY(h), chessboard, pieceList));
+        addPiece(new Knight(PieceColour.WHITE, Square.G1.getX(w), Square.G1.getY(h), chessboard, pieceList));
+        addPiece(new Rook(PieceColour.WHITE, Square.H1.getX(w), Square.H1.getY(h), chessboard, pieceList));
+        addPiece(new Pawn(PieceColour.WHITE, Square.A2.getX(w), Square.A2.getY(h), chessboard, pieceList));
+        addPiece(new Pawn(PieceColour.WHITE, Square.B2.getX(w), Square.B2.getY(h), chessboard, pieceList));
+        addPiece(new Pawn(PieceColour.WHITE, Square.C2.getX(w), Square.C2.getY(h), chessboard, pieceList));
+        addPiece(new Pawn(PieceColour.WHITE, Square.D2.getX(w), Square.D2.getY(h), chessboard, pieceList));
+        addPiece(new Pawn(PieceColour.WHITE, Square.E2.getX(w), Square.E2.getY(h), chessboard, pieceList));
+        addPiece(new Pawn(PieceColour.WHITE, Square.F2.getX(w), Square.F2.getY(h), chessboard, pieceList));
+        addPiece(new Pawn(PieceColour.WHITE, Square.G2.getX(w), Square.G2.getY(h), chessboard, pieceList));
+        addPiece(new Pawn(PieceColour.WHITE, Square.H2.getX(w), Square.H2.getY(h), chessboard, pieceList));
     }
 
     private void addBlackPieces(double w, double h) {
-        addPiece(new Rook(PieceColour.BLACK, Square.A8.getX(w), Square.A8.getY(h), chessboard));
-        addPiece(new Knight(PieceColour.BLACK, Square.B8.getX(w), Square.B8.getY(h), chessboard));
-        addPiece(new Bishop(PieceColour.BLACK, Square.C8.getX(w), Square.C8.getY(h), chessboard));
-        addPiece(new Queen(PieceColour.BLACK, Square.D8.getX(w), Square.D8.getY(h), chessboard));
-        addPiece(new King(PieceColour.BLACK, Square.E8.getX(w), Square.E8.getY(h), chessboard));
-        addPiece(new Bishop(PieceColour.BLACK, Square.F8.getX(w), Square.F8.getY(h), chessboard));
-        addPiece(new Knight(PieceColour.BLACK, Square.G8.getX(w), Square.G8.getY(h), chessboard));
-        addPiece(new Rook(PieceColour.BLACK, Square.H8.getX(w), Square.H8.getY(h), chessboard));
-        addPiece(new Pawn(PieceColour.BLACK, Square.A7.getX(w), Square.A7.getY(h), chessboard));
-        addPiece(new Pawn(PieceColour.BLACK, Square.B7.getX(w), Square.B7.getY(h), chessboard));
-        addPiece(new Pawn(PieceColour.BLACK, Square.C7.getX(w), Square.C7.getY(h), chessboard));
-        addPiece(new Pawn(PieceColour.BLACK, Square.D7.getX(w), Square.D7.getY(h), chessboard));
-        addPiece(new Pawn(PieceColour.BLACK, Square.E7.getX(w), Square.E7.getY(h), chessboard));
-        addPiece(new Pawn(PieceColour.BLACK, Square.F7.getX(w), Square.F7.getY(h), chessboard));
-        addPiece(new Pawn(PieceColour.BLACK, Square.G7.getX(w), Square.G7.getY(h), chessboard));
-        addPiece(new Pawn(PieceColour.BLACK, Square.H7.getX(w), Square.H7.getY(h), chessboard));
+        addPiece(new Rook(PieceColour.BLACK, Square.A8.getX(w), Square.A8.getY(h), chessboard, pieceList));
+        addPiece(new Knight(PieceColour.BLACK, Square.B8.getX(w), Square.B8.getY(h), chessboard, pieceList));
+        addPiece(new Bishop(PieceColour.BLACK, Square.C8.getX(w), Square.C8.getY(h), chessboard, pieceList));
+        addPiece(new Queen(PieceColour.BLACK, Square.D8.getX(w), Square.D8.getY(h), chessboard, pieceList));
+        addPiece(new King(PieceColour.BLACK, Square.E8.getX(w), Square.E8.getY(h), chessboard, pieceList));
+        addPiece(new Bishop(PieceColour.BLACK, Square.F8.getX(w), Square.F8.getY(h), chessboard, pieceList));
+        addPiece(new Knight(PieceColour.BLACK, Square.G8.getX(w), Square.G8.getY(h), chessboard, pieceList));
+        addPiece(new Rook(PieceColour.BLACK, Square.H8.getX(w), Square.H8.getY(h), chessboard, pieceList));
+        addPiece(new Pawn(PieceColour.BLACK, Square.A7.getX(w), Square.A7.getY(h), chessboard, pieceList));
+        addPiece(new Pawn(PieceColour.BLACK, Square.B7.getX(w), Square.B7.getY(h), chessboard, pieceList));
+        addPiece(new Pawn(PieceColour.BLACK, Square.C7.getX(w), Square.C7.getY(h), chessboard, pieceList));
+        addPiece(new Pawn(PieceColour.BLACK, Square.D7.getX(w), Square.D7.getY(h), chessboard, pieceList));
+        addPiece(new Pawn(PieceColour.BLACK, Square.E7.getX(w), Square.E7.getY(h), chessboard, pieceList));
+        addPiece(new Pawn(PieceColour.BLACK, Square.F7.getX(w), Square.F7.getY(h), chessboard, pieceList));
+        addPiece(new Pawn(PieceColour.BLACK, Square.G7.getX(w), Square.G7.getY(h), chessboard, pieceList));
+        addPiece(new Pawn(PieceColour.BLACK, Square.H7.getX(w), Square.H7.getY(h), chessboard, pieceList));
     }
 
     private boolean isPieceSelected() {
