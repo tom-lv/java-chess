@@ -20,7 +20,6 @@ public abstract class Piece extends Rectangle {
     protected ArrayList<Piece> pieceList;
     protected boolean isSelected;
 
-
     public Piece(PieceColour pieceColour, double positionX, double positionY, Chessboard chessboard, ArrayList<Piece> pieceList) {
         this.pieceColour = pieceColour;
         this.positionX = positionX;
@@ -41,6 +40,34 @@ public abstract class Piece extends Rectangle {
     public abstract void move();
 
     public abstract void getLegalMoves();
+
+    protected boolean isSquareOccupied(double x, double y) {
+        boolean isOccupied = false;
+        for (Piece piece : this.pieceList) {
+            if (Math.round(x) == Math.round(piece.getPositionX()) && Math.round(y) == Math.round(piece.getPositionY())) {
+                isOccupied = true;
+                break;
+            }
+        }
+        return isOccupied;
+    }
+
+    protected double findSquareInFront(int numOfSquares, double currentSquareY) {
+        int index = pieceColour.equals(PieceColour.WHITE) ? -1 : 1;
+        double[] possibleCoordinates = chessboard.getPossibleXAndYCoordinates();
+        double squareInFront = 0.0;
+        for (int i = 0; i < possibleCoordinates.length; i++) {
+            if (Math.round(possibleCoordinates[i]) == Math.round(currentSquareY)) {
+                squareInFront = possibleCoordinates[i + index];
+                break;
+            }
+        }
+        if (numOfSquares > 1) {
+            return findSquareInFront(numOfSquares - 1, squareInFront);
+        } else {
+            return squareInFront;
+        }
+    }
 
     public void setPositionX(double positionX) {
         this.positionX = positionX;

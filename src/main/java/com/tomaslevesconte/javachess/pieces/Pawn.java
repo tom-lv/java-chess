@@ -23,12 +23,11 @@ public class Pawn extends Piece {
 
     @Override
     public void getLegalMoves() {
-        double x = this.getPositionX();
-        double oneSqr = findSquareInFront(1, this.getPositionY());
-        double twoSqr = findSquareInFront(2, this.getPositionY());
-        if (!hasMoved && !isSquareOccupied(x, twoSqr)) {
+        double oneSqrY = findSquareInFront(1, this.getPositionY());
+        double twoSqrY = findSquareInFront(2, this.getPositionY());
+        if (!hasMoved && !isSquareOccupied(this.getPositionX(), twoSqrY)) {
             System.out.println("2");
-        } else if (!isSquareOccupied(x, oneSqr)) {
+        } else if (!isSquareOccupied(this.getPositionX(), oneSqrY)) {
             System.out.println("1");
         } else {
             System.out.println("0");
@@ -37,33 +36,5 @@ public class Pawn extends Piece {
 
     private boolean isMoveLegal() {
         return false;
-    }
-
-    private boolean isSquareOccupied(double x, double y) {
-        boolean isOccupied = false;
-        for (Piece piece : this.pieceList) {
-            if (Math.round(x) == Math.round(piece.getPositionX()) && Math.round(y) == Math.round(piece.getPositionY())) {
-                isOccupied = true;
-                break;
-            }
-        }
-        return isOccupied;
-    }
-
-    private double findSquareInFront(int numOfSquares, double currentSquareY) {
-        int index = pieceColour.equals(PieceColour.WHITE) ? -1 : 1;
-        double[] possibleCoordinates = chessboard.getPossibleXAndYCoordinates();
-        double squareInFront = 0.0;
-        for (int i = 0; i < possibleCoordinates.length; i++) {
-            if (Math.round(possibleCoordinates[i]) == Math.round(currentSquareY)) {
-                squareInFront = possibleCoordinates[i + index];
-                break;
-            }
-        }
-        if (numOfSquares > 1) {
-            return findSquareInFront(numOfSquares - 1, squareInFront);
-        } else {
-            return squareInFront;
-        }
     }
 }
