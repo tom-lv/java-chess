@@ -4,11 +4,14 @@ import com.tomaslevesconte.javachess.Chessboard;
 import com.tomaslevesconte.javachess.PieceColour;
 import com.tomaslevesconte.javachess.PieceType;
 
+import com.tomaslevesconte.javachess.Square;
 import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public abstract class Piece extends Rectangle {
     
@@ -33,16 +36,21 @@ public abstract class Piece extends Rectangle {
         setHeight(chessboard.getSquareSize());
         setLayoutX(positionX);
         setLayoutY(positionY);
-        setFill(new ImagePattern(new Image("com/tomaslevesconte/javachess/pieces/"
-                + pieceColour.toString().toLowerCase().charAt(0) + pieceType.toString().toLowerCase().charAt(0)
-                + ".png")));
+        if (getPieceType().equals(PieceType.KNIGHT)) {
+            setFill(new ImagePattern(new Image("com/tomaslevesconte/javachess/pieces/wn.png")));
+        } else {
+            setFill(new ImagePattern(new Image("com/tomaslevesconte/javachess/pieces/"
+                    + pieceColour.toString().toLowerCase().charAt(0) + pieceType.toString().toLowerCase().charAt(0)
+                    + ".png")));
+        }
     }
 
     public abstract void move();
 
-    public abstract void getLegalMoves();
+    public abstract ArrayList<Square> getLegalMoves();
 
-    protected boolean isSquareOccupied(double x, double y) {
+    // issue is here
+    public boolean isSquareOccupied(double x, double y) {
         boolean isOccupied = false;
         for (Piece piece : this.pieceList) {
             if (Math.round(x) == Math.round(piece.getPositionX()) && Math.round(y) == Math.round(piece.getPositionY())) {
@@ -53,22 +61,19 @@ public abstract class Piece extends Rectangle {
         return isOccupied;
     }
 
-    // Stop out of bounds
-    protected double findSquareInFront(int numOfSquares, double currentSquareY) {
-        int index = pieceColour.equals(PieceColour.WHITE) ? -1 : 1;
+    public double findUpSquare(double initialSquareY) {
+        int nextSquareIndex = pieceColour.equals(PieceColour.WHITE) ? -1 : 1;
         double[] possibleCoordinates = chessboard.getPossibleXAndYCoordinates();
-        double squareInFront = 0.0;
+        double upSquareY = 0.0;
         for (int i = 0; i < possibleCoordinates.length; i++) {
-            if (Math.round(possibleCoordinates[i]) == Math.round(currentSquareY)) {
-                squareInFront = possibleCoordinates[i + index];
+            if (Math.round(initialSquareY) == Math.round(possibleCoordinates[i]) && i <= 7 && i > 0) {
+                upSquareY = i == possibleCoordinates.length - 1
+                        ? possibleCoordinates[i]
+                        : possibleCoordinates[i + nextSquareIndex];
                 break;
             }
         }
-        if (numOfSquares > 1) {
-            return findSquareInFront(numOfSquares - 1, squareInFront);
-        } else {
-            return squareInFront;
-        }
+        return upSquareY;
     }
 
     public double getPositionX() {

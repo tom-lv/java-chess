@@ -26,10 +26,10 @@ public enum Square {
         return y * squareHeight;
     }
 
-    public static Square findSquare(double x, double y, double squareWH) {
+    public static Square findSquare(double x, double y, double squareSize) {
         Square result = null;
         for (Square square : Square.values()) {
-            if (Math.round(square.x) == Math.round(x/squareWH) && Math.round(square.y) == Math.round(y/squareWH)) {
+            if (Math.round(square.x) == Math.round(x/squareSize) && Math.round(square.y) == Math.round(y/squareSize)) {
                 result = square;
                 break;
             }

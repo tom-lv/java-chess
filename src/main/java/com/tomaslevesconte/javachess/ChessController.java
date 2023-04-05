@@ -4,7 +4,12 @@ import com.tomaslevesconte.javachess.pieces.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
+import javafx.scene.Group;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Rectangle;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -28,23 +33,17 @@ public class ChessController implements Initializable {
     private void addPiece(Piece piece) {
         int currentPieceIndex = pieceIndex++;
         pieceList.add(piece);
-
         piece.setCursor(Cursor.OPEN_HAND); // default open hand on hover
 
-
-//        rec.setOnMouseClicked(mouseEvent -> {
-//            if (isPieceSelected()) {
-//                System.out.println("deselecting piece " + getSelectedPiece());
-//                pieceList.get(getSelectedPiece()).hideLegalMoves();
-//                pieceList.get(getSelectedPiece()).setSelected(false);
-//            }
-//            pieceList.get(currentPieceIndex).setSelected(true);
-//            System.out.println(getSelectedPiece() + " is now selected.");
-//            if (pieceList.get(currentPieceIndex).isSelected()) {
-//                pieceList.get(currentPieceIndex).showLegalMoves();
-//            }
-//        });
-
+        piece.setOnMouseClicked(mouseEvent -> {
+            if (isPieceSelected()) {
+                pieceList.get(getSelectedPiece()).setSelected(false);
+            }
+            pieceList.get(currentPieceIndex).setSelected(true);
+            if (pieceList.get(currentPieceIndex).isSelected()) {
+                showLegalMoves(piece.getLegalMoves());
+            }
+        });
 
         piece.setOnMousePressed(mouseEvent -> {
             piece.setCursor(Cursor.CLOSED_HAND);
@@ -65,7 +64,7 @@ public class ChessController implements Initializable {
             piece.setLayoutY(chessboard.findClosestSquare(mouseEvent.getSceneY(), chessboard.getPossibleXAndYCoordinates())); // Update pos on board
             pieceList.get(currentPieceIndex).setPositionX(piece.getLayoutX()); // Update pos in arraylist
             pieceList.get(currentPieceIndex).setPositionY(piece.getLayoutY()); // Update pos in arraylist
-            piece.getLegalMoves();
+            hideLegalMoves();
             System.out.println(piece.getPieceColour() + " " + piece.getPieceType() + " " + Square.findSquare(piece.getLayoutX(), piece.getLayoutY(), chessboard.getSquareSize())
                     + " (x=" + piece.getLayoutX() + ", y=" + piece.getLayoutY() + ")");
         });
@@ -108,6 +107,24 @@ public class ChessController implements Initializable {
         addPiece(new Pawn(PieceColour.BLACK, Square.F7.getX(w), Square.F7.getY(h), chessboard, pieceList));
         addPiece(new Pawn(PieceColour.BLACK, Square.G7.getX(w), Square.G7.getY(h), chessboard, pieceList));
         addPiece(new Pawn(PieceColour.BLACK, Square.H7.getX(w), Square.H7.getY(h), chessboard, pieceList));
+    }
+
+    private void showLegalMoves(ArrayList<Square> legalMoves) {
+        Group group = new Group();
+        legalMoves.forEach(square -> {
+            Rectangle highlight = new Rectangle(chessboard.getSquareSize(), chessboard.getSquareSize());
+            highlight.setFill(new ImagePattern(new Image("com/tomaslevesconte/javachess/hc.png")));
+            highlight.setSmooth(false);
+            highlight.setLayoutX(square.getX(chessboard.getSquareSize()));
+            highlight.setLayoutY(square.getY(chessboard.getSquareSize()));
+            group.getChildren().add(highlight);
+        });
+        group.setId("highlight");
+        anchorPane.getChildren().add(group);
+    }
+
+    public void hideLegalMoves() {
+        anchorPane.getChildren().remove(anchorPane.lookup("#highlight"));
     }
 
     private boolean isPieceSelected() {
