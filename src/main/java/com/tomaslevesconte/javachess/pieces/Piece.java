@@ -9,9 +9,7 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public abstract class Piece extends Rectangle {
     
@@ -36,11 +34,15 @@ public abstract class Piece extends Rectangle {
         setHeight(chessboard.getSquareSize());
         setLayoutX(positionX);
         setLayoutY(positionY);
+        char colourFirstChar = pieceColour.toString().toLowerCase().charAt(0);
         if (getPieceType().equals(PieceType.KNIGHT)) {
-            setFill(new ImagePattern(new Image("com/tomaslevesconte/javachess/pieces/wn.png")));
+            setFill(new ImagePattern(new Image("com/tomaslevesconte/javachess/pieces/"
+                    + colourFirstChar
+                    + "n.png")));
         } else {
             setFill(new ImagePattern(new Image("com/tomaslevesconte/javachess/pieces/"
-                    + pieceColour.toString().toLowerCase().charAt(0) + pieceType.toString().toLowerCase().charAt(0)
+                    + colourFirstChar
+                    + pieceType.toString().toLowerCase().charAt(0)
                     + ".png")));
         }
     }

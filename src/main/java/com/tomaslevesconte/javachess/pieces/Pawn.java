@@ -19,21 +19,20 @@ public class Pawn extends Piece {
 
     @Override
     public void move() {
-        isOnStartingSquare = false;
+//        isOnStartingSquare = false;
+        System.out.println(getPositionX() + " " + getPositionY());
     }
 
     @Override
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> squares = new ArrayList<>();
         double firstUpSquare = findUpSquare(getPositionY());
-
         if (isOnStartingSquare && !isSquareOccupied(getPositionX(), firstUpSquare) && !isSquareOccupied(getPositionX(), findUpSquare(firstUpSquare))) {
             squares.add(Square.findSquare(getPositionX(), firstUpSquare, 112.5));
             squares.add(Square.findSquare(getPositionX(), findUpSquare(firstUpSquare), 112.5));
         } else if (!isSquareOccupied(getPositionX(), firstUpSquare)) {
             squares.add(Square.findSquare(getPositionX(), firstUpSquare, 112.5));
         }
-
         return squares;
     }
 

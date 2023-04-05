@@ -65,6 +65,7 @@ public class ChessController implements Initializable {
             pieceList.get(currentPieceIndex).setPositionX(piece.getLayoutX()); // Update pos in arraylist
             pieceList.get(currentPieceIndex).setPositionY(piece.getLayoutY()); // Update pos in arraylist
             hideLegalMoves();
+            pieceList.get(currentPieceIndex).move();
             System.out.println(piece.getPieceColour() + " " + piece.getPieceType() + " " + Square.findSquare(piece.getLayoutX(), piece.getLayoutY(), chessboard.getSquareSize())
                     + " (x=" + piece.getLayoutX() + ", y=" + piece.getLayoutY() + ")");
         });
@@ -111,12 +112,12 @@ public class ChessController implements Initializable {
 
     private void showLegalMoves(ArrayList<Square> legalMoves) {
         Group group = new Group();
-        legalMoves.forEach(square -> {
+        legalMoves.forEach(move -> {
             Rectangle highlight = new Rectangle(chessboard.getSquareSize(), chessboard.getSquareSize());
             highlight.setFill(new ImagePattern(new Image("com/tomaslevesconte/javachess/hc.png")));
             highlight.setSmooth(false);
-            highlight.setLayoutX(square.getX(chessboard.getSquareSize()));
-            highlight.setLayoutY(square.getY(chessboard.getSquareSize()));
+            highlight.setLayoutX(move.getX(chessboard.getSquareSize()));
+            highlight.setLayoutY(move.getY(chessboard.getSquareSize()));
             group.getChildren().add(highlight);
         });
         group.setId("highlight");
