@@ -13,6 +13,9 @@ import javafx.scene.shape.Rectangle;
 import java.util.ArrayList;
 
 public abstract class Piece extends Rectangle {
+
+    private static final String IMAGE_PATH = "com/tomaslevesconte/javachess/pieces/";
+    private static final String IMAGE_TYPE = ".png";
     
     private PieceType pieceType;
     private final PieceColour pieceColour;
@@ -34,43 +37,49 @@ public abstract class Piece extends Rectangle {
         setHeight(chessboard.getSquareSize());
         setLayoutX(currentX);
         setLayoutY(currentY);
-        char charIndex = getPieceType().equals(PieceType.KNIGHT)
-                ? pieceType.toString().toLowerCase().charAt(1)
-                : pieceType.toString().toLowerCase().charAt(0);
-        setFill(new ImagePattern(new Image("com/tomaslevesconte/javachess/pieces/"
-                + pieceColour.toString().toLowerCase().charAt(0)
-                + charIndex
-                + ".png")));
+        char knightInitial = pieceType.toString().toLowerCase().charAt(1);
+        char allInitial = pieceType.toString().toLowerCase().charAt(0);
+        char colourInitial = pieceColour.toString().toLowerCase().charAt(0);
+        char typeInitial = getPieceType().equals(PieceType.KNIGHT) ? knightInitial : allInitial;
+        setFill(new ImagePattern(new Image(IMAGE_PATH + colourInitial + typeInitial + IMAGE_TYPE)));
     }
 
     public abstract boolean move(double newX, double newY);
 
     public abstract ArrayList<Square> getLegalMoves();
 
-    public boolean isSquareOccupied(double x, double y) {
-        boolean isOccupied = true;
-        for (Piece piece : chessboard.getPiecePos()) {
-            if (Math.round(x) == Math.round(piece.getCurrentX()) && Math.round(y) == Math.round(piece.getCurrentY())) {
-                isOccupied = false;
+    public boolean isSquareOccupied(double squareX, double squareY) {
+        boolean occupiedStatus = true;
+        double x = Math.round(squareX);
+        double y = Math.round(squareY);
+        for (Piece piece : chessboard.getPiecePositions()) {
+            double currentX = piece.getCurrentX();
+            double currentY = piece.getCurrentY();
+            if (x == currentX && y == currentY) {
+                occupiedStatus = false;
                 break;
             }
         }
-        return isOccupied;
+        return occupiedStatus;
     }
 
-    public double findUpSquare(double initialSquareY) {
+    public double findYAxisSquares(double squareY) {
         int nextSquareIndex = pieceColour.equals(PieceColour.WHITE) ? -1 : 1;
         double[] possibleCoordinates = chessboard.getPossibleXAndYCoordinates();
-        double upSquareY = 0.0;
-        for (int i = 0; i < possibleCoordinates.length; i++) {
-            if (Math.round(initialSquareY) == Math.round(possibleCoordinates[i]) && i <= 7 && i > 0) {
-                upSquareY = i == possibleCoordinates.length - 1
+        double targetSquareY = 0.0;
+        int i = 0;
+        for (double coordinate : possibleCoordinates) {
+            int startSquareY = (int) Math.round(squareY);
+            int arraySquareY = (int) Math.round(coordinate);
+            if (startSquareY == arraySquareY && i <= 7 && i > 0) {
+                targetSquareY = i == possibleCoordinates.length - 1
                         ? possibleCoordinates[i]
                         : possibleCoordinates[i + nextSquareIndex];
                 break;
             }
+            i++;
         }
-        return upSquareY;
+        return targetSquareY;
     }
 
     public double getCurrentX() {

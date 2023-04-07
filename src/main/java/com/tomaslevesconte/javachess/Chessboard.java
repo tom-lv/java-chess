@@ -14,13 +14,13 @@ import java.util.ArrayList;
 
 public class Chessboard {
 
-    private final static byte TOTAL_NUM_OF_SQUARES = 64;
+    private static final byte TOTAL_NUM_OF_SQUARES = 64;
     private static final Color LIGHT_SQUARE_COLOUR = Color.web("#F2D8B5");
     private static final Color DARK_SQUARE_COLOUR = Color.web("#B78B64");
 
     private final double squareSize;
     private final AnchorPane anchorPane;
-    private final ArrayList<Piece> piecePos = new ArrayList<>();
+    private final ArrayList<Piece> piecePositions = new ArrayList<>();
     private int pieceIndex = 0;
 
 
@@ -55,7 +55,7 @@ public class Chessboard {
     public double findClosestSquare(double input, double[] possibleCoordinates) {
         double result = 0.0;
         for (int i = 0; i < possibleCoordinates.length; i++) {
-            if (input >= possibleCoordinates[i] & input <= possibleCoordinates[i+1] | input < 0) {
+            if (input >= possibleCoordinates[i] && input <= possibleCoordinates[i+1] || input < 0) {
                 result = possibleCoordinates[i];
                 break;
             } else if (input > possibleCoordinates[possibleCoordinates.length - 1]) {
@@ -76,14 +76,14 @@ public class Chessboard {
 
     private void addPiece(Piece piece) {
         int currentPieceIndex = pieceIndex++;
-        piecePos.add(piece);
+        piecePositions.add(piece);
         piece.setOnMousePressed(mouseEvent -> {
             if (isPieceSelected()) {
-                piecePos.get(getSelectedPiece()).setSelected(false);
+                piecePositions.get(getSelectedPiece()).setSelected(false);
                 hideLegalMoves();
             }
-            piecePos.get(currentPieceIndex).setSelected(true);
-            if (piecePos.get(currentPieceIndex).isSelected()) {
+            piecePositions.get(currentPieceIndex).setSelected(true);
+            if (piecePositions.get(currentPieceIndex).isSelected()) {
                 showLegalMoves(piece);
             }
             piece.setCursor(Cursor.CLOSED_HAND);
@@ -100,7 +100,7 @@ public class Chessboard {
             double newX = findClosestSquare(mouseEvent.getSceneX(), getPossibleXAndYCoordinates());
             double newY = findClosestSquare(mouseEvent.getSceneY(), getPossibleXAndYCoordinates());
             piece.setCursor(Cursor.OPEN_HAND);
-            if (piecePos.get(currentPieceIndex).move(newX, newY)) {
+            if (piecePositions.get(currentPieceIndex).move(newX, newY)) {
                 piece.setLayoutX(newX); // Update pos on board
                 piece.setLayoutY(newY); // Update pos on board
                 hideLegalMoves();
@@ -181,7 +181,7 @@ public class Chessboard {
 
     private boolean isPieceSelected() {
         boolean bool = false;
-        for (Piece piece : getPiecePos()) {
+        for (Piece piece : getPiecePositions()) {
             if (piece.isSelected()) {
                 bool = true;
                 break;
@@ -192,8 +192,8 @@ public class Chessboard {
 
     private int getSelectedPiece() {
         int pieceIndex = 0;
-        for (int i = 0; i < getPiecePos().size(); i++) {
-            if (getPiecePos().get(i).isSelected()) {
+        for (int i = 0; i < getPiecePositions().size(); i++) {
+            if (getPiecePositions().get(i).isSelected()) {
                 pieceIndex = i;
                 break;
             }
@@ -205,8 +205,8 @@ public class Chessboard {
         return squareSize;
     }
 
-    public ArrayList<Piece> getPiecePos() {
-        return piecePos;
+    public ArrayList<Piece> getPiecePositions() {
+        return piecePositions;
     }
 
     public AnchorPane getAnchorPane() {
