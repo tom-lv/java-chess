@@ -37,14 +37,15 @@ public class Pawn extends Piece {
     @Override
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
-        double firstUpSquare = findUpSquare(getCurrentY());
-        boolean firstSquareIsNotOccupied = squareIsNotOccupied(getCurrentX(), firstUpSquare);
-        boolean secondSquareIsNotOccupied = squareIsNotOccupied(getCurrentX(), findUpSquare(firstUpSquare));
+        double firstSquareUp = findUpSquare(getCurrentY());
+        double secondSquareUp = findUpSquare(firstSquareUp);
+        boolean firstSquareIsNotOccupied = isSquareOccupied(getCurrentX(), firstSquareUp);
+        boolean secondSquareIsNotOccupied = isSquareOccupied(getCurrentX(), secondSquareUp);
         if (onStartingSquare && firstSquareIsNotOccupied && secondSquareIsNotOccupied) {
-            legalMoves.add(Square.findSquare(getCurrentX(), firstUpSquare, getChessboard().getSquareSize()));
-            legalMoves.add(Square.findSquare(getCurrentX(), findUpSquare(firstUpSquare), getChessboard().getSquareSize()));
+            legalMoves.add(Square.findSquare(getCurrentX(), firstSquareUp, getChessboard().getSquareSize()));
+            legalMoves.add(Square.findSquare(getCurrentX(), findUpSquare(firstSquareUp), getChessboard().getSquareSize()));
         } else if (firstSquareIsNotOccupied) {
-            legalMoves.add(Square.findSquare(getCurrentX(), firstUpSquare, getChessboard().getSquareSize()));
+            legalMoves.add(Square.findSquare(getCurrentX(), firstSquareUp, getChessboard().getSquareSize()));
         }
         return legalMoves;
     }

@@ -47,7 +47,7 @@ public abstract class Piece extends Rectangle {
 
     public abstract ArrayList<Square> getLegalMoves();
 
-    public boolean squareIsNotOccupied(double x, double y) {
+    public boolean isSquareOccupied(double x, double y) {
         boolean isOccupied = true;
         for (Piece piece : chessboard.getPiecePos()) {
             if (Math.round(x) == Math.round(piece.getCurrentX()) && Math.round(y) == Math.round(piece.getCurrentY())) {
