@@ -5,6 +5,7 @@ import com.tomaslevesconte.javachess.PieceColour;
 import com.tomaslevesconte.javachess.PieceType;
 
 import com.tomaslevesconte.javachess.Square;
+import javafx.scene.Cursor;
 import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
@@ -15,48 +16,42 @@ public abstract class Piece extends Rectangle {
     
     private PieceType pieceType;
     private final PieceColour pieceColour;
-    private double positionX;
-    private double positionY;
+    private double currentX;
+    private double currentY;
     private final Chessboard chessboard;
-    private final ArrayList<Piece> pieceList;
     private boolean isSelected;
 
-    public Piece(PieceColour pieceColour, double positionX, double positionY, Chessboard chessboard, ArrayList<Piece> pieceList) {
+    public Piece(PieceColour pieceColour, Square square, Chessboard chessboard) {
         this.pieceColour = pieceColour;
-        this.positionX = positionX;
-        this.positionY = positionY;
+        this.currentX = square.getX(chessboard.getSquareSize());
+        this.currentY = square.getY(chessboard.getSquareSize());
         this.chessboard = chessboard;
-        this.pieceList = pieceList;
     }
 
     protected void createPiece() {
+        setCursor(Cursor.OPEN_HAND);
         setWidth(chessboard.getSquareSize());
         setHeight(chessboard.getSquareSize());
-        setLayoutX(positionX);
-        setLayoutY(positionY);
-        char colourFirstChar = pieceColour.toString().toLowerCase().charAt(0);
-        if (getPieceType().equals(PieceType.KNIGHT)) {
-            setFill(new ImagePattern(new Image("com/tomaslevesconte/javachess/pieces/"
-                    + colourFirstChar
-                    + "n.png")));
-        } else {
-            setFill(new ImagePattern(new Image("com/tomaslevesconte/javachess/pieces/"
-                    + colourFirstChar
-                    + pieceType.toString().toLowerCase().charAt(0)
-                    + ".png")));
-        }
+        setLayoutX(currentX);
+        setLayoutY(currentY);
+        char charIndex = getPieceType().equals(PieceType.KNIGHT)
+                ? pieceType.toString().toLowerCase().charAt(1)
+                : pieceType.toString().toLowerCase().charAt(0);
+        setFill(new ImagePattern(new Image("com/tomaslevesconte/javachess/pieces/"
+                + pieceColour.toString().toLowerCase().charAt(0)
+                + charIndex
+                + ".png")));
     }
 
-    public abstract void move();
+    public abstract boolean move(double newX, double newY);
 
     public abstract ArrayList<Square> getLegalMoves();
 
-    // issue is here
-    public boolean isSquareOccupied(double x, double y) {
-        boolean isOccupied = false;
-        for (Piece piece : this.pieceList) {
-            if (Math.round(x) == Math.round(piece.getPositionX()) && Math.round(y) == Math.round(piece.getPositionY())) {
-                isOccupied = true;
+    public boolean squareIsNotOccupied(double x, double y) {
+        boolean isOccupied = true;
+        for (Piece piece : chessboard.getPiecePos()) {
+            if (Math.round(x) == Math.round(piece.getCurrentX()) && Math.round(y) == Math.round(piece.getCurrentY())) {
+                isOccupied = false;
                 break;
             }
         }
@@ -78,20 +73,20 @@ public abstract class Piece extends Rectangle {
         return upSquareY;
     }
 
-    public double getPositionX() {
-        return positionX;
+    public double getCurrentX() {
+        return currentX;
     }
 
-    public double getPositionY() {
-        return positionY;
+    public double getCurrentY() {
+        return currentY;
     }
 
-    public void setPositionX(double positionX) {
-        this.positionX = positionX;
+    public void setCurrentX(double currentX) {
+        this.currentX = currentX;
     }
 
-    public void setPositionY(double positionY) {
-        this.positionY = positionY;
+    public void setCurrentY(double currentY) {
+        this.currentY = currentY;
     }
 
     public PieceType getPieceType() {
@@ -112,5 +107,9 @@ public abstract class Piece extends Rectangle {
 
     public void setSelected(boolean selected) {
         isSelected = selected;
+    }
+
+    public Chessboard getChessboard() {
+        return chessboard;
     }
 }

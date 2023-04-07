@@ -9,34 +9,43 @@ import java.util.ArrayList;
 
 public class Pawn extends Piece {
 
-    private boolean isOnStartingSquare = true;
+    private boolean onStartingSquare = true;
 
-    public Pawn(PieceColour pieceColour, double positionX, double positionY, Chessboard chessboard, ArrayList<Piece> pieceList) {
-        super(pieceColour, positionX, positionY, chessboard, pieceList);
+    public Pawn(PieceColour pieceColour, Square square, Chessboard chessboard) {
+        super(pieceColour, square, chessboard);
         setPieceType(PieceType.PAWN);
         createPiece();
     }
 
     @Override
-    public void move() {
-//        isOnStartingSquare = false;
-        System.out.println(getPositionX() + " " + getPositionY());
+    public boolean move(double newX, double newY) {
+        boolean isMoveLegal = false;
+        for (Square legalMove : getLegalMoves()) {
+            double legalX = legalMove.getX(getChessboard().getSquareSize());
+            double legalY = legalMove.getY(getChessboard().getSquareSize());
+            if (Math.round(newX) == Math.round(legalX) && Math.round(newY) == Math.round(legalY)) {
+                onStartingSquare = false;
+                isMoveLegal = true;
+                setCurrentX(newX);
+                setCurrentY(newY);
+                break;
+            }
+        }
+        return isMoveLegal;
     }
 
     @Override
     public ArrayList<Square> getLegalMoves() {
-        ArrayList<Square> squares = new ArrayList<>();
-        double firstUpSquare = findUpSquare(getPositionY());
-        if (isOnStartingSquare && !isSquareOccupied(getPositionX(), firstUpSquare) && !isSquareOccupied(getPositionX(), findUpSquare(firstUpSquare))) {
-            squares.add(Square.findSquare(getPositionX(), firstUpSquare, 112.5));
-            squares.add(Square.findSquare(getPositionX(), findUpSquare(firstUpSquare), 112.5));
-        } else if (!isSquareOccupied(getPositionX(), firstUpSquare)) {
-            squares.add(Square.findSquare(getPositionX(), firstUpSquare, 112.5));
+        ArrayList<Square> legalMoves = new ArrayList<>();
+        double firstUpSquare = findUpSquare(getCurrentY());
+        boolean firstSquareIsNotOccupied = squareIsNotOccupied(getCurrentX(), firstUpSquare);
+        boolean secondSquareIsNotOccupied = squareIsNotOccupied(getCurrentX(), findUpSquare(firstUpSquare));
+        if (onStartingSquare && firstSquareIsNotOccupied && secondSquareIsNotOccupied) {
+            legalMoves.add(Square.findSquare(getCurrentX(), firstUpSquare, getChessboard().getSquareSize()));
+            legalMoves.add(Square.findSquare(getCurrentX(), findUpSquare(firstUpSquare), getChessboard().getSquareSize()));
+        } else if (firstSquareIsNotOccupied) {
+            legalMoves.add(Square.findSquare(getCurrentX(), firstUpSquare, getChessboard().getSquareSize()));
         }
-        return squares;
-    }
-
-    private boolean isMoveLegal() {
-        return false;
+        return legalMoves;
     }
 }

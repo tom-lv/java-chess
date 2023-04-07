@@ -18,12 +18,12 @@ public enum Square {
         this.y = y;
     }
 
-    public double getX(double squareWidth) {
-        return x * squareWidth;
+    public double getX(double squareSize) {
+        return x * squareSize;
     }
 
-    public double getY(double squareHeight) {
-        return y * squareHeight;
+    public double getY(double squareSize) {
+        return y * squareSize;
     }
 
     public static Square findSquare(double x, double y, double squareSize) {

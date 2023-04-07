@@ -9,15 +9,15 @@ import java.util.ArrayList;
 
 public class Bishop extends Piece {
 
-    public Bishop(PieceColour pieceColour, double positionX, double positionY, Chessboard chessboard, ArrayList<Piece> pieceList) {
-        super(pieceColour, positionX, positionY, chessboard, pieceList);
+    public Bishop(PieceColour pieceColour, Square square, Chessboard chessboard) {
+        super(pieceColour, square, chessboard);
         setPieceType(PieceType.BISHOP);
         createPiece();
     }
 
     @Override
-    public void move() {
-
+    public boolean move(double newX, double newY) {
+        return false;
     }
 
     @Override
