@@ -14,6 +14,6 @@ public class ChessController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        new Chessboard(ChessApplication.BOARD_SIZE, anchorPane);
+        new PieceBuilder(new Chessboard(ChessApplication.BOARD_SIZE, anchorPane));
     }
 }
