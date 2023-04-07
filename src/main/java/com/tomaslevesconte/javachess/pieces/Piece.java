@@ -53,8 +53,8 @@ public abstract class Piece extends Rectangle {
         double x = Math.round(squareX);
         double y = Math.round(squareY);
         for (Piece piece : chessboard.getPiecePositions()) {
-            double currentX = piece.getCurrentX();
-            double currentY = piece.getCurrentY();
+            double currentX = Math.round(piece.getCurrentX());
+            double currentY = Math.round(piece.getCurrentY());
             if (x == currentX && y == currentY) {
                 occupiedStatus = false;
                 break;
