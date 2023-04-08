@@ -1,9 +1,12 @@
 package com.tomaslevesconte.javachess;
 
 import com.tomaslevesconte.javachess.pieces.*;
+import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
@@ -23,41 +26,44 @@ public class PieceBuilder {
 
     private void addPiece(Piece piece) {
         int currentPieceIndex = pieceIndex++;
+
         chessboard.getPiecePositions().add(piece);
+
         piece.setOnMousePressed(mouseEvent -> {
-            if (isPieceSelected()) {
-                chessboard.getPiecePositions().get(getSelectedPiece()).setSelected(false);
+            if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                 hideLegalMoves();
-            }
-            chessboard.getPiecePositions().get(currentPieceIndex).setSelected(true);
-            if (chessboard.getPiecePositions().get(currentPieceIndex).isSelected()) {
                 showLegalMoves(piece);
+                piece.setCursor(Cursor.CLOSED_HAND);
+                piece.toFront(); // Move rec in front of its siblings in terms of z-order
+                piece.setLayoutX(mouseEvent.getSceneX() - (piece.getWidth() / 2)); // - half the size of the image to find the center
+                piece.setLayoutY(mouseEvent.getSceneY() - (piece.getHeight() / 2));
             }
-            piece.setCursor(Cursor.CLOSED_HAND);
-            piece.toFront(); // Move rec in front of its siblings in terms of z-order
-            piece.setLayoutX(mouseEvent.getSceneX() - (piece.getWidth() / 2)); // - half the size of the image to find the center
-            piece.setLayoutY(mouseEvent.getSceneY() - (piece.getHeight() / 2));
         });
+
         piece.setOnMouseDragged(mouseEvent -> {
-            piece.setCursor(Cursor.CLOSED_HAND);
-            piece.setLayoutX(mouseEvent.getSceneX() - (piece.getWidth() / 2)); // - half the size of the image to find the center
-            piece.setLayoutY(mouseEvent.getSceneY() - (piece.getHeight() / 2));
-        });
-        piece.setOnMouseReleased(mouseEvent -> {
-            double newX = chessboard.findClosestSquare(mouseEvent.getSceneX(), chessboard.getPossibleXAndYCoordinates());
-            double newY = chessboard.findClosestSquare(mouseEvent.getSceneY(), chessboard.getPossibleXAndYCoordinates());
-            piece.setCursor(Cursor.OPEN_HAND);
-            if (chessboard.getPiecePositions().get(currentPieceIndex).move(newX, newY)) {
-                piece.setLayoutX(newX); // Update pos on board
-                piece.setLayoutY(newY); // Update pos on board
-                hideLegalMoves();
-            } else {
-                double currentX = piece.getCurrentX();
-                double currentY = piece.getCurrentY();
-                piece.setLayoutX(currentX);
-                piece.setLayoutY(currentY);
+            if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
+                piece.setCursor(Cursor.CLOSED_HAND);
+                piece.setLayoutX(mouseEvent.getSceneX() - (piece.getWidth() / 2)); // - half the size of the image to find the center
+                piece.setLayoutY(mouseEvent.getSceneY() - (piece.getHeight() / 2));
             }
         });
+
+        piece.setOnMouseReleased(mouseEvent -> {
+            if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
+                piece.setCursor(Cursor.OPEN_HAND);
+                double newX = chessboard.findClosestSquare(mouseEvent.getSceneX(), chessboard.getPossibleXAndYCoordinates());
+                double newY = chessboard.findClosestSquare(mouseEvent.getSceneY(), chessboard.getPossibleXAndYCoordinates());
+                if (chessboard.getPiecePositions().get(currentPieceIndex).move(newX, newY)) {
+                    piece.setLayoutX(newX); // Update pos on board
+                    piece.setLayoutY(newY); // Update pos on board
+                    hideLegalMoves();
+                } else {
+                    piece.setLayoutX(piece.getCurrentX());
+                    piece.setLayoutY(piece.getCurrentY());
+                }
+            }
+        });
+
         chessboard.getAnchorPane().getChildren().add(piece);
     }
 
@@ -104,8 +110,8 @@ public class PieceBuilder {
         Rectangle currentSquare = new Rectangle(chessboard.getSquareSize(), chessboard.getSquareSize());
         currentSquare.setFill(Color.web("#FEF250", 0.6));
         currentSquare.setSmooth(false);
-        currentSquare.setLayoutX(piece.getLayoutX());
-        currentSquare.setLayoutY(piece.getLayoutY());
+        currentSquare.setLayoutX(piece.getCurrentX());
+        currentSquare.setLayoutY(piece.getCurrentY());
         Group possibleMoves = new Group();
         legalMoves.forEach(move -> {
             Rectangle legalMove = new Rectangle(chessboard.getSquareSize(), chessboard.getSquareSize());
@@ -124,27 +130,5 @@ public class PieceBuilder {
     public void hideLegalMoves() {
         chessboard.getAnchorPane().getChildren().remove(chessboard.getAnchorPane().lookup("#currentSquare"));
         chessboard.getAnchorPane().getChildren().remove(chessboard.getAnchorPane().lookup("#possibleMoves"));
-    }
-
-    private boolean isPieceSelected() {
-        boolean bool = false;
-        for (Piece piece : chessboard.getPiecePositions()) {
-            if (piece.isSelected()) {
-                bool = true;
-                break;
-            }
-        }
-        return bool;
-    }
-
-    private int getSelectedPiece() {
-        int pieceIndex = 0;
-        for (int i = 0; i < chessboard.getPiecePositions().size(); i++) {
-            if (chessboard.getPiecePositions().get(i).isSelected()) {
-                pieceIndex = i;
-                break;
-            }
-        }
-        return pieceIndex;
     }
 }
