@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class ChessApplication extends Application {
 
-    public final static double BOARD_SIZE = 900.0;
+    public final static double BOARD_SIZE = 850.0;
 
     @Override
     public void start(Stage stage) throws IOException {
