@@ -22,7 +22,6 @@ public abstract class Piece extends Rectangle {
     private double currentX;
     private double currentY;
     private final Chessboard chessboard;
-    private boolean isSelected;
 
     public Piece(PieceColour pieceColour, Square square, Chessboard chessboard) {
         this.pieceColour = pieceColour;
@@ -108,14 +107,6 @@ public abstract class Piece extends Rectangle {
 
     public PieceColour getPieceColour() {
         return pieceColour;
-    }
-
-    public boolean isSelected() {
-        return isSelected;
-    }
-
-    public void setSelected(boolean selected) {
-        isSelected = selected;
     }
 
     public Chessboard getChessboard() {
