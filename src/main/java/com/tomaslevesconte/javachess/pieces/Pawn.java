@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 public class Pawn extends Piece {
 
+    private static final int SQUARES_CAN_MOVE = 2;
+
     private boolean onStartingSquare = true;
 
     public Pawn(PieceColour pieceColour, Square square, Chessboard chessboard) {
@@ -30,6 +32,7 @@ public class Pawn extends Piece {
                 setCurrentY(newY);
                 onStartingSquare = false;
                 isMoveLegal = true;
+                System.out.println("CALLED!");
                 break;
             }
         }
@@ -39,15 +42,19 @@ public class Pawn extends Piece {
     @Override
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
-        double firstSquareUp = findYAxisSquares(getCurrentY());
-        double secondSquareUp = findYAxisSquares(firstSquareUp);
-        boolean firstSquareIsNotOccupied = isSquareOccupied(getCurrentX(), firstSquareUp);
-        boolean secondSquareIsNotOccupied = isSquareOccupied(getCurrentX(), secondSquareUp);
-        if (onStartingSquare && firstSquareIsNotOccupied && secondSquareIsNotOccupied) {
-            legalMoves.add(Square.findSquare(getCurrentX(), firstSquareUp, getChessboard().getSquareSize()));
-            legalMoves.add(Square.findSquare(getCurrentX(), findYAxisSquares(firstSquareUp), getChessboard().getSquareSize()));
-        } else if (firstSquareIsNotOccupied) {
-            legalMoves.add(Square.findSquare(getCurrentX(), firstSquareUp, getChessboard().getSquareSize()));
+        double squareSize = getChessboard().getSquareSize();
+        double nextY = findYAxisSquares(getCurrentY());
+        double multiplier = getPieceColour().equals(PieceColour.WHITE) ? -squareSize : squareSize;
+        for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
+            if (onStartingSquare && !isSquareOccupied(getCurrentX(), nextY)) {
+                legalMoves.add(Square.findSquare(getCurrentX(), nextY, squareSize));
+            } else if (!isSquareOccupied(getCurrentX(), nextY)) {
+                legalMoves.add(Square.findSquare(getCurrentX(), nextY, squareSize));
+                break;
+            } else if (isSquareOccupied(getCurrentX(), nextY)) {
+                break;
+            }
+            nextY += multiplier;
         }
         return legalMoves;
     }
