@@ -22,6 +22,8 @@ public class King extends Piece {
 
     @Override
     public ArrayList<Square> getLegalMoves() {
-        return null;
+        ArrayList<Square> legalMoves = new ArrayList<>();
+
+        return legalMoves;
     }
 }

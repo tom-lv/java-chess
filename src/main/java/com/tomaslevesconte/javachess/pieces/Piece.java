@@ -49,12 +49,12 @@ public abstract class Piece extends Rectangle {
 
     public boolean isSquareOccupied(double squareX, double squareY) {
         boolean occupiedStatus = false;
-        double x = Math.round(squareX);
-        double y = Math.round(squareY);
+        double argX = Math.round(squareX);
+        double argY = Math.round(squareY);
         for (Piece piece : chessboard.getPiecePositions()) {
             double currentX = Math.round(piece.getCurrentX());
             double currentY = Math.round(piece.getCurrentY());
-            if (x == currentX && y == currentY) {
+            if (argX == currentX && argY == currentY) {
                 occupiedStatus = true;
                 break;
             }
@@ -63,22 +63,46 @@ public abstract class Piece extends Rectangle {
     }
 
     public double findYAxisSquares(double squareY) {
-        int nextSquareIndex = pieceColour.equals(PieceColour.WHITE) ? -1 : 1;
+        int multiplier = pieceColour.equals(PieceColour.WHITE) ? -1 : 1;
+        return findSquareForPawn(multiplier, squareY);
+    }
+
+    public double findYAxisSquares(boolean isUp, double squareY) {
+        int multiplier = isUp ? -1 : 1;
+        return findSquareForAll(multiplier, squareY);
+    }
+
+    public double findXAxisSquares(boolean isLeft, double squareX) {
+        int multiplier = isLeft ? -1 : 1;
+        return findSquareForAll(multiplier, squareX);
+    }
+
+    public double findSquareForPawn(int multiplier, double squareXY) {
         double[] possibleCoordinates = chessboard.getPossibleXAndYCoordinates();
-        double targetSquareY = 0.0;
-        int i = 0;
-        for (double coordinate : possibleCoordinates) {
-            int startSquareY = (int) Math.round(squareY);
-            int arraySquareY = (int) Math.round(coordinate);
-            if (startSquareY == arraySquareY && i <= 7 && i > 0) {
-                targetSquareY = i == possibleCoordinates.length - 1
-                        ? possibleCoordinates[i]
-                        : possibleCoordinates[i + nextSquareIndex];
+        double targetSquareXY = 0.0;
+        for (int i = 0; i < possibleCoordinates.length; i++) {
+            int startSquareXY = (int) Math.round(squareXY);
+            int arraySquareXY = (int) Math.round(possibleCoordinates[i]);
+            if (startSquareXY == arraySquareXY && i > 0 && i < 7) {
+                targetSquareXY = possibleCoordinates[i + multiplier];
                 break;
             }
-            i++;
         }
-        return targetSquareY;
+        return targetSquareXY;
+    }
+
+    public double findSquareForAll(int multiplier, double squareXY) {
+        double[] possibleCoordinates = chessboard.getPossibleXAndYCoordinates();
+        double targetSquareXY = 0.0;
+        for (int i = 0; i < possibleCoordinates.length; i++) {
+            int startSquareXY = (int) Math.round(squareXY);
+            int arraySquareXY = (int) Math.round(possibleCoordinates[i]);
+            if (startSquareXY == arraySquareXY && i + multiplier > 0 && i + multiplier <= 7) {
+                targetSquareXY = possibleCoordinates[i + multiplier];
+                break;
+            }
+        }
+        return targetSquareXY;
     }
 
     public double getCurrentX() {
