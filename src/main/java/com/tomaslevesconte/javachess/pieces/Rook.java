@@ -38,14 +38,18 @@ public class Rook extends Piece {
     @Override
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
-        double[] possibleCoordinates = getChessboard().getPossibleXAndYCoordinates();
         double squareSize = getChessboard().getSquareSize();
 
-        // Evaluate up squares
+        double[] possibleCoordinates = getChessboard().getPossibleXAndYCoordinates();
         double lowerBound = Math.round(possibleCoordinates[0]);
+        double upperBound = Math.round(possibleCoordinates[possibleCoordinates.length - 1]);
+
+        // Evaluate up squares
         double nextY = findYAxisSquares(true, getCurrentY());
         for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
-            if (Math.round(nextY) < lowerBound) {
+            if (Math.round(getCurrentY()) == lowerBound) {
+                break;
+            } else if (Math.round(nextY) < lowerBound) {
                 break;
             } else if (!isSquareOccupied(getCurrentX(), nextY)) {
                 legalMoves.add(Square.findSquare(getCurrentX(), nextY, squareSize));
@@ -56,7 +60,6 @@ public class Rook extends Piece {
         }
 
         //Evaluate down squares
-        double upperBound = Math.round(possibleCoordinates[possibleCoordinates.length - 1]);
         nextY = findYAxisSquares(false, getCurrentY());
         for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
             if (Math.round(getCurrentY()) == upperBound) {
@@ -70,6 +73,37 @@ public class Rook extends Piece {
             }
             nextY += squareSize;
         }
+
+        // Evaluate left squares
+        double nextX = findXAxisSquares(true, getCurrentX());
+        for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
+            if (Math.round(getCurrentX()) == lowerBound) {
+                break;
+            } else if (Math.round(nextX) < lowerBound) {
+                break;
+            } else if (!isSquareOccupied(nextX, getCurrentY())) {
+                legalMoves.add(Square.findSquare(nextX, getCurrentY(), squareSize));
+            } else if (isSquareOccupied(nextX, getCurrentY())) {
+                break;
+            }
+            nextX -= squareSize;
+        }
+
+        // Evaluate right squares
+        nextX = findXAxisSquares(false, getCurrentX());
+        for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
+            if (Math.round(getCurrentX()) == upperBound) {
+                break;
+            } else if (Math.round(nextX) > upperBound) {
+                break;
+            } else if (!isSquareOccupied(nextX, getCurrentY())) {
+                legalMoves.add(Square.findSquare(nextX, getCurrentY(), squareSize));
+            } else if (isSquareOccupied(nextX, getCurrentY())) {
+                break;
+            }
+            nextX += squareSize;
+        }
+
         return legalMoves;
     }
 }

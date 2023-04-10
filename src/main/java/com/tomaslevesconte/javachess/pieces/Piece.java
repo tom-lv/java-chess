@@ -67,16 +67,6 @@ public abstract class Piece extends Rectangle {
         return findSquareForPawn(multiplier, squareY);
     }
 
-    public double findYAxisSquares(boolean isUp, double squareY) {
-        int multiplier = isUp ? -1 : 1;
-        return findSquareForAll(multiplier, squareY);
-    }
-
-    public double findXAxisSquares(boolean isLeft, double squareX) {
-        int multiplier = isLeft ? -1 : 1;
-        return findSquareForAll(multiplier, squareX);
-    }
-
     public double findSquareForPawn(int multiplier, double squareXY) {
         double[] possibleCoordinates = chessboard.getPossibleXAndYCoordinates();
         double targetSquareXY = 0.0;
@@ -89,6 +79,16 @@ public abstract class Piece extends Rectangle {
             }
         }
         return targetSquareXY;
+    }
+
+    public double findYAxisSquares(boolean isUp, double squareY) {
+        int multiplier = isUp ? -1 : 1;
+        return findSquareForAll(multiplier, squareY);
+    }
+
+    public double findXAxisSquares(boolean isLeft, double squareX) {
+        int multiplier = isLeft ? -1 : 1;
+        return findSquareForAll(multiplier, squareX);
     }
 
     public double findSquareForAll(int multiplier, double squareXY) {
