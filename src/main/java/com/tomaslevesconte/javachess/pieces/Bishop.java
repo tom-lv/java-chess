@@ -20,18 +20,21 @@ public class Bishop extends Piece {
     @Override
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
+        double[] possibleCoordinates = getChessboard().getPossibleXAndYCoordinates();
+        double lowerBound = Math.round(possibleCoordinates[0]);
+        double upperBound = Math.round(possibleCoordinates[possibleCoordinates.length - 1]);
         double squareSize = getChessboard().getSquareSize();
 
         // Evaluate up/left squares
-        double[] nextDiagonal = findNextDiagonal(true, true, new double[]{getCurrentX(), getCurrentY()});
+        double[] nextDiagonal = getChessboard().findNextDiagonal(true, true, new double[]{getCurrentX(), getCurrentY()});
         for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
-            if (Math.round(getCurrentX()) == 0 || Math.round(getCurrentY()) == 0) {
+            if (Math.round(getCurrentX()) == lowerBound || Math.round(getCurrentY()) == lowerBound) {
                 break;
-            } else if (Math.round(nextDiagonal[0]) < 0 || Math.round(nextDiagonal[1]) < 0) {
+            } else if (Math.round(nextDiagonal[0]) < lowerBound || Math.round(nextDiagonal[1]) < lowerBound) {
                 break;
-            } else if (!isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
+            } else if (!getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
                 legalMoves.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
-            } else if (isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
+            } else if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
                 break;
             }
             nextDiagonal[0] -= squareSize;
@@ -39,15 +42,15 @@ public class Bishop extends Piece {
         }
 
         // Evaluate up/right squares
-        nextDiagonal = findNextDiagonal(true, false, new double[]{getCurrentX(), getCurrentY()});
+        nextDiagonal = getChessboard().findNextDiagonal(true, false, new double[]{getCurrentX(), getCurrentY()});
         for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
-            if (Math.round(getCurrentX()) == Math.round(squareSize * 7) || getCurrentY() == 0) {
+            if (Math.round(getCurrentX()) == upperBound || getCurrentY() == lowerBound) {
                 break;
-            } else if (Math.round(nextDiagonal[0]) > Math.round(squareSize * 7) || Math.round(nextDiagonal[1]) < 0) {
+            } else if (Math.round(nextDiagonal[0]) > upperBound || Math.round(nextDiagonal[1]) < lowerBound) {
                 break;
-            } else if (!isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
+            } else if (!getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
                 legalMoves.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
-            } else if (isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
+            } else if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
                 break;
             }
             nextDiagonal[0] += squareSize;
@@ -55,15 +58,15 @@ public class Bishop extends Piece {
         }
 
         // Evaluate down/left squares
-        nextDiagonal = findNextDiagonal(false, true, new double[]{getCurrentX(), getCurrentY()});
+        nextDiagonal = getChessboard().findNextDiagonal(false, true, new double[]{getCurrentX(), getCurrentY()});
         for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
-            if (Math.round(getCurrentY()) == Math.round(squareSize * 7) || Math.round(getCurrentX()) == 0) {
+            if (Math.round(getCurrentY()) == upperBound || Math.round(getCurrentX()) == lowerBound) {
                 break;
-            } else if (Math.round(nextDiagonal[0]) < 0 || Math.round(nextDiagonal[1]) > Math.round(squareSize * 7)) {
+            } else if (Math.round(nextDiagonal[0]) < lowerBound || Math.round(nextDiagonal[1]) > upperBound ) {
                 break;
-            } else if (!isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
+            } else if (!getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
                 legalMoves.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
-            } else if (isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
+            } else if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
                 break;
             }
             nextDiagonal[0] -= squareSize;
@@ -71,15 +74,15 @@ public class Bishop extends Piece {
         }
 
         // Evaluate down/right squares
-        nextDiagonal = findNextDiagonal(false, false, new double[]{getCurrentX(), getCurrentY()});
+        nextDiagonal = getChessboard().findNextDiagonal(false, false, new double[]{getCurrentX(), getCurrentY()});
         for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
-            if (Math.round(getCurrentY()) == Math.round(squareSize * 7) || Math.round(getCurrentX()) == Math.round(squareSize * 7)) {
+            if (Math.round(getCurrentY()) == upperBound || Math.round(getCurrentX()) == upperBound) {
                 break;
-            } else if (Math.round(nextDiagonal[0]) > Math.round(squareSize * 7) || Math.round(nextDiagonal[1]) > Math.round(squareSize * 7)) {
+            } else if (Math.round(nextDiagonal[0]) > upperBound || Math.round(nextDiagonal[1]) > upperBound) {
                 break;
-            } else if (!isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
+            } else if (!getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
                 legalMoves.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
-            } else if (isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
+            } else if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
                 break;
             }
             nextDiagonal[0] += squareSize;

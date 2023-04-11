@@ -24,7 +24,7 @@ public class Chessboard {
         createBoard();
     }
 
-    public void createBoard() {
+    private void createBoard() {
         double x = 0;
         double y = 0;
         for (int i = 0; i < Math.sqrt(TOTAL_NUM_OF_SQUARES); i++) {
@@ -44,6 +44,14 @@ public class Chessboard {
         }
     }
 
+    public double[] getPossibleXAndYCoordinates() {
+        double[] possibleXAndYCoordinates = new double[(int) (Math.sqrt(Chessboard.TOTAL_NUM_OF_SQUARES))];
+        for (int i = 0; i < possibleXAndYCoordinates.length; i++) {
+            possibleXAndYCoordinates[i] = squareSize * i;
+        }
+        return possibleXAndYCoordinates;
+    }
+
     public double findClosestSquare(double input, double[] possibleCoordinates) {
         double result = 0.0;
         for (int i = 0; i < possibleCoordinates.length; i++) {
@@ -57,13 +65,58 @@ public class Chessboard {
         }
         return result;
     }
-    
-    public double[] getPossibleXAndYCoordinates() {
-        double[] possibleXAndYCoordinates = new double[(int) (Math.sqrt(Chessboard.TOTAL_NUM_OF_SQUARES))];
-        for (int i = 0; i < possibleXAndYCoordinates.length; i++) {
-            possibleXAndYCoordinates[i] = squareSize * i;
+
+    public boolean isSquareOccupied(double squareX, double squareY) {
+        boolean occupiedStatus = false;
+        for (Piece piece : getPiecePositions()) {
+            if (Math.round(squareX) == Math.round(piece.getCurrentX())
+                    && Math.round(squareY) == Math.round(piece.getCurrentY())) {
+                occupiedStatus = true;
+                break;
+            }
         }
-        return possibleXAndYCoordinates;
+        return occupiedStatus;
+    }
+
+    public double findNextYAxisSquare(PieceColour pieceColour, double startSquareY) {
+        int multiplier = pieceColour.equals(PieceColour.WHITE) ? -1 : 1;
+        return findSquare(multiplier, startSquareY);
+    }
+
+    public double findNextYAxisSquare(boolean isUp, double startSquareY) {
+        int multiplier = isUp ? -1 : 1;
+        return findSquare(multiplier, startSquareY);
+    }
+
+    public double findNextXAxisSquare(boolean isLeft, double startSquareX) {
+        int multiplier = isLeft ? -1 : 1;
+        return findSquare(multiplier, startSquareX);
+    }
+
+    private double findSquare(int multiplier, double startSquareXY) {
+        double[] possibleCoordinates = getPossibleXAndYCoordinates();
+        double targetSquareXY = 0.0;
+        for (int i = 0; i < possibleCoordinates.length; i++) {
+            int squareXY = (int) Math.round(startSquareXY);
+            int arraySquareXY = (int) Math.round(possibleCoordinates[i]);
+            if (squareXY == arraySquareXY && i + multiplier > 0 && i + multiplier <= 7) {
+                targetSquareXY = possibleCoordinates[i + multiplier];
+                break;
+            }
+        }
+        return targetSquareXY;
+    }
+
+    public double[] findNextDiagonal(boolean isUp, boolean isLeft, double[] startSquareXY) {
+        int multiplierX = isLeft ? -1 : 1;
+        int multiplierY = isUp ? -1 : 1;
+        return findDiagonalSquare(multiplierX, multiplierY, startSquareXY);
+    }
+
+    private double[] findDiagonalSquare(int multiplierX, int multiplierY, double[] startSquareXY) {
+        double nextSquareX = findSquare(multiplierX, startSquareXY[0]);
+        double nextSquareY = findSquare(multiplierY, startSquareXY[1]);
+        return new double[]{nextSquareX, nextSquareY};
     }
 
     public double getSquareSize() {

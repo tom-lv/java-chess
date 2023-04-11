@@ -10,7 +10,6 @@ import java.util.ArrayList;
 public class Pawn extends Piece {
 
     private static final int SQUARES_CAN_MOVE = 2;
-
     private boolean onStartingSquare = true;
 
     public Pawn(PieceColour pieceColour, Square square, Chessboard chessboard) {
@@ -22,12 +21,10 @@ public class Pawn extends Piece {
     @Override
     public boolean move(double newX, double newY) {
         boolean isMoveLegal = false;
-        double x = Math.round(newX);
-        double y = Math.round(newY);
         for (Square legalMove : getLegalMoves()) {
             double legalX = Math.round(legalMove.getX(getChessboard().getSquareSize()));
             double legalY = Math.round(legalMove.getY(getChessboard().getSquareSize()));
-            if (x == legalX && y == legalY) {
+            if (Math.round(newX) == legalX && Math.round(newY) == legalY) {
                 setCurrentX(newX);
                 setCurrentY(newY);
                 onStartingSquare = false;
@@ -41,20 +38,23 @@ public class Pawn extends Piece {
     @Override
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
+        double[] possibleCoordinates = getChessboard().getPossibleXAndYCoordinates();
+        double lowerBound = Math.round(possibleCoordinates[0]);
+        double upperBound = Math.round(possibleCoordinates[possibleCoordinates.length - 1]);
         double squareSize = getChessboard().getSquareSize();
         double multiplier = getPieceColour().equals(PieceColour.WHITE) ? -squareSize : squareSize;
 
         // Evaluate up/down squares (depending on pieceColour)
-        double nextY = findNextYAxisSquare(getCurrentY());
+        double nextY = getChessboard().findNextYAxisSquare(getPieceColour(), getCurrentY());
         for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
-            if (onStartingSquare && !isSquareOccupied(getCurrentX(), nextY)) {
+            if (onStartingSquare && !getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
                 legalMoves.add(Square.findSquare(getCurrentX(), nextY, squareSize));
-            } else if (Math.round(getCurrentY()) == 0 ||  Math.round(getCurrentY()) == Math.round(squareSize * 7)) {
+            } else if (Math.round(getCurrentY()) == lowerBound ||  Math.round(getCurrentY()) == upperBound) {
                 break;
-            } else if (!isSquareOccupied(getCurrentX(), nextY)) {
+            } else if (!getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
                 legalMoves.add(Square.findSquare(getCurrentX(), nextY, squareSize));
                 break;
-            } else if (isSquareOccupied(getCurrentX(), nextY)) {
+            } else if (getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
                 break;
             }
             nextY += multiplier;
