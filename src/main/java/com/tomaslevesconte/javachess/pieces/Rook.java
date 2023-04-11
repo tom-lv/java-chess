@@ -18,34 +18,17 @@ public class Rook extends Piece {
     }
 
     @Override
-    public boolean move(double newX, double newY) {
-        boolean isMoveLegal = false;
-        double x = Math.round(newX);
-        double y = Math.round(newY);
-        for (Square legalMove : getLegalMoves()) {
-            double legalX = Math.round(legalMove.getX(getChessboard().getSquareSize()));
-            double legalY = Math.round(legalMove.getY(getChessboard().getSquareSize()));
-            if (x == legalX && y == legalY) {
-                setCurrentX(newX);
-                setCurrentY(newY);
-                isMoveLegal = true;
-                break;
-            }
-        }
-        return isMoveLegal;
-    }
-
-    @Override
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
-        double squareSize = getChessboard().getSquareSize();
 
         double[] possibleCoordinates = getChessboard().getPossibleXAndYCoordinates();
         double lowerBound = Math.round(possibleCoordinates[0]);
         double upperBound = Math.round(possibleCoordinates[possibleCoordinates.length - 1]);
 
+        double squareSize = getChessboard().getSquareSize();
+
         // Evaluate up squares
-        double nextY = findYAxisSquares(true, getCurrentY());
+        double nextY = findNextYAxisSquare(true, getCurrentY());
         for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
             if (Math.round(getCurrentY()) == lowerBound) {
                 break;
@@ -59,8 +42,8 @@ public class Rook extends Piece {
             nextY -= squareSize;
         }
 
-        //Evaluate down squares
-        nextY = findYAxisSquares(false, getCurrentY());
+        // Evaluate down squares
+        nextY = findNextYAxisSquare(false, getCurrentY());
         for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
             if (Math.round(getCurrentY()) == upperBound) {
                 break;
@@ -75,7 +58,7 @@ public class Rook extends Piece {
         }
 
         // Evaluate left squares
-        double nextX = findXAxisSquares(true, getCurrentX());
+        double nextX = findNextXAxisSquare(true, getCurrentX());
         for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
             if (Math.round(getCurrentX()) == lowerBound) {
                 break;
@@ -90,7 +73,7 @@ public class Rook extends Piece {
         }
 
         // Evaluate right squares
-        nextX = findXAxisSquares(false, getCurrentX());
+        nextX = findNextXAxisSquare(false, getCurrentX());
         for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
             if (Math.round(getCurrentX()) == upperBound) {
                 break;

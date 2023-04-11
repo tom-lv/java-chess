@@ -16,11 +16,6 @@ public class King extends Piece {
     }
 
     @Override
-    public boolean move(double newX, double newY) {
-        return false;
-    }
-
-    @Override
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
 

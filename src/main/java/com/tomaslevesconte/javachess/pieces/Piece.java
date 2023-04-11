@@ -43,7 +43,22 @@ public abstract class Piece extends Rectangle {
         setFill(new ImagePattern(new Image(IMAGE_PATH + colourInitial + typeInitial + IMAGE_TYPE)));
     }
 
-    public abstract boolean move(double newX, double newY);
+    public boolean move(double newX, double newY) {
+        boolean isMoveLegal = false;
+        double x = Math.round(newX);
+        double y = Math.round(newY);
+        for (Square legalMove : getLegalMoves()) {
+            double legalX = Math.round(legalMove.getX(getChessboard().getSquareSize()));
+            double legalY = Math.round(legalMove.getY(getChessboard().getSquareSize()));
+            if (x == legalX && y == legalY) {
+                setCurrentX(newX);
+                setCurrentY(newY);
+                isMoveLegal = true;
+                break;
+            }
+        }
+        return isMoveLegal;
+    }
 
     public abstract ArrayList<Square> getLegalMoves();
 
@@ -62,18 +77,18 @@ public abstract class Piece extends Rectangle {
         return occupiedStatus;
     }
 
-    public double findYAxisSquares(double squareY) {
+    public double findNextYAxisSquare(double startSquareY) {
         int multiplier = pieceColour.equals(PieceColour.WHITE) ? -1 : 1;
-        return findSquareForPawn(multiplier, squareY);
+        return findSquareForPawn(multiplier, startSquareY);
     }
 
-    public double findSquareForPawn(int multiplier, double squareXY) {
+    private double findSquareForPawn(int multiplier, double startSquareXY) {
         double[] possibleCoordinates = chessboard.getPossibleXAndYCoordinates();
         double targetSquareXY = 0.0;
         for (int i = 0; i < possibleCoordinates.length; i++) {
-            int startSquareXY = (int) Math.round(squareXY);
+            int squareXY = (int) Math.round(startSquareXY);
             int arraySquareXY = (int) Math.round(possibleCoordinates[i]);
-            if (startSquareXY == arraySquareXY && i > 0 && i < 7) {
+            if (squareXY == arraySquareXY && i > 0 && i < 7) {
                 targetSquareXY = possibleCoordinates[i + multiplier];
                 break;
             }
@@ -81,28 +96,40 @@ public abstract class Piece extends Rectangle {
         return targetSquareXY;
     }
 
-    public double findYAxisSquares(boolean isUp, double squareY) {
+    public double findNextYAxisSquare(boolean isUp, double startSquareY) {
         int multiplier = isUp ? -1 : 1;
-        return findSquareForAll(multiplier, squareY);
+        return findSquareForAll(multiplier, startSquareY);
     }
 
-    public double findXAxisSquares(boolean isLeft, double squareX) {
+    public double findNextXAxisSquare(boolean isLeft, double startSquareX) {
         int multiplier = isLeft ? -1 : 1;
-        return findSquareForAll(multiplier, squareX);
+        return findSquareForAll(multiplier, startSquareX);
     }
 
-    public double findSquareForAll(int multiplier, double squareXY) {
+    private double findSquareForAll(int multiplier, double startSquareXY) {
         double[] possibleCoordinates = chessboard.getPossibleXAndYCoordinates();
         double targetSquareXY = 0.0;
         for (int i = 0; i < possibleCoordinates.length; i++) {
-            int startSquareXY = (int) Math.round(squareXY);
+            int squareXY = (int) Math.round(startSquareXY);
             int arraySquareXY = (int) Math.round(possibleCoordinates[i]);
-            if (startSquareXY == arraySquareXY && i + multiplier > 0 && i + multiplier <= 7) {
+            if (squareXY == arraySquareXY && i + multiplier > 0 && i + multiplier <= 7) {
                 targetSquareXY = possibleCoordinates[i + multiplier];
                 break;
             }
         }
         return targetSquareXY;
+    }
+
+    public double[] findNextStepSquare(boolean isUp, boolean isLeft, double[] startSquareXY) {
+        int multiplierX = isLeft ? -1 : 1;
+        int multiplierY = isUp ? -1 : 1;
+        return findSquareStaircase(multiplierX, multiplierY, startSquareXY);
+    }
+
+    private double[] findSquareStaircase(int multiplierX, int multiplierY, double[] startSquareXY) {
+        double nextSquareX = findSquareForAll(multiplierX, startSquareXY[0]);
+        double nextSquareY = findSquareForAll(multiplierY, startSquareXY[1]);
+        return new double[]{nextSquareX, nextSquareY};
     }
 
     public double getCurrentX() {
