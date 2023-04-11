@@ -20,75 +20,70 @@ public class Bishop extends Piece {
     @Override
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
-
-        double[] possibleCoordinates = getChessboard().getPossibleXAndYCoordinates();
-        double lowerBound = Math.round(possibleCoordinates[0]);
-        double upperBound = Math.round(possibleCoordinates[possibleCoordinates.length - 1]);
-
         double squareSize = getChessboard().getSquareSize();
 
         // Evaluate up/left squares
-        double[] nextStepXY = findNextStepSquare(true, true, new double[]{getCurrentX(), getCurrentY()});
+        double[] nextDiagonal = findNextDiagonal(true, true, new double[]{getCurrentX(), getCurrentY()});
         for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
-            if (Math.round(getCurrentX()) == lowerBound || Math.round(getCurrentY()) == lowerBound) {
+            if (Math.round(getCurrentX()) == 0 || Math.round(getCurrentY()) == 0) {
                 break;
-            } else if (Math.round(nextStepXY[0]) < lowerBound || Math.round(nextStepXY[1]) < lowerBound) {
+            } else if (Math.round(nextDiagonal[0]) < 0 || Math.round(nextDiagonal[1]) < 0) {
                 break;
-            } else if (!isSquareOccupied(nextStepXY[0], nextStepXY[1])) {
-                legalMoves.add(Square.findSquare(nextStepXY[0], nextStepXY[1], squareSize));
-            } else if (isSquareOccupied(nextStepXY[0], nextStepXY[1])) {
+            } else if (!isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
+                legalMoves.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
+            } else if (isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
                 break;
             }
-            nextStepXY[0] -= squareSize;
-            nextStepXY[1] -= squareSize;
+            nextDiagonal[0] -= squareSize;
+            nextDiagonal[1] -= squareSize;
         }
 
         // Evaluate up/right squares
-        nextStepXY = findNextStepSquare(true, false, new double[]{getCurrentX(), getCurrentY()});
+        nextDiagonal = findNextDiagonal(true, false, new double[]{getCurrentX(), getCurrentY()});
         for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
-            if (Math.round(getCurrentX()) == upperBound || getCurrentY() == lowerBound) {
+            if (Math.round(getCurrentX()) == Math.round(squareSize * 7) || getCurrentY() == 0) {
                 break;
-            } else if (Math.round(nextStepXY[0]) > upperBound || Math.round(nextStepXY[1]) < lowerBound) {
+            } else if (Math.round(nextDiagonal[0]) > Math.round(squareSize * 7) || Math.round(nextDiagonal[1]) < 0) {
                 break;
-            } else if (!isSquareOccupied(nextStepXY[0], nextStepXY[1])) {
-                legalMoves.add(Square.findSquare(nextStepXY[0], nextStepXY[1], squareSize));
-            } else if (isSquareOccupied(nextStepXY[0], nextStepXY[1])) {
+            } else if (!isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
+                legalMoves.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
+            } else if (isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
                 break;
             }
-            nextStepXY[0] += squareSize;
-            nextStepXY[1] -= squareSize;
+            nextDiagonal[0] += squareSize;
+            nextDiagonal[1] -= squareSize;
         }
 
         // Evaluate down/left squares
-        nextStepXY = findNextStepSquare(false, true, new double[]{getCurrentX(), getCurrentY()});
+        nextDiagonal = findNextDiagonal(false, true, new double[]{getCurrentX(), getCurrentY()});
         for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
-            if (Math.round(getCurrentY()) == upperBound || Math.round(getCurrentX()) == lowerBound) {
+            if (Math.round(getCurrentY()) == Math.round(squareSize * 7) || Math.round(getCurrentX()) == 0) {
                 break;
-            } else if (Math.round(nextStepXY[0]) < lowerBound || Math.round(nextStepXY[1]) > upperBound ) {
+            } else if (Math.round(nextDiagonal[0]) < 0 || Math.round(nextDiagonal[1]) > Math.round(squareSize * 7)) {
                 break;
-            } else if (!isSquareOccupied(nextStepXY[0], nextStepXY[1])) {
-                legalMoves.add(Square.findSquare(nextStepXY[0], nextStepXY[1], squareSize));
-            } else if (isSquareOccupied(nextStepXY[0], nextStepXY[1])) {
+            } else if (!isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
+                legalMoves.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
+            } else if (isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
                 break;
             }
-            nextStepXY[0] -= squareSize;
-            nextStepXY[1] += squareSize;
+            nextDiagonal[0] -= squareSize;
+            nextDiagonal[1] += squareSize;
         }
 
         // Evaluate down/right squares
-        nextStepXY = findNextStepSquare(false, false, new double[]{getCurrentX(), getCurrentY()});
+        nextDiagonal = findNextDiagonal(false, false, new double[]{getCurrentX(), getCurrentY()});
         for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
-            if (Math.round(getCurrentY()) == upperBound || Math.round(getCurrentX()) == upperBound) {
+            if (Math.round(getCurrentY()) == Math.round(squareSize * 7) || Math.round(getCurrentX()) == Math.round(squareSize * 7)) {
                 break;
-            } else if (Math.round(nextStepXY[0]) > upperBound || Math.round(nextStepXY[1]) > upperBound) {
+            } else if (Math.round(nextDiagonal[0]) > Math.round(squareSize * 7) || Math.round(nextDiagonal[1]) > Math.round(squareSize * 7)) {
                 break;
-            } else if (!isSquareOccupied(nextStepXY[0], nextStepXY[1])) {
-                legalMoves.add(Square.findSquare(nextStepXY[0], nextStepXY[1], squareSize));
-            } else if (isSquareOccupied(nextStepXY[0], nextStepXY[1])) {
+            } else if (!isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
+                legalMoves.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
+            } else if (isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
                 break;
             }
-            nextStepXY[0] += squareSize;
-            nextStepXY[1] += squareSize;
+            nextDiagonal[0] += squareSize;
+            nextDiagonal[1] += squareSize;
         }
 
         return legalMoves;

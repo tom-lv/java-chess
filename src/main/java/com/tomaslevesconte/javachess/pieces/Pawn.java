@@ -10,6 +10,7 @@ import java.util.ArrayList;
 public class Pawn extends Piece {
 
     private static final int SQUARES_CAN_MOVE = 2;
+
     private boolean onStartingSquare = true;
 
     public Pawn(PieceColour pieceColour, Square square, Chessboard chessboard) {
@@ -40,11 +41,6 @@ public class Pawn extends Piece {
     @Override
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
-
-        double[] possibleCoordinates = getChessboard().getPossibleXAndYCoordinates();
-        double lowerBound = Math.round(possibleCoordinates[0]);
-        double upperBound = Math.round(possibleCoordinates[possibleCoordinates.length - 1]);
-
         double squareSize = getChessboard().getSquareSize();
         double multiplier = getPieceColour().equals(PieceColour.WHITE) ? -squareSize : squareSize;
 
@@ -53,7 +49,7 @@ public class Pawn extends Piece {
         for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
             if (onStartingSquare && !isSquareOccupied(getCurrentX(), nextY)) {
                 legalMoves.add(Square.findSquare(getCurrentX(), nextY, squareSize));
-            } else if (Math.round(getCurrentY()) == lowerBound ||  Math.round(getCurrentY()) == upperBound) {
+            } else if (Math.round(getCurrentY()) == 0 ||  Math.round(getCurrentY()) == Math.round(squareSize * 7)) {
                 break;
             } else if (!isSquareOccupied(getCurrentX(), nextY)) {
                 legalMoves.add(Square.findSquare(getCurrentX(), nextY, squareSize));

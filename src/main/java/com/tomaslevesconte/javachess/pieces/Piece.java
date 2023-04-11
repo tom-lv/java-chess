@@ -120,13 +120,13 @@ public abstract class Piece extends Rectangle {
         return targetSquareXY;
     }
 
-    public double[] findNextStepSquare(boolean isUp, boolean isLeft, double[] startSquareXY) {
+    public double[] findNextDiagonal(boolean isUp, boolean isLeft, double[] startSquareXY) {
         int multiplierX = isLeft ? -1 : 1;
         int multiplierY = isUp ? -1 : 1;
-        return findSquareStaircase(multiplierX, multiplierY, startSquareXY);
+        return findDiagonal(multiplierX, multiplierY, startSquareXY);
     }
 
-    private double[] findSquareStaircase(int multiplierX, int multiplierY, double[] startSquareXY) {
+    private double[] findDiagonal(int multiplierX, int multiplierY, double[] startSquareXY) {
         double nextSquareX = findSquareForAll(multiplierX, startSquareXY[0]);
         double nextSquareY = findSquareForAll(multiplierY, startSquareXY[1]);
         return new double[]{nextSquareX, nextSquareY};
