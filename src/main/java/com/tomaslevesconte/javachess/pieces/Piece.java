@@ -30,17 +30,18 @@ public abstract class Piece extends Rectangle {
         this.chessboard = chessboard;
     }
 
-    protected void createPiece() {
+    public void createPiece() {
         setCursor(Cursor.OPEN_HAND);
         setWidth(chessboard.getSquareSize());
         setHeight(chessboard.getSquareSize());
         setLayoutX(currentX);
         setLayoutY(currentY);
-        char knightInitial = pieceType.toString().toLowerCase().charAt(1);
-        char allInitial = pieceType.toString().toLowerCase().charAt(0);
-        char colourInitial = pieceColour.toString().toLowerCase().charAt(0);
-        char typeInitial = getPieceType().equals(PieceType.KNIGHT) ? knightInitial : allInitial;
-        setFill(new ImagePattern(new Image(IMAGE_PATH + colourInitial + typeInitial + IMAGE_TYPE)));
+        setSmooth(false);
+        char pieceInitial = getPieceType().equals(PieceType.KNIGHT)
+                ? getPieceType().toString().toLowerCase().charAt(1)
+                : getPieceType().toString().toLowerCase().charAt(0);
+        char colourInitial = getPieceColour().toString().toLowerCase().charAt(0);
+        setFill(new ImagePattern(new Image(IMAGE_PATH + colourInitial + pieceInitial + IMAGE_TYPE)));
     }
 
     public boolean move(double newX, double newY) {
@@ -60,22 +61,6 @@ public abstract class Piece extends Rectangle {
 
     public abstract ArrayList<Square> getLegalMoves();
 
-    public double getCurrentX() {
-        return currentX;
-    }
-
-    public double getCurrentY() {
-        return currentY;
-    }
-
-    public void setCurrentX(double currentX) {
-        this.currentX = currentX;
-    }
-
-    public void setCurrentY(double currentY) {
-        this.currentY = currentY;
-    }
-
     public PieceType getPieceType() {
         return pieceType;
     }
@@ -86,6 +71,22 @@ public abstract class Piece extends Rectangle {
 
     public PieceColour getPieceColour() {
         return pieceColour;
+    }
+
+    public double getCurrentX() {
+        return currentX;
+    }
+
+    public void setCurrentX(double currentX) {
+        this.currentX = currentX;
+    }
+
+    public double getCurrentY() {
+        return currentY;
+    }
+
+    public void setCurrentY(double currentY) {
+        this.currentY = currentY;
     }
 
     public Chessboard getChessboard() {

@@ -11,8 +11,10 @@ import java.util.ArrayList;
 public class Chessboard {
 
     private static final byte TOTAL_NUM_OF_SQUARES = 64;
-    private static final Color LIGHT_SQUARE_COLOUR = Color.web("#F2D8B5");
-    private static final Color DARK_SQUARE_COLOUR = Color.web("#B78B64");
+    // #f0eef1, #F2D8B5
+    private static final Color LIGHT_SQUARE_COLOUR = Color.web("#f0eef1");
+    // #8877B3, #B78B64
+    private static final Color DARK_SQUARE_COLOUR = Color.web("#8877B3");
 
     private final double squareSize;
     private final AnchorPane anchorPane;
@@ -69,13 +71,26 @@ public class Chessboard {
     public boolean isSquareOccupied(double squareX, double squareY) {
         boolean occupiedStatus = false;
         for (Piece piece : getPiecePositions()) {
-            if (Math.round(squareX) == Math.round(piece.getCurrentX())
-                    && Math.round(squareY) == Math.round(piece.getCurrentY())) {
+            if (Math.round(squareX) == Math.round(piece.getCurrentX()) && Math.round(squareY) == Math.round(piece.getCurrentY())) {
                 occupiedStatus = true;
                 break;
             }
         }
         return occupiedStatus;
+    }
+
+    private double findSquare(int multiplier, double startSquareXY) {
+        double[] possibleCoordinates = getPossibleXAndYCoordinates();
+        double targetSquareXY = 0.0;
+        for (int i = 0; i < possibleCoordinates.length; i++) {
+            int squareXY = (int) Math.round(startSquareXY);
+            int arraySquareXY = (int) Math.round(possibleCoordinates[i]);
+            if (squareXY == arraySquareXY && i + multiplier > 0 && i + multiplier <= 7) {
+                targetSquareXY = possibleCoordinates[i + multiplier];
+                break;
+            }
+        }
+        return targetSquareXY;
     }
 
     public double findNextVerticalSquare(PieceColour pieceColour, double startSquareY) {
@@ -93,20 +108,6 @@ public class Chessboard {
         return findSquare(multiplier, startSquareX);
     }
 
-    private double findSquare(int multiplier, double startSquareXY) {
-        double[] possibleCoordinates = getPossibleXAndYCoordinates();
-        double targetSquareXY = 0.0;
-        for (int i = 0; i < possibleCoordinates.length; i++) {
-            int squareXY = (int) Math.round(startSquareXY);
-            int arraySquareXY = (int) Math.round(possibleCoordinates[i]);
-            if (squareXY == arraySquareXY && i + multiplier > 0 && i + multiplier <= 7) {
-                targetSquareXY = possibleCoordinates[i + multiplier];
-                break;
-            }
-        }
-        return targetSquareXY;
-    }
-
     public double[] findNextDiagonal(boolean isUp, boolean isLeft, double[] startSquareXY) {
         int multiplierX = isLeft ? -1 : 1;
         int multiplierY = isUp ? -1 : 1;
@@ -119,25 +120,20 @@ public class Chessboard {
         return new double[]{nextSquareX, nextSquareY};
     }
 
-    //move isUp/isLeft
     public double[] findNextLSquare(boolean isVertical, boolean isLeft, boolean isUp, double[] startSquareXY) {
         int multiplierX = isLeft ? -1 : 1;
         int multiplierY = isUp ? -1 : 1;
-        return isVertical
-                ? findVerticalLSquare(multiplierX, multiplierY, startSquareXY)
-                : findHorizontalLSquare(multiplierX, multiplierY, startSquareXY);
+        return isVertical ? findVerticalLSquare(multiplierX, multiplierY, startSquareXY) : findHorizontalLSquare(multiplierX, multiplierY, startSquareXY);
     }
 
     private double[] findVerticalLSquare(int multiplierX, int multiplierY, double[] startSquareXY) {
         double nextSquareX = findSquare(multiplierX, startSquareXY[0]);
-        double firstSquareY = findSquare(multiplierY, startSquareXY[1]);
-        double lastSquareY = findSquare(multiplierY, firstSquareY);
+        double lastSquareY = findSquare(multiplierY, findSquare(multiplierY, startSquareXY[1]));
         return new double[]{nextSquareX, lastSquareY};
     }
 
     private double[] findHorizontalLSquare(int multiplierX, int multiplierY, double[] startSquareXY) {
-        double firstSquareX = findSquare(multiplierX, startSquareXY[0]);
-        double lastSquareX = findSquare(multiplierX, firstSquareX);
+        double lastSquareX = findSquare(multiplierX, findSquare(multiplierX, startSquareXY[0]));
         double nextSquareY = findSquare(multiplierY, startSquareXY[1]);
         return new double[]{lastSquareX, nextSquareY};
     }
