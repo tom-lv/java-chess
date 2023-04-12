@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class Bishop extends Piece {
 
-    private static final int SQUARES_CAN_MOVE = 8;
+    private static final int SQUARES_IT_CAN_MOVE = 8;
 
     public Bishop(PieceColour pieceColour, Square square, Chessboard chessboard) {
         super(pieceColour, square, chessboard);
@@ -27,7 +27,7 @@ public class Bishop extends Piece {
 
         // Evaluate up/left squares
         double[] nextDiagonal = getChessboard().findNextDiagonal(true, true, new double[]{getCurrentX(), getCurrentY()});
-        for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
+        for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
             if (Math.round(getCurrentX()) == lowerBound || Math.round(getCurrentY()) == lowerBound) {
                 break;
             } else if (Math.round(nextDiagonal[0]) < lowerBound || Math.round(nextDiagonal[1]) < lowerBound) {
@@ -43,7 +43,7 @@ public class Bishop extends Piece {
 
         // Evaluate up/right squares
         nextDiagonal = getChessboard().findNextDiagonal(true, false, new double[]{getCurrentX(), getCurrentY()});
-        for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
+        for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
             if (Math.round(getCurrentX()) == upperBound || getCurrentY() == lowerBound) {
                 break;
             } else if (Math.round(nextDiagonal[0]) > upperBound || Math.round(nextDiagonal[1]) < lowerBound) {
@@ -59,7 +59,7 @@ public class Bishop extends Piece {
 
         // Evaluate down/left squares
         nextDiagonal = getChessboard().findNextDiagonal(false, true, new double[]{getCurrentX(), getCurrentY()});
-        for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
+        for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
             if (Math.round(getCurrentY()) == upperBound || Math.round(getCurrentX()) == lowerBound) {
                 break;
             } else if (Math.round(nextDiagonal[0]) < lowerBound || Math.round(nextDiagonal[1]) > upperBound ) {
@@ -75,7 +75,7 @@ public class Bishop extends Piece {
 
         // Evaluate down/right squares
         nextDiagonal = getChessboard().findNextDiagonal(false, false, new double[]{getCurrentX(), getCurrentY()});
-        for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
+        for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
             if (Math.round(getCurrentY()) == upperBound || Math.round(getCurrentX()) == upperBound) {
                 break;
             } else if (Math.round(nextDiagonal[0]) > upperBound || Math.round(nextDiagonal[1]) > upperBound) {

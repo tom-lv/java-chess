@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class Pawn extends Piece {
 
-    private static final int SQUARES_CAN_MOVE = 2;
+    private static final int SQUARES_IT_CAN_MOVE = 2;
     private boolean onStartingSquare = true;
 
     public Pawn(PieceColour pieceColour, Square square, Chessboard chessboard) {
@@ -45,8 +45,8 @@ public class Pawn extends Piece {
         double multiplier = getPieceColour().equals(PieceColour.WHITE) ? -squareSize : squareSize;
 
         // Evaluate up/down squares (depending on pieceColour)
-        double nextY = getChessboard().findNextYAxisSquare(getPieceColour(), getCurrentY());
-        for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
+        double nextY = getChessboard().findNextVerticalSquare(getPieceColour(), getCurrentY());
+        for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
             if (onStartingSquare && !getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
                 legalMoves.add(Square.findSquare(getCurrentX(), nextY, squareSize));
             } else if (Math.round(getCurrentY()) == lowerBound ||  Math.round(getCurrentY()) == upperBound) {

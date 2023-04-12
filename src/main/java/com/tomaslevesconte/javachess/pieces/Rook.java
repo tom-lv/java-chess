@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class Rook extends Piece {
 
-    private static final int SQUARES_CAN_MOVE = 8;
+    private static final int SQUARES_IT_CAN_MOVE = 8;
 
     public Rook(PieceColour pieceColour, Square square, Chessboard chessboard) {
         super(pieceColour, square, chessboard);
@@ -21,15 +21,16 @@ public class Rook extends Piece {
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
         double[] possibleCoordinates = getChessboard().getPossibleXAndYCoordinates();
+        double lowerBound = Math.round(possibleCoordinates[0]);
         double upperBound = Math.round(possibleCoordinates[possibleCoordinates.length - 1]);
         double squareSize = getChessboard().getSquareSize();
 
         // Evaluate up squares
-        double nextY = getChessboard().findNextYAxisSquare(true, getCurrentY());
-        for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
-            if (Math.round(getCurrentY()) == 0) {
+        double nextY = getChessboard().findNextVerticalSquare(true, getCurrentY());
+        for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
+            if (Math.round(getCurrentY()) == lowerBound) {
                 break;
-            } else if (Math.round(nextY) < 0) {
+            } else if (Math.round(nextY) < lowerBound) {
                 break;
             } else if (!getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
                 legalMoves.add(Square.findSquare(getCurrentX(), nextY, squareSize));
@@ -40,8 +41,8 @@ public class Rook extends Piece {
         }
 
         // Evaluate down squares
-        nextY = getChessboard().findNextYAxisSquare(false, getCurrentY());
-        for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
+        nextY = getChessboard().findNextVerticalSquare(false, getCurrentY());
+        for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
             if (Math.round(getCurrentY()) == upperBound) {
                 break;
             } else if (Math.round(nextY) > upperBound) {
@@ -55,11 +56,11 @@ public class Rook extends Piece {
         }
 
         // Evaluate left squares
-        double nextX = getChessboard().findNextXAxisSquare(true, getCurrentX());
-        for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
-            if (Math.round(getCurrentX()) == 0) {
+        double nextX = getChessboard().findNextVerticalSquare(true, getCurrentX());
+        for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
+            if (Math.round(getCurrentX()) == lowerBound) {
                 break;
-            } else if (Math.round(nextX) < 0) {
+            } else if (Math.round(nextX) < lowerBound) {
                 break;
             } else if (!getChessboard().isSquareOccupied(nextX, getCurrentY())) {
                 legalMoves.add(Square.findSquare(nextX, getCurrentY(), squareSize));
@@ -70,8 +71,8 @@ public class Rook extends Piece {
         }
 
         // Evaluate right squares
-        nextX = getChessboard().findNextXAxisSquare(false, getCurrentX());
-        for (int i = 0; i < SQUARES_CAN_MOVE; i++) {
+        nextX = getChessboard().findNextVerticalSquare(false, getCurrentX());
+        for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
             if (Math.round(getCurrentX()) == upperBound) {
                 break;
             } else if (Math.round(nextX) > upperBound) {

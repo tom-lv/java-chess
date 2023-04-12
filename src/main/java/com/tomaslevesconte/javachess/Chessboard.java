@@ -78,17 +78,17 @@ public class Chessboard {
         return occupiedStatus;
     }
 
-    public double findNextYAxisSquare(PieceColour pieceColour, double startSquareY) {
+    public double findNextVerticalSquare(PieceColour pieceColour, double startSquareY) {
         int multiplier = pieceColour.equals(PieceColour.WHITE) ? -1 : 1;
         return findSquare(multiplier, startSquareY);
     }
 
-    public double findNextYAxisSquare(boolean isUp, double startSquareY) {
+    public double findNextVerticalSquare(boolean isUp, double startSquareY) {
         int multiplier = isUp ? -1 : 1;
         return findSquare(multiplier, startSquareY);
     }
 
-    public double findNextXAxisSquare(boolean isLeft, double startSquareX) {
+    public double findNextHorizontalSquare(boolean isLeft, double startSquareX) {
         int multiplier = isLeft ? -1 : 1;
         return findSquare(multiplier, startSquareX);
     }
@@ -117,6 +117,29 @@ public class Chessboard {
         double nextSquareX = findSquare(multiplierX, startSquareXY[0]);
         double nextSquareY = findSquare(multiplierY, startSquareXY[1]);
         return new double[]{nextSquareX, nextSquareY};
+    }
+
+    //move isUp/isLeft
+    public double[] findNextLSquare(boolean isVertical, boolean isLeft, boolean isUp, double[] startSquareXY) {
+        int multiplierX = isLeft ? -1 : 1;
+        int multiplierY = isUp ? -1 : 1;
+        return isVertical
+                ? findVerticalLSquare(multiplierX, multiplierY, startSquareXY)
+                : findHorizontalLSquare(multiplierX, multiplierY, startSquareXY);
+    }
+
+    private double[] findVerticalLSquare(int multiplierX, int multiplierY, double[] startSquareXY) {
+        double nextSquareX = findSquare(multiplierX, startSquareXY[0]);
+        double firstSquareY = findSquare(multiplierY, startSquareXY[1]);
+        double lastSquareY = findSquare(multiplierY, firstSquareY);
+        return new double[]{nextSquareX, lastSquareY};
+    }
+
+    private double[] findHorizontalLSquare(int multiplierX, int multiplierY, double[] startSquareXY) {
+        double firstSquareX = findSquare(multiplierX, startSquareXY[0]);
+        double lastSquareX = findSquare(multiplierX, firstSquareX);
+        double nextSquareY = findSquare(multiplierY, startSquareXY[1]);
+        return new double[]{lastSquareX, nextSquareY};
     }
 
     public double getSquareSize() {
