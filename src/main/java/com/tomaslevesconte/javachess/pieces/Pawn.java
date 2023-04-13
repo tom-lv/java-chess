@@ -20,19 +20,18 @@ public class Pawn extends Piece {
 
     @Override
     public boolean move(double newX, double newY) {
-        boolean isMoveLegal = false;
+        double squareSize = getChessboard().getSquareSize();
         for (Square legalMove : getLegalMoves()) {
-            double legalX = Math.round(legalMove.getX(getChessboard().getSquareSize()));
-            double legalY = Math.round(legalMove.getY(getChessboard().getSquareSize()));
-            if (Math.round(newX) == legalX && Math.round(newY) == legalY) {
+            double lmX = Math.round(legalMove.getX(squareSize));
+            double lmY = Math.round(legalMove.getY(squareSize));
+            if (Math.round(newX) == lmX && Math.round(newY) == lmY) {
+                onStartingSquare = false;
                 setCurrentX(newX);
                 setCurrentY(newY);
-                onStartingSquare = false;
-                isMoveLegal = true;
-                break;
+                return true;
             }
         }
-        return isMoveLegal;
+        return false;
     }
 
     @Override
@@ -46,12 +45,12 @@ public class Pawn extends Piece {
         for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
             if (onStartingSquare && !getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
                 legalMoves.add(Square.findSquare(getCurrentX(), nextY, squareSize));
-            } else if (Math.round(getCurrentY()) == 0 ||  Math.round(getCurrentY()) == Math.round(squareSize * 7)) {
+            } else if (getCurrentY() == 0 ||  getCurrentY() == (squareSize * 7)) {
                 break;
             } else if (!getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
                 legalMoves.add(Square.findSquare(getCurrentX(), nextY, squareSize));
                 break;
-            } else if (getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
+            } else {
                 break;
             }
             nextY += multiplier;

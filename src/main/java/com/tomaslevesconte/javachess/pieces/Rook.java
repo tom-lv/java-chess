@@ -25,13 +25,11 @@ public class Rook extends Piece {
         // Evaluate up squares
         double nextY = getChessboard().findNextVerticalSquare(true, getCurrentY());
         for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (Math.round(getCurrentY()) == 0) {
-                break;
-            } else if (Math.round(nextY) < 0) {
+            if (getCurrentY() == 0 || nextY < 0) {
                 break;
             } else if (!getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
                 legalMoves.add(Square.findSquare(getCurrentX(), nextY, squareSize));
-            } else if (getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
+            } else {
                 break;
             }
             nextY -= squareSize;
@@ -40,13 +38,11 @@ public class Rook extends Piece {
         // Evaluate down squares
         nextY = getChessboard().findNextVerticalSquare(false, getCurrentY());
         for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (Math.round(getCurrentY()) == Math.round(squareSize * 7)) {
-                break;
-            } else if (Math.round(nextY) > Math.round(squareSize * 7)) {
+            if (getCurrentY() == (squareSize * 7) || nextY > (squareSize * 7)) {
                 break;
             } else if (!getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
                 legalMoves.add(Square.findSquare(getCurrentX(), nextY, squareSize));
-            } else if (getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
+            } else {
                 break;
             }
             nextY += squareSize;
@@ -55,13 +51,11 @@ public class Rook extends Piece {
         // Evaluate left squares
         double nextX = getChessboard().findNextVerticalSquare(true, getCurrentX());
         for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (Math.round(getCurrentX()) == 0) {
-                break;
-            } else if (Math.round(nextX) < 0) {
+            if (getCurrentX() == 0 || nextX < 0) {
                 break;
             } else if (!getChessboard().isSquareOccupied(nextX, getCurrentY())) {
                 legalMoves.add(Square.findSquare(nextX, getCurrentY(), squareSize));
-            } else if (getChessboard().isSquareOccupied(nextX, getCurrentY())) {
+            } else {
                 break;
             }
             nextX -= squareSize;
@@ -70,13 +64,11 @@ public class Rook extends Piece {
         // Evaluate right squares
         nextX = getChessboard().findNextVerticalSquare(false, getCurrentX());
         for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (Math.round(getCurrentX()) == Math.round(squareSize * 7)) {
-                break;
-            } else if (Math.round(nextX) > Math.round(squareSize * 7)) {
+            if (getCurrentX() == (squareSize * 7) || nextX > (squareSize * 7)) {
                 break;
             } else if (!getChessboard().isSquareOccupied(nextX, getCurrentY())) {
                 legalMoves.add(Square.findSquare(nextX, getCurrentY(), squareSize));
-            } else if (getChessboard().isSquareOccupied(nextX, getCurrentY())) {
+            } else {
                 break;
             }
             nextX += squareSize;

@@ -45,18 +45,17 @@ public abstract class Piece extends Rectangle {
     }
 
     public boolean move(double newX, double newY) {
-        boolean isMoveLegal = false;
+        double squareSize = getChessboard().getSquareSize();
         for (Square legalMove : getLegalMoves()) {
-            double legalX = Math.round(legalMove.getX(getChessboard().getSquareSize()));
-            double legalY = Math.round(legalMove.getY(getChessboard().getSquareSize()));
-            if (Math.round(newX) == legalX && Math.round(newY) == legalY) {
+            double lmX = Math.round(legalMove.getX(squareSize));
+            double lmY = Math.round(legalMove.getY(squareSize));
+            if (Math.round(newX) == lmX && Math.round(newY) == lmY) {
                 setCurrentX(newX);
                 setCurrentY(newY);
-                isMoveLegal = true;
-                break;
+                return true;
             }
         }
-        return isMoveLegal;
+        return false;
     }
 
     public abstract ArrayList<Square> getLegalMoves();

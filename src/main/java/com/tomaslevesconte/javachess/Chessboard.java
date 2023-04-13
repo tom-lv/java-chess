@@ -11,10 +11,8 @@ import java.util.ArrayList;
 public class Chessboard {
 
     private static final byte TOTAL_NUM_OF_SQUARES = 64;
-    // #f0eef1, #F2D8B5
-    private static final Color LIGHT_SQUARE_COLOUR = Color.web("#f0eef1");
-    // #8877B3, #B78B64
-    private static final Color DARK_SQUARE_COLOUR = Color.web("#8877B3");
+    private static final Color LIGHT_SQUARE_COLOUR = Color.web("#f0eef1"); // off-white #f0eef1, beach #F2D8B5
+    private static final Color DARK_SQUARE_COLOUR = Color.web("#8877B3"); // purple #8877B3, orange #B78B64
 
     private final double squareSize;
     private final AnchorPane anchorPane;
@@ -69,14 +67,12 @@ public class Chessboard {
     }
 
     public boolean isSquareOccupied(double squareX, double squareY) {
-        boolean occupiedStatus = false;
         for (Piece piece : getPiecePositions()) {
             if (Math.round(squareX) == Math.round(piece.getCurrentX()) && Math.round(squareY) == Math.round(piece.getCurrentY())) {
-                occupiedStatus = true;
-                break;
+                return true;
             }
         }
-        return occupiedStatus;
+        return false;
     }
 
     private double findSquare(int multiplier, double startSquareXY) {
