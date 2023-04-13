@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class PieceBuilder {
 
     private final Chessboard chessboard;
-    private int pI = 0; // pieceIndex
+    private int pieceIndex = 0;
 
     public PieceBuilder(Chessboard chessboard) {
         this.chessboard = chessboard;
@@ -24,7 +24,7 @@ public class PieceBuilder {
     }
 
     private void addPiece(Piece piece) {
-        int cPI = pI++; // currentPieceIndex
+        int currentPieceIndex = pieceIndex++;
         piece.setOnMousePressed(mouseEvent -> {
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                 showLegalMoves(piece);
@@ -46,7 +46,7 @@ public class PieceBuilder {
                 piece.setCursor(Cursor.OPEN_HAND);
                 double newX = chessboard.findClosestSquare(mouseEvent.getSceneX(), chessboard.getPossibleXAndYCoordinates());
                 double newY = chessboard.findClosestSquare(mouseEvent.getSceneY(), chessboard.getPossibleXAndYCoordinates());
-                if (chessboard.getPiecePositions().get(cPI).move(newX, newY)) {
+                if (chessboard.getPiecePositions().get(currentPieceIndex).move(newX, newY)) {
                     piece.setLayoutX(newX); // Update pos on board
                     piece.setLayoutY(newY); // Update pos on board
                     hideLegalMoves(); // once placed, hide legal moves

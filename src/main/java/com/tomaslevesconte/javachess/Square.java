@@ -29,7 +29,8 @@ public enum Square {
     public static Square findSquare(double x, double y, double squareSize) {
         Square result = null;
         for (Square square : Square.values()) {
-            if (Math.round(square.x) == Math.round(x/squareSize) && Math.round(square.y) == Math.round(y/squareSize)) {
+            if (Math.round(square.x) == Math.round(x/squareSize)
+                    && Math.round(square.y) == Math.round(y/squareSize)) {
                 result = square;
                 break;
             }
