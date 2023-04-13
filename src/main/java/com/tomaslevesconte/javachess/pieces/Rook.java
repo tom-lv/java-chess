@@ -21,7 +21,7 @@ public class Rook extends Piece {
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
         legalMoves.addAll(evaluateVerticalSquares(SQUARES_IT_CAN_MOVE));
-        legalMoves.addAll(evaluateVerticalSquares(SQUARES_IT_CAN_MOVE));
+        legalMoves.addAll(evaluateHorizontalSquares(SQUARES_IT_CAN_MOVE));
         return legalMoves;
     }
 }
