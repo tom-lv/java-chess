@@ -20,7 +20,7 @@ public class PieceBuilder {
     public PieceBuilder(Chessboard chessboard) {
         this.chessboard = chessboard;
         addWhitePieces();
-//        addBlackPieces();
+        addBlackPieces();
     }
 
     private void addPiece(Piece piece) {
@@ -61,22 +61,22 @@ public class PieceBuilder {
     }
 
     private void addWhitePieces() {
-//        addPiece(new Rook(PieceColour.WHITE, Square.A1, chessboard));
-//        addPiece(new Knight(PieceColour.WHITE, Square.B1, chessboard));
-//        addPiece(new Bishop(PieceColour.WHITE, Square.C1, chessboard));
-//        addPiece(new Queen(PieceColour.WHITE, Square.D1, chessboard));
-//        addPiece(new King(PieceColour.WHITE, Square.E1, chessboard));
-//        addPiece(new Bishop(PieceColour.WHITE, Square.F1, chessboard));
+        addPiece(new Rook(PieceColour.WHITE, Square.A1, chessboard));
+        addPiece(new Knight(PieceColour.WHITE, Square.B1, chessboard));
+        addPiece(new Bishop(PieceColour.WHITE, Square.C1, chessboard));
+        addPiece(new Queen(PieceColour.WHITE, Square.D1, chessboard));
+        addPiece(new King(PieceColour.WHITE, Square.E1, chessboard));
+        addPiece(new Bishop(PieceColour.WHITE, Square.F1, chessboard));
         addPiece(new Knight(PieceColour.WHITE, Square.G1, chessboard));
-//        addPiece(new Rook(PieceColour.WHITE, Square.H1, chessboard));
-//        addPiece(new Pawn(PieceColour.WHITE, Square.A2, chessboard));
-//        addPiece(new Pawn(PieceColour.WHITE, Square.B2, chessboard));
-//        addPiece(new Pawn(PieceColour.WHITE, Square.C2, chessboard));
-//        addPiece(new Pawn(PieceColour.WHITE, Square.D2, chessboard));
-//        addPiece(new Pawn(PieceColour.WHITE, Square.E2, chessboard));
-//        addPiece(new Pawn(PieceColour.WHITE, Square.F2, chessboard));
-//        addPiece(new Pawn(PieceColour.WHITE, Square.G2, chessboard));
-//        addPiece(new Pawn(PieceColour.WHITE, Square.H2, chessboard));
+        addPiece(new Rook(PieceColour.WHITE, Square.H1, chessboard));
+        addPiece(new Pawn(PieceColour.WHITE, Square.A2, chessboard));
+        addPiece(new Pawn(PieceColour.WHITE, Square.B2, chessboard));
+        addPiece(new Pawn(PieceColour.WHITE, Square.C2, chessboard));
+        addPiece(new Pawn(PieceColour.WHITE, Square.D2, chessboard));
+        addPiece(new Pawn(PieceColour.WHITE, Square.E2, chessboard));
+        addPiece(new Pawn(PieceColour.WHITE, Square.F2, chessboard));
+        addPiece(new Pawn(PieceColour.WHITE, Square.G2, chessboard));
+        addPiece(new Pawn(PieceColour.WHITE, Square.H2, chessboard));
     }
 
     private void addBlackPieces() {

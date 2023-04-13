@@ -58,6 +58,147 @@ public abstract class Piece extends Rectangle {
         return false;
     }
 
+    public ArrayList<Square> evaluateVerticalSquares(int numOfSquares) {
+        ArrayList<Square> verticalSquares = new ArrayList<>();
+        double squareSize = getChessboard().getSquareSize();
+
+        // Evaluate up squares
+        double nextY = getChessboard().findNextVerticalSquare(true, getCurrentY());
+        for (int i = 0; i < numOfSquares; i++) {
+            if (getCurrentY() == 0 || nextY < 0) {
+                break;
+            } else if (!getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
+                verticalSquares.add(Square.findSquare(getCurrentX(), nextY, squareSize));
+            } else {
+                break;
+            }
+            nextY -= squareSize;
+        }
+
+        // Evaluate down squares
+        nextY = getChessboard().findNextVerticalSquare(false, getCurrentY());
+        for (int i = 0; i < numOfSquares; i++) {
+            if (getCurrentY() == (squareSize * 7) || nextY > (squareSize * 7)) {
+                break;
+            } else if (!getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
+                verticalSquares.add(Square.findSquare(getCurrentX(), nextY, squareSize));
+            } else {
+                break;
+            }
+            nextY += squareSize;
+        }
+
+        return verticalSquares;
+    }
+
+    public ArrayList<Square> evaluateHorizontalSquares(int numOfSquares) {
+        ArrayList<Square> horizontalSquares = new ArrayList<>();
+        double squareSize = getChessboard().getSquareSize();
+
+        // Evaluate left squares
+        double nextX = getChessboard().findNextHorizontalSquare(true, getCurrentX());
+        for (int i = 0; i < numOfSquares; i++) {
+            if (getCurrentX() == 0 || nextX < 0) {
+                break;
+            } else if (!getChessboard().isSquareOccupied(nextX, getCurrentY())) {
+                horizontalSquares.add(Square.findSquare(nextX, getCurrentY(), squareSize));
+            } else {
+                break;
+            }
+            nextX -= squareSize;
+        }
+
+        // Evaluate right squares
+        nextX = getChessboard().findNextHorizontalSquare(false, getCurrentX());
+        for (int i = 0; i < numOfSquares; i++) {
+            if (getCurrentX() == (squareSize * 7) || nextX > (squareSize * 7)) {
+                break;
+            } else if (!getChessboard().isSquareOccupied(nextX, getCurrentY())) {
+                horizontalSquares.add(Square.findSquare(nextX, getCurrentY(), squareSize));
+            } else {
+                break;
+            }
+            nextX += squareSize;
+        }
+
+        return horizontalSquares;
+    }
+
+    public ArrayList<Square> evaluateDiagonalSquares(int numOfSquares) {
+        ArrayList<Square> diagonalSquares = new ArrayList<>();
+        double squareSize = getChessboard().getSquareSize();
+
+        // Evaluate up/left squares
+        double[] nextDiagonal = getChessboard().findNextDiagonal(true, true, new double[]{getCurrentX(), getCurrentY()});
+        for (int i = 0; i < numOfSquares; i++) {
+            if (getCurrentX() == 0
+                    || getCurrentY() == 0
+                    || nextDiagonal[0] < 0
+                    || nextDiagonal[1] < 0) {
+                break;
+            } else if (!getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
+                diagonalSquares.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
+            } else {
+                break;
+            }
+            nextDiagonal[0] -= squareSize;
+            nextDiagonal[1] -= squareSize;
+        }
+
+        // Evaluate up/right squares
+        nextDiagonal = getChessboard().findNextDiagonal(true, false, new double[]{getCurrentX(), getCurrentY()});
+        for (int i = 0; i < numOfSquares; i++) {
+            if (getCurrentX() == (squareSize * 7)
+                    || getCurrentY() == 0
+                    || nextDiagonal[0] > (squareSize * 7)
+                    || nextDiagonal[1] < 0) {
+                break;
+            } else if (!getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
+                diagonalSquares.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
+            } else {
+                break;
+            }
+            nextDiagonal[0] += squareSize;
+            nextDiagonal[1] -= squareSize;
+        }
+
+        // Evaluate down/left squares
+        nextDiagonal = getChessboard().findNextDiagonal(false, true, new double[]{getCurrentX(), getCurrentY()});
+        for (int i = 0; i < numOfSquares; i++) {
+            if (getCurrentY() == (squareSize * 7)
+                    || getCurrentX() == 0
+                    || nextDiagonal[0] < 0
+                    || nextDiagonal[1] > (squareSize * 7)) {
+                break;
+            } else if (!getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
+                diagonalSquares.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
+            } else if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
+                break;
+            }
+            nextDiagonal[0] -= squareSize;
+            nextDiagonal[1] += squareSize;
+        }
+
+        // Evaluate down/right squares
+        nextDiagonal = getChessboard().findNextDiagonal(false, false, new double[]{getCurrentX(), getCurrentY()});
+        for (int i = 0; i < numOfSquares; i++) {
+            if (getCurrentY() == (squareSize * 7)
+                    || getCurrentX() == (squareSize * 7)
+                    || nextDiagonal[0] > (squareSize * 7)
+                    || nextDiagonal[1] > (squareSize * 7)) {
+                break;
+            } else if (!getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
+                diagonalSquares.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
+            } else if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
+                break;
+            }
+            nextDiagonal[0] += squareSize;
+            nextDiagonal[1] += squareSize;
+        }
+
+        return diagonalSquares;
+    }
+
     public abstract ArrayList<Square> getLegalMoves();
 
     public PieceType getPieceType() {

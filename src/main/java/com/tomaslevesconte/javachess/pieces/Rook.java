@@ -20,60 +20,8 @@ public class Rook extends Piece {
     @Override
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
-        double squareSize = getChessboard().getSquareSize();
-
-        // Evaluate up squares
-        double nextY = getChessboard().findNextVerticalSquare(true, getCurrentY());
-        for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (getCurrentY() == 0 || nextY < 0) {
-                break;
-            } else if (!getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
-                legalMoves.add(Square.findSquare(getCurrentX(), nextY, squareSize));
-            } else {
-                break;
-            }
-            nextY -= squareSize;
-        }
-
-        // Evaluate down squares
-        nextY = getChessboard().findNextVerticalSquare(false, getCurrentY());
-        for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (getCurrentY() == (squareSize * 7) || nextY > (squareSize * 7)) {
-                break;
-            } else if (!getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
-                legalMoves.add(Square.findSquare(getCurrentX(), nextY, squareSize));
-            } else {
-                break;
-            }
-            nextY += squareSize;
-        }
-
-        // Evaluate left squares
-        double nextX = getChessboard().findNextVerticalSquare(true, getCurrentX());
-        for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (getCurrentX() == 0 || nextX < 0) {
-                break;
-            } else if (!getChessboard().isSquareOccupied(nextX, getCurrentY())) {
-                legalMoves.add(Square.findSquare(nextX, getCurrentY(), squareSize));
-            } else {
-                break;
-            }
-            nextX -= squareSize;
-        }
-
-        // Evaluate right squares
-        nextX = getChessboard().findNextVerticalSquare(false, getCurrentX());
-        for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (getCurrentX() == (squareSize * 7) || nextX > (squareSize * 7)) {
-                break;
-            } else if (!getChessboard().isSquareOccupied(nextX, getCurrentY())) {
-                legalMoves.add(Square.findSquare(nextX, getCurrentY(), squareSize));
-            } else {
-                break;
-            }
-            nextX += squareSize;
-        }
-
+        legalMoves.addAll(evaluateVerticalSquares(SQUARES_IT_CAN_MOVE));
+        legalMoves.addAll(evaluateVerticalSquares(SQUARES_IT_CAN_MOVE));
         return legalMoves;
     }
 }
