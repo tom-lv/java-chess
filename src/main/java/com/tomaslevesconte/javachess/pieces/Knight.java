@@ -20,19 +20,14 @@ public class Knight extends Piece {
     @Override
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
-        double[] possibleCoordinates = getChessboard().getPossibleXAndYCoordinates();
-        double lowerBound = Math.round(possibleCoordinates[0]);
-        double lowerInnerBound = Math.round(possibleCoordinates[1]);
-        double upperBound = Math.round(possibleCoordinates[possibleCoordinates.length - 1]);
-        double upperInnerBound = Math.round(possibleCoordinates[possibleCoordinates.length -2]);
         double squareSize = getChessboard().getSquareSize();
 
         // Evaluate vertical up/left squares
         double[] nextLSquare = getChessboard().findNextLSquare(true, true, true, new double[]{getCurrentX(), getCurrentY()});
         for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (Math.round(getCurrentX()) == lowerBound || Math.round(getCurrentY()) == lowerBound) {
+            if (Math.round(getCurrentX()) == 0 || Math.round(getCurrentY()) == 0) {
                 break;
-            } else if (Math.round(nextLSquare[1]) <= lowerBound && Math.round(getCurrentY()) == lowerInnerBound) {
+            } else if (Math.round(nextLSquare[1]) <= 0 && Math.round(getCurrentY()) == Math.round(squareSize)) {
                 break;
             } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
                 legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
@@ -44,9 +39,9 @@ public class Knight extends Piece {
         // Evaluate vertical up/right squares
         nextLSquare = getChessboard().findNextLSquare(true, false, true, new double[]{getCurrentX(), getCurrentY()});
         for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (Math.round(getCurrentX()) == upperBound || getCurrentY() == lowerBound) {
+            if (Math.round(getCurrentX()) == Math.round(squareSize * 7) || getCurrentY() == 0) {
                 break;
-            } else if (Math.round(nextLSquare[1]) <= lowerBound && Math.round(getCurrentY()) == lowerInnerBound) {
+            } else if (Math.round(nextLSquare[1]) <= 0 && Math.round(getCurrentY()) == Math.round(squareSize)) {
                 break;
             } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
                 legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
@@ -58,9 +53,9 @@ public class Knight extends Piece {
         // Evaluate vertical down/left squares
         nextLSquare = getChessboard().findNextLSquare(true, true, false, new double[]{getCurrentX(), getCurrentY()});
         for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (Math.round(getCurrentY()) == upperBound || Math.round(getCurrentX()) == lowerBound) {
+            if (Math.round(getCurrentY()) == Math.round(squareSize * 7) || Math.round(getCurrentX()) == 0) {
                 break;
-            } else if (Math.round(nextLSquare[1]) <= lowerBound) {
+            } else if (Math.round(nextLSquare[1]) <= 0) {
                 break;
             } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
                 legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
@@ -72,9 +67,9 @@ public class Knight extends Piece {
         // Evaluate vertical down/right squares
         nextLSquare = getChessboard().findNextLSquare(true, false, false, new double[]{getCurrentX(), getCurrentY()});
         for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (Math.round(getCurrentY()) == upperBound || Math.round(getCurrentX()) == upperBound) {
+            if (Math.round(getCurrentY()) == Math.round(squareSize * 7) || Math.round(getCurrentX()) == Math.round(squareSize * 7)) {
                 break;
-            } else if (Math.round(nextLSquare[1]) <= lowerBound) {
+            } else if (Math.round(nextLSquare[1]) <= 0) {
                 break;
             } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
                 legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
@@ -86,9 +81,9 @@ public class Knight extends Piece {
         // Evaluate horizontal left/up squares
         nextLSquare = getChessboard().findNextLSquare(false, true, true, new double[]{getCurrentX(), getCurrentY()});
         for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (Math.round(getCurrentX()) == lowerBound || Math.round(getCurrentY()) == lowerBound) {
+            if (Math.round(getCurrentX()) == 0 || Math.round(getCurrentY()) == 0) {
                 break;
-            } else if (Math.round(nextLSquare[0]) <= lowerBound && Math.round(getCurrentX()) == lowerInnerBound) {
+            } else if (Math.round(nextLSquare[0]) <= 0 && Math.round(getCurrentX()) == Math.round(squareSize)) {
                 break;
             } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
                 legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
@@ -100,9 +95,9 @@ public class Knight extends Piece {
         // Evaluate horizontal right/up squares
         nextLSquare = getChessboard().findNextLSquare(false, false, true, new double[]{getCurrentX(), getCurrentY()});
         for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (Math.round(getCurrentX()) == upperBound || getCurrentY() == lowerBound) {
+            if (Math.round(getCurrentX()) == Math.round(squareSize * 7) || getCurrentY() == 0) {
                 break;
-            } else if (Math.round(nextLSquare[0]) <= upperBound && Math.round(getCurrentX()) == upperInnerBound) {
+            } else if (Math.round(nextLSquare[0]) <= Math.round(squareSize * 7) && Math.round(getCurrentX()) == Math.round(squareSize * 6)) {
                 break;
             } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
                 legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
@@ -114,9 +109,9 @@ public class Knight extends Piece {
         // Evaluate horizontal left/down squares
         nextLSquare = getChessboard().findNextLSquare(false, true, false, new double[]{getCurrentX(), getCurrentY()});
         for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (Math.round(getCurrentY()) == upperBound || Math.round(getCurrentX()) == lowerBound) {
+            if (Math.round(getCurrentY()) == Math.round(squareSize * 7) || Math.round(getCurrentX()) == 0) {
                 break;
-            } else if (Math.round(nextLSquare[0]) <= lowerBound && Math.round(getCurrentX()) == lowerInnerBound) {
+            } else if (Math.round(nextLSquare[0]) <= 0 && Math.round(getCurrentX()) == Math.round(squareSize)) {
                 break;
             } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
                 legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
@@ -128,9 +123,9 @@ public class Knight extends Piece {
         // Evaluate horizontal right/down squares
         nextLSquare = getChessboard().findNextLSquare(false, false, false, new double[]{getCurrentX(), getCurrentY()});
         for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (Math.round(getCurrentY()) == upperBound || Math.round(getCurrentX()) == upperBound) {
+            if (Math.round(getCurrentY()) == Math.round(squareSize * 7) || Math.round(getCurrentX()) == Math.round(squareSize * 7)) {
                 break;
-            } else if (Math.round(nextLSquare[0]) <= lowerBound && Math.round(getCurrentX()) == upperInnerBound) {
+            } else if (Math.round(nextLSquare[0]) <= 0 && Math.round(getCurrentX()) == Math.round(squareSize * 6)) {
                 break;
             } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
                 legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));

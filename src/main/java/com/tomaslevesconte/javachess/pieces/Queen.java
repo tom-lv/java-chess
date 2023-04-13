@@ -20,17 +20,14 @@ public class Queen extends Piece {
     @Override
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
-        double[] possibleCoordinates = getChessboard().getPossibleXAndYCoordinates();
-        double lowerBound = Math.round(possibleCoordinates[0]);
-        double upperBound = Math.round(possibleCoordinates[possibleCoordinates.length - 1]);
         double squareSize = getChessboard().getSquareSize();
 
         // Evaluate up squares
         double nextY = getChessboard().findNextVerticalSquare(true, getCurrentY());
         for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (Math.round(getCurrentY()) == lowerBound) {
+            if (Math.round(getCurrentY()) == 0) {
                 break;
-            } else if (Math.round(nextY) < lowerBound) {
+            } else if (Math.round(nextY) < 0) {
                 break;
             } else if (!getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
                 legalMoves.add(Square.findSquare(getCurrentX(), nextY, squareSize));
@@ -43,9 +40,9 @@ public class Queen extends Piece {
         // Evaluate down squares
         nextY = getChessboard().findNextVerticalSquare(false, getCurrentY());
         for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (Math.round(getCurrentY()) == upperBound) {
+            if (Math.round(getCurrentY()) == Math.round(squareSize * 7)) {
                 break;
-            } else if (Math.round(nextY) > upperBound) {
+            } else if (Math.round(nextY) > Math.round(squareSize * 7)) {
                 break;
             } else if (!getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
                 legalMoves.add(Square.findSquare(getCurrentX(), nextY, squareSize));
@@ -58,9 +55,9 @@ public class Queen extends Piece {
         // Evaluate left squares
         double nextX = getChessboard().findNextHorizontalSquare(true, getCurrentX());
         for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (Math.round(getCurrentX()) == lowerBound) {
+            if (Math.round(getCurrentX()) == 0) {
                 break;
-            } else if (Math.round(nextX) < lowerBound) {
+            } else if (Math.round(nextX) < 0) {
                 break;
             } else if (!getChessboard().isSquareOccupied(nextX, getCurrentY())) {
                 legalMoves.add(Square.findSquare(nextX, getCurrentY(), squareSize));
@@ -73,9 +70,9 @@ public class Queen extends Piece {
         // Evaluate right squares
         nextX = getChessboard().findNextHorizontalSquare(false, getCurrentX());
         for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (Math.round(getCurrentX()) == upperBound) {
+            if (Math.round(getCurrentX()) == Math.round(squareSize * 7)) {
                 break;
-            } else if (Math.round(nextX) > upperBound) {
+            } else if (Math.round(nextX) > Math.round(squareSize * 7)) {
                 break;
             } else if (!getChessboard().isSquareOccupied(nextX, getCurrentY())) {
                 legalMoves.add(Square.findSquare(nextX, getCurrentY(), squareSize));
@@ -88,9 +85,9 @@ public class Queen extends Piece {
         // Evaluate up/left squares
         double[] nextDiagonal = getChessboard().findNextDiagonal(true, true, new double[]{getCurrentX(), getCurrentY()});
         for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (Math.round(getCurrentX()) == lowerBound || Math.round(getCurrentY()) == lowerBound) {
+            if (Math.round(getCurrentX()) == 0 || Math.round(getCurrentY()) == 0) {
                 break;
-            } else if (Math.round(nextDiagonal[0]) < lowerBound || Math.round(nextDiagonal[1]) < lowerBound) {
+            } else if (Math.round(nextDiagonal[0]) < 0 || Math.round(nextDiagonal[1]) < 0) {
                 break;
             } else if (!getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
                 legalMoves.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
@@ -104,9 +101,9 @@ public class Queen extends Piece {
         // Evaluate up/right squares
         nextDiagonal = getChessboard().findNextDiagonal(true, false, new double[]{getCurrentX(), getCurrentY()});
         for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (Math.round(getCurrentX()) == upperBound || getCurrentY() == lowerBound) {
+            if (Math.round(getCurrentX()) == Math.round(squareSize * 7) || getCurrentY() == 0) {
                 break;
-            } else if (Math.round(nextDiagonal[0]) > upperBound || Math.round(nextDiagonal[1]) < lowerBound) {
+            } else if (Math.round(nextDiagonal[0]) > Math.round(squareSize * 7) || Math.round(nextDiagonal[1]) < 0) {
                 break;
             } else if (!getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
                 legalMoves.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
@@ -120,9 +117,9 @@ public class Queen extends Piece {
         // Evaluate down/left squares
         nextDiagonal = getChessboard().findNextDiagonal(false, true, new double[]{getCurrentX(), getCurrentY()});
         for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (Math.round(getCurrentY()) == upperBound || Math.round(getCurrentX()) == lowerBound) {
+            if (Math.round(getCurrentY()) == Math.round(squareSize * 7) || Math.round(getCurrentX()) == 0) {
                 break;
-            } else if (Math.round(nextDiagonal[0]) < lowerBound || Math.round(nextDiagonal[1]) > upperBound ) {
+            } else if (Math.round(nextDiagonal[0]) < 0 || Math.round(nextDiagonal[1]) > Math.round(squareSize * 7) ) {
                 break;
             } else if (!getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
                 legalMoves.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
@@ -136,9 +133,9 @@ public class Queen extends Piece {
         // Evaluate down/right squares
         nextDiagonal = getChessboard().findNextDiagonal(false, false, new double[]{getCurrentX(), getCurrentY()});
         for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (Math.round(getCurrentY()) == upperBound || Math.round(getCurrentX()) == upperBound) {
+            if (Math.round(getCurrentY()) == Math.round(squareSize * 7) || Math.round(getCurrentX()) == Math.round(squareSize * 7)) {
                 break;
-            } else if (Math.round(nextDiagonal[0]) > upperBound || Math.round(nextDiagonal[1]) > upperBound) {
+            } else if (Math.round(nextDiagonal[0]) > Math.round(squareSize * 7) || Math.round(nextDiagonal[1]) > Math.round(squareSize * 7)) {
                 break;
             } else if (!getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
                 legalMoves.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
