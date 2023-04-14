@@ -49,9 +49,10 @@ public class PieceBuilder {
                 double newY = chessboard.findClosestSquare(mouseEvent.getSceneY(), chessboard.getPossibleXAndYCoordinates());
                 Piece capturedPiece = chessboard.findPiece(newX, newY);
                 if (chessboard.getPiecePositions().get(currentPieceIndex).move(newX, newY)) {
-                    if (capturedPiece != null) {
+                    if (capturedPiece != null
+                            && !capturedPiece.getPieceType().equals(PieceType.KING)) {
                         chessboard.getAnchorPane().getChildren().remove(capturedPiece); // Remove piece from the board
-                        // Need to change captured piece's pos to something that does not exist on the board
+                        capturedPiece.captured();
                     }
                     piece.setLayoutX(newX); // Update pos on board
                     piece.setLayoutY(newY); // Update pos on board

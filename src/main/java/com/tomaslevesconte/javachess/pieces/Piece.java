@@ -58,6 +58,14 @@ public abstract class Piece extends Rectangle {
         return false;
     }
 
+    public void captured() {
+        // King cannot be captured
+        if (!getPieceType().equals(PieceType.KING)) {
+            setCurrentX(-1); // No longer on the board
+            setCurrentY(-1); // No longer on the board
+        }
+    }
+
     public abstract ArrayList<Square> getLegalMoves();
 
     public ArrayList<Square> evaluateVerticalSquares(int numOfSquares) {
