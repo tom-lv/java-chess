@@ -4,6 +4,7 @@ import com.tomaslevesconte.javachess.pieces.*;
 
 import javafx.scene.Cursor;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
@@ -100,25 +101,30 @@ public class PieceBuilder {
 
     private void showLegalMoves(Piece piece) {
         hideLegalMoves(); // hide last selected piece's moves
-        piece.toFront();
         ArrayList<Square> legalMoves = piece.getLegalMoves();
-        Rectangle currentSquare = new Rectangle(chessboard.getSquareSize(), chessboard.getSquareSize());
+        double squareSize = chessboard.getSquareSize();
+        Rectangle currentSquare = new Rectangle(squareSize, squareSize);
         currentSquare.setFill(Color.web("#FEF250", 0.6));
         currentSquare.setSmooth(false);
         currentSquare.setLayoutX(piece.getCurrentX());
         currentSquare.setLayoutY(piece.getCurrentY());
         Group possibleMoves = new Group();
         legalMoves.forEach(move -> {
-            Rectangle legalMove = new Rectangle(chessboard.getSquareSize(), chessboard.getSquareSize());
-            legalMove.setFill(new ImagePattern(new Image("com/tomaslevesconte/javachess/hc.png")));
+            Rectangle legalMove = new Rectangle(squareSize, squareSize);
             legalMove.setSmooth(false);
             legalMove.setLayoutX(move.getX(chessboard.getSquareSize()));
             legalMove.setLayoutY(move.getY(chessboard.getSquareSize()));
+            if (chessboard.isSquareOccupied(move.getX(squareSize), move.getY(squareSize))) {
+                legalMove.setFill(Color.web("#A70000", 0.6));
+            } else {
+                legalMove.setFill(new ImagePattern(new Image("com/tomaslevesconte/javachess/hc.png")));
+            }
             possibleMoves.getChildren().add(legalMove);
         });
         currentSquare.setId("currentSquare");
         possibleMoves.setId("possibleMoves");
         chessboard.getAnchorPane().getChildren().addAll(possibleMoves, currentSquare);
+        chessboard.getPiecePositions().forEach(Node::toFront);
     }
 
     public void hideLegalMoves() {

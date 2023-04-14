@@ -32,8 +32,8 @@ public abstract class Piece extends Rectangle {
 
     public void createPiece() {
         setCursor(Cursor.OPEN_HAND);
-        setWidth(chessboard.getSquareSize());
-        setHeight(chessboard.getSquareSize());
+        setWidth(getChessboard().getSquareSize());
+        setHeight(getChessboard().getSquareSize());
         setLayoutX(currentX);
         setLayoutY(currentY);
         setSmooth(false);
@@ -57,6 +57,8 @@ public abstract class Piece extends Rectangle {
         }
         return false;
     }
+
+    public abstract ArrayList<Square> getLegalMoves();
 
     public ArrayList<Square> evaluateVerticalSquares(int numOfSquares) {
         ArrayList<Square> verticalSquares = new ArrayList<>();
@@ -128,7 +130,7 @@ public abstract class Piece extends Rectangle {
         ArrayList<Square> diagonalSquares = new ArrayList<>();
         double squareSize = getChessboard().getSquareSize();
 
-        // Evaluate up/left squares
+        // Evaluate diagonal up/left squares
         double[] nextDiagonal = getChessboard().findNextDiagonal(true, true, new double[]{getCurrentX(), getCurrentY()});
         for (int i = 0; i < numOfSquares; i++) {
             if (getCurrentX() == 0
@@ -145,7 +147,7 @@ public abstract class Piece extends Rectangle {
             nextDiagonal[1] -= squareSize;
         }
 
-        // Evaluate up/right squares
+        // Evaluate diagonal up/right squares
         nextDiagonal = getChessboard().findNextDiagonal(true, false, new double[]{getCurrentX(), getCurrentY()});
         for (int i = 0; i < numOfSquares; i++) {
             if (getCurrentX() == (squareSize * 7)
@@ -162,7 +164,7 @@ public abstract class Piece extends Rectangle {
             nextDiagonal[1] -= squareSize;
         }
 
-        // Evaluate down/left squares
+        // Evaluate diagonal down/left squares
         nextDiagonal = getChessboard().findNextDiagonal(false, true, new double[]{getCurrentX(), getCurrentY()});
         for (int i = 0; i < numOfSquares; i++) {
             if (getCurrentY() == (squareSize * 7)
@@ -179,7 +181,7 @@ public abstract class Piece extends Rectangle {
             nextDiagonal[1] += squareSize;
         }
 
-        // Evaluate down/right squares
+        // Evaluate diagonal down/right squares
         nextDiagonal = getChessboard().findNextDiagonal(false, false, new double[]{getCurrentX(), getCurrentY()});
         for (int i = 0; i < numOfSquares; i++) {
             if (getCurrentY() == (squareSize * 7)
@@ -198,8 +200,6 @@ public abstract class Piece extends Rectangle {
 
         return diagonalSquares;
     }
-
-    public abstract ArrayList<Square> getLegalMoves();
 
     public PieceType getPieceType() {
         return pieceType;

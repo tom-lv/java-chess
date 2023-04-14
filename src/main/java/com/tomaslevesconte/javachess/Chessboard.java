@@ -68,11 +68,22 @@ public class Chessboard {
 
     public boolean isSquareOccupied(double squareX, double squareY) {
         for (Piece piece : getPiecePositions()) {
-            if (Math.round(squareX) == Math.round(piece.getCurrentX()) && Math.round(squareY) == Math.round(piece.getCurrentY())) {
+            if (Math.round(squareX) == Math.round(piece.getCurrentX())
+                    && Math.round(squareY) == Math.round(piece.getCurrentY())) {
                 return true;
             }
         }
         return false;
+    }
+
+    public PieceColour discoverPieceColour(double squareX, double squareY) {
+        for (Piece piece : getPiecePositions()) {
+            if (Math.round(squareX) == Math.round(piece.getCurrentX())
+                    && Math.round(squareY) == Math.round(piece.getCurrentY())) {
+                return piece.getPieceColour();
+            }
+        }
+        return null;
     }
 
     private double findSquare(int multiplier, double startSquareXY) {

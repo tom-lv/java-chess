@@ -39,6 +39,7 @@ public class Pawn extends Piece {
         ArrayList<Square> legalMoves = new ArrayList<>();
         double squareSize = getChessboard().getSquareSize();
         double multiplier = getPieceColour().equals(PieceColour.WHITE) ? -squareSize : squareSize;
+        boolean direction = getPieceColour().equals(PieceColour.WHITE);
 
         // Evaluate up/down squares (depending on pieceColour)
         double nextY = getChessboard().findNextVerticalSquare(getPieceColour(), getCurrentY());
@@ -54,6 +55,20 @@ public class Pawn extends Piece {
                 break;
             }
             nextY += multiplier;
+        }
+
+        // Evaluate diagonal left for capturing
+        double[] nextDiagonal = getChessboard().findNextDiagonal(direction, true, new double[]{getCurrentX(), getCurrentY()});
+        if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])
+                && getPieceColour() != getChessboard().discoverPieceColour(nextDiagonal[0], nextDiagonal[1])) {
+            legalMoves.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
+        }
+
+        // Evaluate diagonal right for capturing
+        nextDiagonal = getChessboard().findNextDiagonal(direction, false, new double[]{getCurrentX(), getCurrentY()});
+        if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])
+                && getPieceColour() != getChessboard().discoverPieceColour(nextDiagonal[0], nextDiagonal[1])) {
+            legalMoves.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
         }
 
         return legalMoves;
