@@ -76,7 +76,17 @@ public class Chessboard {
         return false;
     }
 
-    public PieceColour discoverPieceColour(double squareX, double squareY) {
+    public Piece findPiece(double squareX, double squareY) {
+        for (Piece piece : getPiecePositions()) {
+            if (Math.round(squareX) == Math.round(piece.getCurrentX())
+                    && Math.round(squareY) == Math.round(piece.getCurrentY())) {
+                return piece;
+            }
+        }
+        return null;
+    }
+
+    public PieceColour findPieceColour(double squareX, double squareY) {
         for (Piece piece : getPiecePositions()) {
             if (Math.round(squareX) == Math.round(piece.getCurrentX())
                     && Math.round(squareY) == Math.round(piece.getCurrentY())) {

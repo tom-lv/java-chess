@@ -47,10 +47,15 @@ public class PieceBuilder {
                 piece.setCursor(Cursor.OPEN_HAND);
                 double newX = chessboard.findClosestSquare(mouseEvent.getSceneX(), chessboard.getPossibleXAndYCoordinates());
                 double newY = chessboard.findClosestSquare(mouseEvent.getSceneY(), chessboard.getPossibleXAndYCoordinates());
+                Piece capturedPiece = chessboard.findPiece(newX, newY);
                 if (chessboard.getPiecePositions().get(currentPieceIndex).move(newX, newY)) {
+                    if (capturedPiece != null) {
+                        chessboard.getAnchorPane().getChildren().remove(capturedPiece); // Remove piece from the board
+                        // Need to change captured piece's pos to something that does not exist on the board
+                    }
                     piece.setLayoutX(newX); // Update pos on board
                     piece.setLayoutY(newY); // Update pos on board
-                    hideLegalMoves(); // once placed, hide legal moves
+                    hideLegalMoves(); // Once placed, hide legal moves
                 } else {
                     piece.setLayoutX(piece.getCurrentX());
                     piece.setLayoutY(piece.getCurrentY());
@@ -100,7 +105,7 @@ public class PieceBuilder {
     }
 
     private void showLegalMoves(Piece piece) {
-        hideLegalMoves(); // hide last selected piece's moves
+        hideLegalMoves(); // Hide last selected piece's moves
         ArrayList<Square> legalMoves = piece.getLegalMoves();
         double squareSize = chessboard.getSquareSize();
         Rectangle currentSquare = new Rectangle(squareSize, squareSize);
@@ -124,7 +129,7 @@ public class PieceBuilder {
         currentSquare.setId("currentSquare");
         possibleMoves.setId("possibleMoves");
         chessboard.getAnchorPane().getChildren().addAll(possibleMoves, currentSquare);
-        chessboard.getPiecePositions().forEach(Node::toFront);
+        chessboard.getPiecePositions().forEach(Node::toFront); // All pieces to front in terms of z-index
     }
 
     public void hideLegalMoves() {

@@ -6,6 +6,7 @@ import com.tomaslevesconte.javachess.PieceType;
 import com.tomaslevesconte.javachess.Square;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Pawn extends Piece {
 
@@ -59,15 +60,29 @@ public class Pawn extends Piece {
 
         // Evaluate diagonal left for capturing
         double[] nextDiagonal = getChessboard().findNextDiagonal(direction, true, new double[]{getCurrentX(), getCurrentY()});
-        if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])
-                && getPieceColour() != getChessboard().discoverPieceColour(nextDiagonal[0], nextDiagonal[1])) {
+        if (getPieceColour().equals(PieceColour.WHITE)
+                && getCurrentY() == 0
+                || getPieceColour().equals(PieceColour.BLACK)
+                && getCurrentY() == (squareSize * 7)
+                || getCurrentX() == 0
+                && nextDiagonal[0] == 0) {
+            // Do nothing
+        } else if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])
+                && getPieceColour() != getChessboard().findPieceColour(nextDiagonal[0], nextDiagonal[1])) {
             legalMoves.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
         }
 
         // Evaluate diagonal right for capturing
         nextDiagonal = getChessboard().findNextDiagonal(direction, false, new double[]{getCurrentX(), getCurrentY()});
-        if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])
-                && getPieceColour() != getChessboard().discoverPieceColour(nextDiagonal[0], nextDiagonal[1])) {
+        if (getPieceColour().equals(PieceColour.WHITE)
+                && getCurrentY() == 0
+                || getPieceColour().equals(PieceColour.BLACK)
+                && getCurrentY() == (squareSize * 7)
+                || getCurrentX() == (squareSize * 7)
+                && nextDiagonal[0] == 0) {
+            // Do nothing
+        } else if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])
+                && getPieceColour() != getChessboard().findPieceColour(nextDiagonal[0], nextDiagonal[1])) {
             legalMoves.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
         }
 
