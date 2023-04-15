@@ -30,6 +30,10 @@ public class Knight extends Piece {
                     || nextLSquare[1] <= 0
                     && getCurrentY() == squareSize) {
                 break;
+            } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
+                    && !getPieceColour().equals(getChessboard().findPieceColour(nextLSquare[0], nextLSquare[1]))) {
+                legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
+                break;
             } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
                 legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
             } else {
@@ -45,6 +49,10 @@ public class Knight extends Piece {
                     || nextLSquare[1] <= 0
                     && getCurrentY() == squareSize) {
                 break;
+            } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
+                    && !getPieceColour().equals(getChessboard().findPieceColour(nextLSquare[0], nextLSquare[1]))) {
+                legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
+                break;
             } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
                 legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
             } else {
@@ -59,6 +67,10 @@ public class Knight extends Piece {
                     || getCurrentX() == 0
                     || nextLSquare[1] <= 0) {
                 break;
+            } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
+                    && !getPieceColour().equals(getChessboard().findPieceColour(nextLSquare[0], nextLSquare[1]))) {
+                legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
+                break;
             } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
                 legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
             } else {
@@ -72,6 +84,10 @@ public class Knight extends Piece {
             if (getCurrentY() == (squareSize * 7)
                     || getCurrentX() == (squareSize * 7)
                     || nextLSquare[1] <= 0) {
+                break;
+            } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
+                    && !getPieceColour().equals(getChessboard().findPieceColour(nextLSquare[0], nextLSquare[1]))) {
+                legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
                 break;
             } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
                 legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
@@ -88,6 +104,10 @@ public class Knight extends Piece {
                     || nextLSquare[0] <= 0
                     && getCurrentX() == squareSize) {
                 break;
+            } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
+                    && !getPieceColour().equals(getChessboard().findPieceColour(nextLSquare[0], nextLSquare[1]))) {
+                legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
+                break;
             } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
                 legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
             } else {
@@ -102,6 +122,10 @@ public class Knight extends Piece {
                     || getCurrentY() == 0
                     || nextLSquare[0] <= (squareSize * 7)
                     && getCurrentX() == (squareSize * 6)) {
+                break;
+            } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
+                    && !getPieceColour().equals(getChessboard().findPieceColour(nextLSquare[0], nextLSquare[1]))) {
+                legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
                 break;
             } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
                 legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
@@ -118,6 +142,10 @@ public class Knight extends Piece {
                     || nextLSquare[0] <= 0
                     && getCurrentX() == squareSize) {
                 break;
+            } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
+                    && !getPieceColour().equals(getChessboard().findPieceColour(nextLSquare[0], nextLSquare[1]))) {
+                legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
+                break;
             } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
                 legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
             } else {
@@ -132,6 +160,10 @@ public class Knight extends Piece {
                     || getCurrentX() == (squareSize * 7)
                     || nextLSquare[0] <= 0
                     && getCurrentX() == (squareSize * 6)) {
+                break;
+            } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
+                    && !getPieceColour().equals(getChessboard().findPieceColour(nextLSquare[0], nextLSquare[1]))) {
+                legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
                 break;
             } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
                 legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));

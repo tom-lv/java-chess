@@ -11,7 +11,7 @@ import java.util.Arrays;
 public class Pawn extends Piece {
 
     private static final int SQUARES_IT_CAN_MOVE = 2;
-    private boolean onStartingSquare = true;
+    private boolean hasMoved = false;
 
     public Pawn(PieceColour pieceColour, Square square, Chessboard chessboard) {
         super(pieceColour, square, chessboard);
@@ -26,7 +26,7 @@ public class Pawn extends Piece {
             double lmX = Math.round(legalMove.getX(squareSize));
             double lmY = Math.round(legalMove.getY(squareSize));
             if (Math.round(newX) == lmX && Math.round(newY) == lmY) {
-                onStartingSquare = false;
+                hasMoved = true;
                 setCurrentX(newX);
                 setCurrentY(newY);
                 return true;
@@ -45,7 +45,7 @@ public class Pawn extends Piece {
         // Evaluate up/down squares (depending on pieceColour)
         double nextY = getChessboard().findNextVerticalSquare(getPieceColour(), getCurrentY());
         for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (onStartingSquare && !getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
+            if (!hasMoved && !getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
                 legalMoves.add(Square.findSquare(getCurrentX(), nextY, squareSize));
             } else if (getCurrentY() == 0 ||  getCurrentY() == (squareSize * 7)) {
                 break;

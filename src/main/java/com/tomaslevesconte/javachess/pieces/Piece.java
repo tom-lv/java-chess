@@ -58,7 +58,7 @@ public abstract class Piece extends Rectangle {
         return false;
     }
 
-    public void captured() {
+    public void setCaptured() {
         // King cannot be captured
         if (!getPieceType().equals(PieceType.KING)) {
             setCurrentX(-1); // No longer on the board
@@ -77,6 +77,10 @@ public abstract class Piece extends Rectangle {
         for (int i = 0; i < numOfSquares; i++) {
             if (getCurrentY() == 0 || nextY < 0) {
                 break;
+            } else if (getChessboard().isSquareOccupied(getCurrentX(), nextY)
+                    && !getPieceColour().equals(getChessboard().findPieceColour(getCurrentX(), nextY))) {
+                verticalSquares.add(Square.findSquare(getCurrentX(), nextY, squareSize));
+                break;
             } else if (!getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
                 verticalSquares.add(Square.findSquare(getCurrentX(), nextY, squareSize));
             } else {
@@ -89,6 +93,10 @@ public abstract class Piece extends Rectangle {
         nextY = getChessboard().findNextVerticalSquare(false, getCurrentY());
         for (int i = 0; i < numOfSquares; i++) {
             if (getCurrentY() == (squareSize * 7) || nextY > (squareSize * 7)) {
+                break;
+            } else if (getChessboard().isSquareOccupied(getCurrentX(), nextY)
+                    && !getPieceColour().equals(getChessboard().findPieceColour(getCurrentX(), nextY))) {
+                verticalSquares.add(Square.findSquare(getCurrentX(), nextY, squareSize));
                 break;
             } else if (!getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
                 verticalSquares.add(Square.findSquare(getCurrentX(), nextY, squareSize));
@@ -110,7 +118,11 @@ public abstract class Piece extends Rectangle {
         for (int i = 0; i < numOfSquares; i++) {
             if (getCurrentX() == 0 || nextX < 0) {
                 break;
-            } else if (!getChessboard().isSquareOccupied(nextX, getCurrentY())) {
+            } else if (getChessboard().isSquareOccupied(nextX, getCurrentY())
+                    && !getPieceColour().equals(getChessboard().findPieceColour(nextX, getCurrentY()))) {
+                horizontalSquares.add(Square.findSquare(nextX, getCurrentY(), squareSize));
+                break;
+            }  else if (!getChessboard().isSquareOccupied(nextX, getCurrentY())) {
                 horizontalSquares.add(Square.findSquare(nextX, getCurrentY(), squareSize));
             } else {
                 break;
@@ -122,6 +134,10 @@ public abstract class Piece extends Rectangle {
         nextX = getChessboard().findNextHorizontalSquare(false, getCurrentX());
         for (int i = 0; i < numOfSquares; i++) {
             if (getCurrentX() == (squareSize * 7) || nextX > (squareSize * 7)) {
+                break;
+            } else if (getChessboard().isSquareOccupied(nextX, getCurrentY())
+                    && !getPieceColour().equals(getChessboard().findPieceColour(nextX, getCurrentY()))) {
+                horizontalSquares.add(Square.findSquare(nextX, getCurrentY(), squareSize));
                 break;
             } else if (!getChessboard().isSquareOccupied(nextX, getCurrentY())) {
                 horizontalSquares.add(Square.findSquare(nextX, getCurrentY(), squareSize));
@@ -146,6 +162,10 @@ public abstract class Piece extends Rectangle {
                     || nextDiagonal[0] < 0
                     || nextDiagonal[1] < 0) {
                 break;
+            } else if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])
+                    && !getPieceColour().equals(getChessboard().findPieceColour(nextDiagonal[0], nextDiagonal[1]))) {
+                diagonalSquares.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
+                break;
             } else if (!getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
                 diagonalSquares.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
             } else {
@@ -162,6 +182,10 @@ public abstract class Piece extends Rectangle {
                     || getCurrentY() == 0
                     || nextDiagonal[0] > (squareSize * 7)
                     || nextDiagonal[1] < 0) {
+                break;
+            } else if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])
+                    && !getPieceColour().equals(getChessboard().findPieceColour(nextDiagonal[0], nextDiagonal[1]))) {
+                diagonalSquares.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
                 break;
             } else if (!getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
                 diagonalSquares.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
@@ -180,6 +204,10 @@ public abstract class Piece extends Rectangle {
                     || nextDiagonal[0] < 0
                     || nextDiagonal[1] > (squareSize * 7)) {
                 break;
+            } else if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])
+                    && !getPieceColour().equals(getChessboard().findPieceColour(nextDiagonal[0], nextDiagonal[1]))) {
+                diagonalSquares.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
+                break;
             } else if (!getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
                 diagonalSquares.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
             } else if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
@@ -196,6 +224,10 @@ public abstract class Piece extends Rectangle {
                     || getCurrentX() == (squareSize * 7)
                     || nextDiagonal[0] > (squareSize * 7)
                     || nextDiagonal[1] > (squareSize * 7)) {
+                break;
+            } else if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])
+                    && !getPieceColour().equals(getChessboard().findPieceColour(nextDiagonal[0], nextDiagonal[1]))) {
+                diagonalSquares.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
                 break;
             } else if (!getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
                 diagonalSquares.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
