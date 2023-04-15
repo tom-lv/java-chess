@@ -52,7 +52,7 @@ public class PieceBuilder {
                     if (capturedPiece != null
                             && !capturedPiece.getPieceType().equals(PieceType.KING)) {
                         chessboard.getAnchorPane().getChildren().remove(capturedPiece); // Remove piece from the board
-                        capturedPiece.captured();
+                        capturedPiece.setCaptured();
                     }
                     piece.setLayoutX(newX); // Update pos on board
                     piece.setLayoutY(newY); // Update pos on board
@@ -121,7 +121,7 @@ public class PieceBuilder {
             legalMove.setLayoutX(move.getX(chessboard.getSquareSize()));
             legalMove.setLayoutY(move.getY(chessboard.getSquareSize()));
             if (chessboard.isSquareOccupied(move.getX(squareSize), move.getY(squareSize))) {
-                legalMove.setFill(Color.web("#A70000", 0.6));
+                legalMove.setFill(Color.web("#9A3048", 1));
             } else {
                 legalMove.setFill(new ImagePattern(new Image("com/tomaslevesconte/javachess/hc.png")));
             }
