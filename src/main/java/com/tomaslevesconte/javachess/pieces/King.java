@@ -20,24 +20,19 @@ public class King extends Piece {
     @Override
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
-
+        // Add all legal moves for the king (can move one square in every direction)
         legalMoves.addAll(evaluateVerticalSquares(SQUARES_IT_CAN_MOVE));
         legalMoves.addAll(evaluateHorizontalSquares(SQUARES_IT_CAN_MOVE));
         legalMoves.addAll(evaluateDiagonalSquares(SQUARES_IT_CAN_MOVE));
 
         ArrayList<Square> opponentsMoves = new ArrayList<>();
-
         getChessboard().getPiecePositions().forEach(piece -> {
-
             if (piece.getPieceType() != PieceType.KING
                     && piece.getPieceType() != PieceType.PAWN
                     && piece.getPieceColour() != getPieceColour()) {
-
-                opponentsMoves.addAll(piece.getLegalMoves());
-
+                opponentsMoves.addAll(piece.getLegalMoves()); // Add all opposing pieces' moves (except for pawn)
             } else if (piece.getPieceType().equals(PieceType.PAWN)
                     && piece.getPieceColour() != getPieceColour()) {
-
                 boolean direction = piece.getPieceColour().equals(PieceColour.WHITE);
                 double squareSize = getChessboard().getSquareSize();
 
@@ -66,8 +61,8 @@ public class King extends Piece {
         });
 
         ArrayList<Square> curatedMoves = new ArrayList<>(legalMoves);
+        // Remove opponent's moves from the 'legalMoves' arraylist and store remainder in a new arraylist
         curatedMoves.removeAll(opponentsMoves);
-
         return curatedMoves;
     }
 }
