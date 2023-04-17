@@ -6,7 +6,6 @@ import com.tomaslevesconte.javachess.PieceType;
 import com.tomaslevesconte.javachess.Square;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Pawn extends Piece {
 
@@ -68,7 +67,7 @@ public class Pawn extends Piece {
                 && nextDiagonal[0] == 0) {
             // Do nothing
         } else if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])
-                && getPieceColour() != getChessboard().findPieceColour(nextDiagonal[0], nextDiagonal[1])) {
+                && getPieceColour() != getChessboard().findPiece(nextDiagonal[0], nextDiagonal[1]).getPieceColour()) {
             legalMoves.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
         }
 
@@ -82,7 +81,7 @@ public class Pawn extends Piece {
                 && nextDiagonal[0] == 0) {
             // Do nothing
         } else if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])
-                && getPieceColour() != getChessboard().findPieceColour(nextDiagonal[0], nextDiagonal[1])) {
+                && getPieceColour() != getChessboard().findPiece(nextDiagonal[0], nextDiagonal[1]).getPieceColour()) {
             legalMoves.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
         }
 

@@ -86,16 +86,6 @@ public class Chessboard {
         return null;
     }
 
-    public PieceColour findPieceColour(double squareX, double squareY) {
-        for (Piece piece : getPiecePositions()) {
-            if (Math.round(squareX) == Math.round(piece.getCurrentX())
-                    && Math.round(squareY) == Math.round(piece.getCurrentY())) {
-                return piece.getPieceColour();
-            }
-        }
-        return null;
-    }
-
     private double findSquare(int multiplier, double startSquareXY) {
         double[] possibleCoordinates = getPossibleXAndYCoordinates();
         double targetSquareXY = 0.0;
@@ -137,9 +127,9 @@ public class Chessboard {
         return new double[]{nextSquareX, nextSquareY};
     }
 
-    public double[] findNextLSquare(boolean isVertical, boolean isLeft, boolean isUp, double[] startSquareXY) {
-        int multiplierX = isLeft ? -1 : 1;
+    public double[] findNextLSquare(boolean isVertical, boolean isUp, boolean isLeft, double[] startSquareXY) {
         int multiplierY = isUp ? -1 : 1;
+        int multiplierX = isLeft ? -1 : 1;
         return isVertical ? findVerticalLSquare(multiplierX, multiplierY, startSquareXY) : findHorizontalLSquare(multiplierX, multiplierY, startSquareXY);
     }
 
