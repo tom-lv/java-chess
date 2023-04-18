@@ -27,12 +27,20 @@ public class King extends Piece {
 
         ArrayList<Square> opponentsMoves = new ArrayList<>();
         getChessboard().getPiecePositions().forEach(piece -> {
-            if (piece.getPieceType() != PieceType.KING
-                    && piece.getPieceType() != PieceType.PAWN
-                    && piece.getPieceColour() != getPieceColour()) {
-                opponentsMoves.addAll(piece.getLegalMoves()); // Add all opposing pieces' moves (except for pawn)
-            } else if (piece.getPieceType().equals(PieceType.PAWN)
-                    && piece.getPieceColour() != getPieceColour()) {
+            if (piece.getPieceColour() != getPieceColour()
+                    && piece.getPieceType() != PieceType.KING
+                    && piece.getPieceType() != PieceType.PAWN) {
+                opponentsMoves.addAll(piece.getLegalMoves()); // Add all opposing pieces' moves (except for king & pawn)
+
+            } else if (piece.getPieceColour() != getPieceColour()
+                    && piece.getPieceType().equals(PieceType.KING)) {
+                // Add opposing king's attack patterns
+                opponentsMoves.addAll(piece.evaluateVerticalSquares(SQUARES_IT_CAN_MOVE));
+                opponentsMoves.addAll(piece.evaluateHorizontalSquares(SQUARES_IT_CAN_MOVE));
+                opponentsMoves.addAll(piece.evaluateDiagonalSquares(SQUARES_IT_CAN_MOVE));
+
+            } else if (piece.getPieceColour() != getPieceColour()
+                    && piece.getPieceType().equals(PieceType.PAWN)) {
                 boolean direction = piece.getPieceColour().equals(PieceColour.WHITE);
                 double squareSize = getChessboard().getSquareSize();
 
@@ -61,7 +69,7 @@ public class King extends Piece {
         });
 
         ArrayList<Square> curatedMoves = new ArrayList<>(legalMoves);
-        // Remove opponent's moves from the 'legalMoves' arraylist and store remainder in a new arraylist
+        // Remove opponent's moves from the 'legalMoves' arraylist and store the remainder in a new arraylist
         curatedMoves.removeAll(opponentsMoves);
         return curatedMoves;
     }
