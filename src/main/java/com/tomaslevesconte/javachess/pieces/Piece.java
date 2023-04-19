@@ -58,6 +58,7 @@ public abstract class Piece extends Rectangle {
         return false;
     }
 
+    // Change
     public void setCaptured() {
         // King cannot be captured
         if (!getPieceType().equals(PieceType.KING)) {
@@ -105,7 +106,6 @@ public abstract class Piece extends Rectangle {
             }
             nextY += squareSize;
         }
-
         return verticalSquares;
     }
 
@@ -146,7 +146,6 @@ public abstract class Piece extends Rectangle {
             }
             nextX += squareSize;
         }
-
         return horizontalSquares;
     }
 
@@ -237,8 +236,11 @@ public abstract class Piece extends Rectangle {
             nextDiagonal[0] += squareSize;
             nextDiagonal[1] += squareSize;
         }
-
         return diagonalSquares;
+    }
+
+    public Square getSquare() {
+        return Square.findSquare(getCurrentX(), getCurrentY(), getChessboard().getSquareSize());
     }
 
     public PieceType getPieceType() {
