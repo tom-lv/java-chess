@@ -26,6 +26,7 @@ public class PieceBuilder {
 
     private void addPiece(Piece piece) {
         int currentPieceIndex = pieceIndex++;
+
         piece.setOnMousePressed(mouseEvent -> {
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                 showLegalMoves(piece);
@@ -35,6 +36,7 @@ public class PieceBuilder {
                 piece.setLayoutY(mouseEvent.getSceneY() - (piece.getHeight() / 2));
             }
         });
+
         piece.setOnMouseDragged(mouseEvent -> {
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                 piece.setCursor(Cursor.CLOSED_HAND);
@@ -42,6 +44,7 @@ public class PieceBuilder {
                 piece.setLayoutY(mouseEvent.getSceneY() - (piece.getHeight() / 2));
             }
         });
+
         piece.setOnMouseReleased(mouseEvent -> {
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                 piece.setCursor(Cursor.OPEN_HAND);
@@ -63,6 +66,7 @@ public class PieceBuilder {
                 }
             }
         });
+
         chessboard.getPiecePositions().add(piece);
         chessboard.getAnchorPane().getChildren().add(piece);
     }

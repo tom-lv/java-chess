@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 
 public class ChessApplication extends Application {
 
-    public final static double BOARD_SIZE = 850.0;
+    public final static double BOARD_SIZE = 850;
 
     @Override
     public void start(Stage stage) {
