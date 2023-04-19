@@ -76,16 +76,6 @@ public class Chessboard {
         return false;
     }
 
-    public Piece findPiece(double squareX, double squareY) {
-        for (Piece piece : getPiecePositions()) {
-            if (Math.round(squareX) == Math.round(piece.getCurrentX())
-                    && Math.round(squareY) == Math.round(piece.getCurrentY())) {
-                return piece;
-            }
-        }
-        return null;
-    }
-
     private double findSquare(int multiplier, double startSquareXY) {
         double[] possibleCoordinates = getPossibleXAndYCoordinates();
         double targetSquareXY = 0.0;
@@ -144,6 +134,28 @@ public class Chessboard {
         double nextSquareY = findSquare(multiplierY, startSquareXY[1]);
         return new double[]{lastSquareX, nextSquareY};
     }
+
+    public Piece getPiece(double squareX, double squareY) {
+        for (Piece piece : getPiecePositions()) {
+            if (Math.round(squareX) == Math.round(piece.getCurrentX())
+                    && Math.round(squareY) == Math.round(piece.getCurrentY())) {
+                return piece;
+            }
+        }
+        return null;
+    }
+
+    public ArrayList<Piece> getRooks(PieceColour pieceColour) {
+        ArrayList<Piece> rooks = new ArrayList<>();
+        for (Piece piece : getPiecePositions()) {
+            if (piece.getPieceColour().equals(pieceColour)
+                    && piece.getPieceType().equals(PieceType.ROOK)) {
+                rooks.add(piece);
+            }
+        }
+        return rooks;
+    }
+
 
     public double getSquareSize() {
         return squareSize;

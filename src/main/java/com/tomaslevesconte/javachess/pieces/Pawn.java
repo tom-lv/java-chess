@@ -10,28 +10,11 @@ import java.util.ArrayList;
 public class Pawn extends Piece {
 
     private static final int SQUARES_IT_CAN_MOVE = 2;
-    private boolean hasMoved = false;
 
     public Pawn(PieceColour pieceColour, Square square, Chessboard chessboard) {
         super(pieceColour, square, chessboard);
         setPieceType(PieceType.PAWN);
         createPiece();
-    }
-
-    @Override
-    public boolean move(double newX, double newY) {
-        double squareSize = getChessboard().getSquareSize();
-        for (Square legalMove : getLegalMoves()) {
-            double lmX = Math.round(legalMove.getX(squareSize));
-            double lmY = Math.round(legalMove.getY(squareSize));
-            if (Math.round(newX) == lmX && Math.round(newY) == lmY) {
-                hasMoved = true;
-                setCurrentX(newX);
-                setCurrentY(newY);
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
@@ -44,7 +27,7 @@ public class Pawn extends Piece {
         // Evaluate up/down squares (depending on pieceColour)
         double nextY = getChessboard().findNextVerticalSquare(getPieceColour(), getCurrentY());
         for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
-            if (!hasMoved && !getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
+            if (!hasMoved() && !getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
                 legalMoves.add(Square.findSquare(getCurrentX(), nextY, squareSize));
             } else if (getCurrentY() == 0 ||  getCurrentY() == (squareSize * 7)) {
                 break;
@@ -67,7 +50,7 @@ public class Pawn extends Piece {
                 && nextDiagonal[0] == 0) {
             // Do nothing
         } else if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])
-                && getPieceColour() != getChessboard().findPiece(nextDiagonal[0], nextDiagonal[1]).getPieceColour()) {
+                && getPieceColour() != getChessboard().getPiece(nextDiagonal[0], nextDiagonal[1]).getPieceColour()) {
             legalMoves.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
         }
 
@@ -81,7 +64,7 @@ public class Pawn extends Piece {
                 && nextDiagonal[0] == 0) {
             // Do nothing
         } else if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])
-                && getPieceColour() != getChessboard().findPiece(nextDiagonal[0], nextDiagonal[1]).getPieceColour()) {
+                && getPieceColour() != getChessboard().getPiece(nextDiagonal[0], nextDiagonal[1]).getPieceColour()) {
             legalMoves.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
         }
 

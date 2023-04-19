@@ -50,7 +50,7 @@ public class PieceBuilder {
                 piece.setCursor(Cursor.OPEN_HAND);
                 double newX = chessboard.findClosestSquare(mouseEvent.getSceneX(), chessboard.getPossibleXAndYCoordinates());
                 double newY = chessboard.findClosestSquare(mouseEvent.getSceneY(), chessboard.getPossibleXAndYCoordinates());
-                Piece capturedPiece = chessboard.findPiece(newX, newY);
+                Piece capturedPiece = chessboard.getPiece(newX, newY);
                 if (chessboard.getPiecePositions().get(currentPieceIndex).move(newX, newY)) {
                     if (capturedPiece != null
                             && !capturedPiece.getPieceType().equals(PieceType.KING)) {

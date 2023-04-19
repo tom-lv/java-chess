@@ -31,7 +31,7 @@ public class Knight extends Piece {
                     && getCurrentY() == squareSize) {
                 break;
             } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
-                    && getPieceColour() != getChessboard().findPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()) {
+                    && getPieceColour() != getChessboard().getPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()) {
                 legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
                 break;
             } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
@@ -50,7 +50,7 @@ public class Knight extends Piece {
                     && getCurrentY() == squareSize) {
                 break;
             } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
-                    && getPieceColour() != getChessboard().findPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()) {
+                    && getPieceColour() != getChessboard().getPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()) {
                 legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
                 break;
             } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
@@ -68,7 +68,7 @@ public class Knight extends Piece {
                     || nextLSquare[1] <= 0) {
                 break;
             } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
-                    && getPieceColour() != getChessboard().findPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()) {
+                    && getPieceColour() != getChessboard().getPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()) {
                 legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
                 break;
             } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
@@ -86,7 +86,7 @@ public class Knight extends Piece {
                     || nextLSquare[1] <= 0) {
                 break;
             } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
-                    && getPieceColour() != getChessboard().findPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()) {
+                    && getPieceColour() != getChessboard().getPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()) {
                 legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
                 break;
             } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
@@ -105,7 +105,7 @@ public class Knight extends Piece {
                     && getCurrentX() == squareSize) {
                 break;
             } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
-                    && getPieceColour() != getChessboard().findPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()) {
+                    && getPieceColour() != getChessboard().getPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()) {
                 legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
                 break;
             } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
@@ -124,7 +124,7 @@ public class Knight extends Piece {
                     && getCurrentX() == (squareSize * 6)) {
                 break;
             } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
-                    && getPieceColour() != getChessboard().findPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()) {
+                    && getPieceColour() != getChessboard().getPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()) {
                 legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
                 break;
             } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
@@ -143,7 +143,7 @@ public class Knight extends Piece {
                     && getCurrentX() == squareSize) {
                 break;
             } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
-                    && getPieceColour() != getChessboard().findPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()) {
+                    && getPieceColour() != getChessboard().getPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()) {
                 legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
                 break;
             } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
@@ -162,7 +162,7 @@ public class Knight extends Piece {
                     && getCurrentX() == (squareSize * 6)) {
                 break;
             } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
-                    && getPieceColour() != getChessboard().findPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()) {
+                    && getPieceColour() != getChessboard().getPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()) {
                 legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
                 break;
             } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
