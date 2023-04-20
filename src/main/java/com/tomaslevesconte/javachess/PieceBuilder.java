@@ -12,6 +12,7 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class PieceBuilder {
 
@@ -50,13 +51,12 @@ public class PieceBuilder {
                 piece.setCursor(Cursor.OPEN_HAND);
                 double newX = chessboard.findClosestSquare(mouseEvent.getSceneX(), chessboard.getPossibleXAndYCoordinates());
                 double newY = chessboard.findClosestSquare(mouseEvent.getSceneY(), chessboard.getPossibleXAndYCoordinates());
+                double oldX = piece.getCurrentX();
+                double oldY = piece.getCurrentY();
                 Piece capturedPiece = chessboard.getPiece(newX, newY);
                 if (chessboard.getPiecePositions().get(currentPieceIndex).move(newX, newY)) {
-                    if (capturedPiece != null
-                            && !capturedPiece.getPieceType().equals(PieceType.KING)) {
-                        chessboard.getAnchorPane().getChildren().remove(capturedPiece); // Remove piece from the board
-                        capturedPiece.setCaptured();
-                    }
+                    attemptCapture(capturedPiece); // If capturing
+                    attemptCastle(oldX, oldY, piece); // If king
                     piece.setLayoutX(newX); // Update pos on board
                     piece.setLayoutY(newY); // Update pos on board
                     hideLegalMoves(); // Once placed, hide legal moves
@@ -69,6 +69,39 @@ public class PieceBuilder {
 
         chessboard.getPiecePositions().add(piece);
         chessboard.getAnchorPane().getChildren().add(piece);
+    }
+
+    private void attemptCapture(Piece capturedPiece) {
+        if (capturedPiece != null && !capturedPiece.getPieceType().equals(PieceType.KING)) {
+            chessboard.getAnchorPane().getChildren().remove(capturedPiece); // Remove piece from the board
+            capturedPiece.setCaptured();
+        }
+    }
+
+    private void attemptCastle(double startX, double startY, Piece king) {
+        if (king.getPieceType().equals(PieceType.KING)) {
+            Square startSquare = king.getPieceColour().equals(PieceColour.WHITE) ? Square.E1 : Square.E8;
+            Square[] kingPos = king.getPieceColour().equals(PieceColour.WHITE) ? new Square[]{Square.C1, Square.G1} : new Square[]{Square.C8, Square.G8};
+            Square[] rookPos = king.getPieceColour().equals(PieceColour.WHITE) ? new Square[]{Square.D1, Square.F1} : new Square[]{Square.D8, Square.F8};
+
+            if (Objects.equals(Square.findSquare(startX, startY, chessboard.getSquareSize()), startSquare)
+                    && king.getSquare().equals(kingPos[0])) {
+                Piece queenSideRook = chessboard.getRooks(king.getPieceColour()).get(0);
+                movePiece(queenSideRook, rookPos[0]);
+
+            } else if (Objects.equals(Square.findSquare(startX, startY, chessboard.getSquareSize()), startSquare)
+                    && king.getSquare().equals(kingPos[1])) {
+                Piece kingSideRook = chessboard.getRooks(king.getPieceColour()).get(1);
+                movePiece(kingSideRook, rookPos[1]);
+            }
+        }
+    }
+
+    private void movePiece(Piece piece, Square square) {
+        piece.setCurrentX(square.getX(chessboard.getSquareSize()));
+        piece.setCurrentY(square.getY(chessboard.getSquareSize()));
+        piece.setLayoutX(square.getX(chessboard.getSquareSize()));
+        piece.setLayoutY(square.getY(chessboard.getSquareSize()));
     }
 
     private void addWhitePieces() {
@@ -114,7 +147,7 @@ public class PieceBuilder {
         ArrayList<Square> legalMoves = piece.getLegalMoves();
         double squareSize = chessboard.getSquareSize();
         Rectangle currentSquare = new Rectangle(squareSize, squareSize);
-        currentSquare.setFill(Color.web("#FEF250", 0.6));
+        currentSquare.setFill(Color.web("#FEF250", 0.5));
         currentSquare.setSmooth(false);
         currentSquare.setLayoutX(piece.getCurrentX());
         currentSquare.setLayoutY(piece.getCurrentY());

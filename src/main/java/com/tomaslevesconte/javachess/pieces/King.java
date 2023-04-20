@@ -26,7 +26,6 @@ public class King extends Piece {
         legalMoves.addAll(evaluateDiagonalSquares(SQUARES_IT_CAN_MOVE));
         legalMoves.addAll(evaluateCastleSquares());
 
-
         ArrayList<Square> opponentsMoves = getOpponentsMoves(); // List of opponent's moves
         ArrayList<Square> curatedMoves = new ArrayList<>(legalMoves); // List of legal moves - opponent's moves
         curatedMoves.removeAll(opponentsMoves); // Stop the king from putting itself in check

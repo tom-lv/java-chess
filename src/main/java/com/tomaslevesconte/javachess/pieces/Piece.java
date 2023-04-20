@@ -242,6 +242,10 @@ public abstract class Piece extends Rectangle {
         return diagonalSquares;
     }
 
+    public Square getSquare() {
+        return Square.findSquare(getCurrentX(), getCurrentY(), getChessboard().getSquareSize());
+    }
+
     public PieceType getPieceType() {
         return pieceType;
     }
