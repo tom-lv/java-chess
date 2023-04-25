@@ -30,6 +30,7 @@ public class PieceBuilder {
 
         piece.setOnMousePressed(mouseEvent -> {
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
+                piece.setSelected(true);
                 showLegalMoves(piece);
                 piece.setCursor(Cursor.CLOSED_HAND);
                 piece.toFront(); // Move piece in front of its siblings in terms of z-order
@@ -40,30 +41,28 @@ public class PieceBuilder {
 
         piece.setOnMouseDragged(mouseEvent -> {
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-                piece.setCursor(Cursor.CLOSED_HAND);
                 piece.setLayoutX(mouseEvent.getSceneX() - (piece.getWidth() / 2)); // - half the size of the image to find the center
                 piece.setLayoutY(mouseEvent.getSceneY() - (piece.getHeight() / 2));
             }
         });
 
         piece.setOnMouseReleased(mouseEvent -> {
-            if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-                piece.setCursor(Cursor.OPEN_HAND);
-                double newX = chessboard.findClosestSquare(mouseEvent.getSceneX(), chessboard.getPossibleXAndYCoordinates());
-                double newY = chessboard.findClosestSquare(mouseEvent.getSceneY(), chessboard.getPossibleXAndYCoordinates());
-                double oldX = piece.getCurrentX();
-                double oldY = piece.getCurrentY();
-                Piece capturedPiece = chessboard.getPiece(newX, newY);
-                if (chessboard.getPiecePositions().get(currentPieceIndex).move(newX, newY)) {
-                    attemptCapture(capturedPiece); // If capturing
-                    attemptCastle(oldX, oldY, piece); // If king
-                    piece.setLayoutX(newX); // Update pos on board
-                    piece.setLayoutY(newY); // Update pos on board
-                    hideLegalMoves(); // Once placed, hide legal moves
-                } else {
-                    piece.setLayoutX(piece.getCurrentX());
-                    piece.setLayoutY(piece.getCurrentY());
-                }
+            piece.setCursor(Cursor.OPEN_HAND);
+            double newX = chessboard.findClosestSquare(mouseEvent.getSceneX(), chessboard.getPossibleXAndYCoordinates());
+            double newY = chessboard.findClosestSquare(mouseEvent.getSceneY(), chessboard.getPossibleXAndYCoordinates());
+            double oldX = piece.getCurrentX();
+            double oldY = piece.getCurrentY();
+            Piece enemyPiece = chessboard.getPiece(newX, newY); // If exists, else null
+            if (mouseEvent.getButton().equals(MouseButton.PRIMARY)
+                    && chessboard.getPiecePositions().get(currentPieceIndex).move(newX, newY)) {
+                attemptCapture(enemyPiece); // If exists
+                attemptCastle(oldX, oldY, piece); // If possible and piece equals king
+                piece.setLayoutX(newX); // Update pos on board
+                piece.setLayoutY(newY); // Update pos on board
+                hideLegalMoves(); // Once placed, hide legal moves
+            } else {
+                piece.setLayoutX(piece.getCurrentX());
+                piece.setLayoutY(piece.getCurrentY());
             }
         });
 
