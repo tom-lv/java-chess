@@ -27,7 +27,7 @@ public class PieceBuilder {
 
     private void addPiece(Piece piece) {
         int currentPieceIndex = pieceIndex++;
-        
+        // Comment 
         piece.setOnMousePressed(mouseEvent -> {
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                 piece.setSelected(true);
