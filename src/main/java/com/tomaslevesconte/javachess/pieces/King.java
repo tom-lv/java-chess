@@ -30,15 +30,17 @@ public class King extends Piece {
 
     private ArrayList<Square> getOpponentsMoves() {
         ArrayList<Square> opponentsMoves = new ArrayList<>();
+        // For each piece on the board
         getChessboard().getPiecePositions().forEach(piece -> {
-            if (piece.getPieceColour() != getPieceColour()
-                    && piece.getPieceType().equals(PieceType.KING)) {
+            // If the piece's colour is different & =='King'
+            if (piece.getPieceColour() != getPieceColour() && piece.getPieceType().equals(PieceType.KING)) {
                 opponentsMoves.addAll(piece.evaluateVerticalSquares(SQUARES_IT_CAN_MOVE));
                 opponentsMoves.addAll(piece.evaluateHorizontalSquares(SQUARES_IT_CAN_MOVE));
                 opponentsMoves.addAll(piece.evaluateDiagonalSquares(SQUARES_IT_CAN_MOVE));
-            } else if (piece.getPieceColour() != getPieceColour()
-                    && piece.getPieceType().equals(PieceType.PAWN)) {
+                // If the piece's colour is different & == 'Pawn'
+            } else if (piece.getPieceColour() != getPieceColour() && piece.getPieceType().equals(PieceType.PAWN)) {
                 opponentsMoves.addAll(getEnemyPawnAttackPatterns(piece));
+                // Every piece that != 'King' or 'Pawn'
             } else {
                 opponentsMoves.addAll(piece.getLegalMoves());
             }
@@ -49,9 +51,10 @@ public class King extends Piece {
     private ArrayList<Square> getEnemyPawnAttackPatterns(Piece piece) {
         ArrayList<Square> pawnsAttackPatterns = new ArrayList<>();
         double squareSize = getChessboard().getSquareSize();
-        double multiplier = piece.getPieceColour().equals(PieceColour.WHITE) ? -squareSize : squareSize;
+        double multiplier = piece.getPieceColour().equals(PieceColour.WHITE) ? -squareSize : squareSize; // Pawns move in different directions depending on colour
         // Evaluate Pawn's x coordinate down (<--) for capturing
         double[] nextDiagonal = {(piece.getCurrentX() - squareSize), (piece.getCurrentY() + multiplier)};
+        // Do not evaluate a Pawn's moves if they are on the edge of the board
         if (piece.getCurrentX() == 0
                 || piece.getPieceColour().equals(PieceColour.WHITE) && piece.getCurrentY() == 0
                 || piece.getPieceColour().equals(PieceColour.BLACK) && piece.getCurrentY() == (squareSize * 7)) {
@@ -61,6 +64,7 @@ public class King extends Piece {
         }
         // Evaluate Pawn's x coordinate up (-->) for capturing
         nextDiagonal = new double[]{(piece.getCurrentX() + squareSize), (piece.getCurrentY() + multiplier)};
+        // Do not evaluate a Pawn's moves if they are on the edge of the board 
         if (piece.getCurrentX() == (squareSize * 7)
                 || piece.getPieceColour().equals(PieceColour.WHITE) && piece.getCurrentY() == 0
                 || piece.getPieceColour().equals(PieceColour.BLACK) && piece.getCurrentY() == (squareSize * 7)) {
