@@ -24,26 +24,22 @@ public class King extends Piece {
         legalMoves.addAll(evaluateHorizontalSquares(SQUARES_IT_CAN_MOVE));
         legalMoves.addAll(evaluateDiagonalSquares(SQUARES_IT_CAN_MOVE));
         legalMoves.addAll(evaluateCastleSquares());
-        // Stop the King from putting itself in check by removing the opponent's moves from the possible pool
-        legalMoves.removeAll(getOpponentsMoves());
+        legalMoves.removeAll(getOpponentsMoves()); // Stop the King from putting itself in check by removing the opponent's moves from the possible pool
         return legalMoves;
     }
 
     private ArrayList<Square> getOpponentsMoves() {
-        ArrayList<Square> opponentsMoves = new ArrayList<>(); // List of opponent's moves
+        ArrayList<Square> opponentsMoves = new ArrayList<>();
         getChessboard().getPiecePositions().forEach(piece -> {
-            // If piece is of the opposite colour & is not a Pawn or a King
             if (piece.getPieceColour() != getPieceColour()
                     && piece.getPieceType() != PieceType.KING
                     && piece.getPieceType() != PieceType.PAWN) {
-                opponentsMoves.addAll(piece.getLegalMoves()); // Add all opposing pieces' moves (except for king & Pawn)
-                // If piece is of the opposite colour & piece is a King
+                opponentsMoves.addAll(piece.getLegalMoves());
             } else if (piece.getPieceColour() != getPieceColour()
                     && piece.getPieceType().equals(PieceType.KING)) {
                 opponentsMoves.addAll(piece.evaluateVerticalSquares(SQUARES_IT_CAN_MOVE));
                 opponentsMoves.addAll(piece.evaluateHorizontalSquares(SQUARES_IT_CAN_MOVE));
                 opponentsMoves.addAll(piece.evaluateDiagonalSquares(SQUARES_IT_CAN_MOVE));
-                // If piece is different & piece is a Pawn
             } else if (piece.getPieceColour() != getPieceColour()
                     && piece.getPieceType().equals(PieceType.PAWN)) {
                 opponentsMoves.addAll(getEnemyPawnAttackPatterns(piece));
@@ -102,7 +98,6 @@ public class King extends Piece {
             }
             nextX -= squareSize;
         }
-
         // Evaluate King's side
         nextX = getChessboard().findNextHorizontalSquare(false, getCurrentX());
         emptySquareCounter = 0;
