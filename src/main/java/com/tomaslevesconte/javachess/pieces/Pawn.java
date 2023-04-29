@@ -22,10 +22,9 @@ public class Pawn extends Piece {
         ArrayList<Square> legalMoves = new ArrayList<>();
         double squareSize = getChessboard().getSquareSize();
         double multiplier = getPieceColour().equals(PieceColour.WHITE) ? -squareSize : squareSize;
-        boolean direction = getPieceColour().equals(PieceColour.WHITE);
 
-        // Evaluate up/down squares (depending on pieceColour)
-        double nextY = getChessboard().findNextVerticalSquare(getPieceColour(), getCurrentY());
+        // Evaluate y coordinate up/down squares (depending on pieceColour)
+        double nextY = (getCurrentY() + multiplier);
         for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
             if (!hasMoved() && !getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
                 legalMoves.add(Square.findSquare(getCurrentX(), nextY, squareSize));
@@ -40,8 +39,8 @@ public class Pawn extends Piece {
             nextY += multiplier;
         }
 
-        // Evaluate diagonal left for capturing
-        double[] nextDiagonal = getChessboard().findNextDiagonal(direction, true, new double[]{getCurrentX(), getCurrentY()});
+        // Evaluate x coordinate down (<--) for capturing
+        double[] nextDiagonal = {(getCurrentX() - squareSize), (getCurrentY() + multiplier)};
         if (getPieceColour().equals(PieceColour.WHITE)
                 && getCurrentY() == 0
                 || getPieceColour().equals(PieceColour.BLACK)
@@ -54,8 +53,8 @@ public class Pawn extends Piece {
             legalMoves.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
         }
 
-        // Evaluate diagonal right for capturing
-        nextDiagonal = getChessboard().findNextDiagonal(direction, false, new double[]{getCurrentX(), getCurrentY()});
+        // Evaluate x coordinate up (-->) for capturing
+        nextDiagonal = new double[]{(getCurrentX() + squareSize), (getCurrentY() + multiplier)};
         if (getPieceColour().equals(PieceColour.WHITE)
                 && getCurrentY() == 0
                 || getPieceColour().equals(PieceColour.BLACK)
