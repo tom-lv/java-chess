@@ -35,6 +35,7 @@ public class King extends Piece {
     private ArrayList<Square> getOpponentsMoves() {
         ArrayList<Square> opponentsMoves = new ArrayList<>(); // List of opponent's moves
         double squareSize = getChessboard().getSquareSize();
+
         getChessboard().getPiecePositions().forEach(piece -> {
             // If piece is of the opposite colour & is not a pawn or a king
             if (piece.getPieceColour() != getPieceColour()
@@ -53,27 +54,26 @@ public class King extends Piece {
                 // If piece is of the opposite colour & piece is a pawn
             } else if (piece.getPieceColour() != getPieceColour()
                     && piece.getPieceType().equals(PieceType.PAWN)) {
-                boolean direction = piece.getPieceColour().equals(PieceColour.WHITE);
+                double multiplier = piece.getPieceColour().equals(PieceColour.WHITE) ? -squareSize : squareSize;
 
-                // Add opposing pawns attack patterns (left)
-                double[] nextDiagonal = getChessboard().findNextDiagonal(direction, true, new double[]{piece.getCurrentX(), piece.getCurrentY()});
-                if (piece.getPieceColour() != PieceColour.WHITE
-                        && piece.getCurrentY() != 0
-                        || piece.getPieceColour() != PieceColour.BLACK
-                        && piece.getCurrentY() != (squareSize * 7)
-                        || piece.getCurrentX() != 0
-                        && nextDiagonal[0] != 0) {
+                // Evaluate pawn's x coordinate down (<--) for capturing
+                double[] nextDiagonal = {(piece.getCurrentX() - squareSize), (piece.getCurrentY() + multiplier)};
+                if (piece.getCurrentX() == 0
+                        || piece.getPieceColour().equals(PieceColour.WHITE) && piece.getCurrentY() == 0
+                        || piece.getPieceColour().equals(PieceColour.BLACK) && piece.getCurrentY() == (squareSize * 7)) {
+                    // Do nothing
+                } else {
                     opponentsMoves.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
                 }
 
-                // Add opposing pawns attack patterns (right)
-                nextDiagonal = getChessboard().findNextDiagonal(direction, false, new double[]{piece.getCurrentX(), piece.getCurrentY()});
-                if (piece.getPieceColour() != PieceColour.WHITE
-                        && piece.getCurrentY() != 0
-                        || piece.getPieceColour() != PieceColour.BLACK
-                        && piece.getCurrentY() != (squareSize * 7)
-                        || piece.getCurrentX() != (squareSize * 7)
-                        && nextDiagonal[0] != 0) {
+                // Evaluate pawn's x coordinate up (-->) for capturing
+                nextDiagonal = new double[]{(piece.getCurrentX() + squareSize), (piece.getCurrentY() + multiplier)};
+                if (piece.getCurrentX() == (squareSize * 7)
+                        || piece.getPieceColour().equals(PieceColour.WHITE) && piece.getCurrentY() == 0
+                        || piece.getPieceColour().equals(PieceColour.BLACK) && piece.getCurrentY() == (squareSize * 7)) {
+                    // Do nothing
+                } else {
+                    System.out.println(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
                     opponentsMoves.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
                 }
             }

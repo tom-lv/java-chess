@@ -41,12 +41,9 @@ public class Pawn extends Piece {
 
         // Evaluate x coordinate down (<--) for capturing
         double[] nextDiagonal = {(getCurrentX() - squareSize), (getCurrentY() + multiplier)};
-        if (getPieceColour().equals(PieceColour.WHITE)
-                && getCurrentY() == 0
-                || getPieceColour().equals(PieceColour.BLACK)
-                && getCurrentY() == (squareSize * 7)
-                || getCurrentX() == 0
-                && nextDiagonal[0] == 0) {
+        if (getCurrentX() == 0
+                || getPieceColour().equals(PieceColour.WHITE) && getCurrentY() == 0
+                || getPieceColour().equals(PieceColour.BLACK) && getCurrentY() == (squareSize * 7)) {
             // Do nothing
         } else if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])
                 && getPieceColour() != getChessboard().getPiece(nextDiagonal[0], nextDiagonal[1]).getPieceColour()) {
@@ -55,12 +52,9 @@ public class Pawn extends Piece {
 
         // Evaluate x coordinate up (-->) for capturing
         nextDiagonal = new double[]{(getCurrentX() + squareSize), (getCurrentY() + multiplier)};
-        if (getPieceColour().equals(PieceColour.WHITE)
-                && getCurrentY() == 0
-                || getPieceColour().equals(PieceColour.BLACK)
-                && getCurrentY() == (squareSize * 7)
-                || getCurrentX() == (squareSize * 7)
-                && nextDiagonal[0] == 0) {
+        if (getCurrentX() == (squareSize * 7)
+                || getPieceColour().equals(PieceColour.WHITE) && getCurrentY() == 0
+                || getPieceColour().equals(PieceColour.BLACK) && getCurrentY() == (squareSize * 7)) {
             // Do nothing
         } else if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])
                 && getPieceColour() != getChessboard().getPiece(nextDiagonal[0], nextDiagonal[1]).getPieceColour()) {
