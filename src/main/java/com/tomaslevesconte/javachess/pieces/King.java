@@ -20,65 +20,67 @@ public class King extends Piece {
     @Override
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
-        // Add all legal moves for the king (can move one square in every direction)
         legalMoves.addAll(evaluateVerticalSquares(SQUARES_IT_CAN_MOVE));
         legalMoves.addAll(evaluateHorizontalSquares(SQUARES_IT_CAN_MOVE));
         legalMoves.addAll(evaluateDiagonalSquares(SQUARES_IT_CAN_MOVE));
         legalMoves.addAll(evaluateCastleSquares());
-
-        ArrayList<Square> opponentsMoves = getOpponentsMoves(); // List of opponent's moves
-        ArrayList<Square> curatedMoves = new ArrayList<>(legalMoves); // List of legal moves - opponent's moves
-        curatedMoves.removeAll(opponentsMoves); // Stop the king from putting itself in check
-        return curatedMoves;
+        // Stop the King from putting itself in check by removing the opponent's moves from the possible pool
+        legalMoves.removeAll(getOpponentsMoves());
+        return legalMoves;
     }
 
     private ArrayList<Square> getOpponentsMoves() {
         ArrayList<Square> opponentsMoves = new ArrayList<>(); // List of opponent's moves
-        double squareSize = getChessboard().getSquareSize();
 
         getChessboard().getPiecePositions().forEach(piece -> {
-            // If piece is of the opposite colour & is not a pawn or a king
+            // If piece is of the opposite colour & is not a Pawn or a King
             if (piece.getPieceColour() != getPieceColour()
                     && piece.getPieceType() != PieceType.KING
                     && piece.getPieceType() != PieceType.PAWN) {
-                opponentsMoves.addAll(piece.getLegalMoves()); // Add all opposing pieces' moves (except for king & pawn)
+                opponentsMoves.addAll(piece.getLegalMoves()); // Add all opposing pieces' moves (except for king & Pawn)
 
-                // If piece is of the opposite colour & piece is a king
+                // If piece is of the opposite colour & piece is a King
             } else if (piece.getPieceColour() != getPieceColour()
                     && piece.getPieceType().equals(PieceType.KING)) {
-                // Add opposing king's attack patterns
                 opponentsMoves.addAll(piece.evaluateVerticalSquares(SQUARES_IT_CAN_MOVE));
                 opponentsMoves.addAll(piece.evaluateHorizontalSquares(SQUARES_IT_CAN_MOVE));
                 opponentsMoves.addAll(piece.evaluateDiagonalSquares(SQUARES_IT_CAN_MOVE));
 
-                // If piece is of the opposite colour & piece is a pawn
+                // If piece is different & piece is a Pawn
             } else if (piece.getPieceColour() != getPieceColour()
                     && piece.getPieceType().equals(PieceType.PAWN)) {
-                double multiplier = piece.getPieceColour().equals(PieceColour.WHITE) ? -squareSize : squareSize;
-
-                // Evaluate pawn's x coordinate down (<--) for capturing
-                double[] nextDiagonal = {(piece.getCurrentX() - squareSize), (piece.getCurrentY() + multiplier)};
-                if (piece.getCurrentX() == 0
-                        || piece.getPieceColour().equals(PieceColour.WHITE) && piece.getCurrentY() == 0
-                        || piece.getPieceColour().equals(PieceColour.BLACK) && piece.getCurrentY() == (squareSize * 7)) {
-                    // Do nothing
-                } else {
-                    opponentsMoves.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
-                }
-
-                // Evaluate pawn's x coordinate up (-->) for capturing
-                nextDiagonal = new double[]{(piece.getCurrentX() + squareSize), (piece.getCurrentY() + multiplier)};
-                if (piece.getCurrentX() == (squareSize * 7)
-                        || piece.getPieceColour().equals(PieceColour.WHITE) && piece.getCurrentY() == 0
-                        || piece.getPieceColour().equals(PieceColour.BLACK) && piece.getCurrentY() == (squareSize * 7)) {
-                    // Do nothing
-                } else {
-                    System.out.println(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
-                    opponentsMoves.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
-                }
+                opponentsMoves.addAll(getEnemyPawnAttackPatterns(piece));
             }
         });
+
         return opponentsMoves;
+    }
+
+    private ArrayList<Square> getEnemyPawnAttackPatterns(Piece piece) {
+        ArrayList<Square> pawnsAttackPatterns = new ArrayList<>();
+        double squareSize = getChessboard().getSquareSize();
+        double multiplier = piece.getPieceColour().equals(PieceColour.WHITE) ? -squareSize : squareSize;
+
+        // Evaluate Pawn's x coordinate down (<--) for capturing
+        double[] nextDiagonal = {(piece.getCurrentX() - squareSize), (piece.getCurrentY() + multiplier)};
+        if (piece.getCurrentX() == 0
+                || piece.getPieceColour().equals(PieceColour.WHITE) && piece.getCurrentY() == 0
+                || piece.getPieceColour().equals(PieceColour.BLACK) && piece.getCurrentY() == (squareSize * 7)) {
+            // Do nothing
+        } else {
+            pawnsAttackPatterns.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
+        }
+
+        // Evaluate Pawn's x coordinate up (-->) for capturing
+        nextDiagonal = new double[]{(piece.getCurrentX() + squareSize), (piece.getCurrentY() + multiplier)};
+        if (piece.getCurrentX() == (squareSize * 7)
+                || piece.getPieceColour().equals(PieceColour.WHITE) && piece.getCurrentY() == 0
+                || piece.getPieceColour().equals(PieceColour.BLACK) && piece.getCurrentY() == (squareSize * 7)) {
+            // Do nothing
+        } else {
+            pawnsAttackPatterns.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
+        }
+        return pawnsAttackPatterns;
     }
 
     private ArrayList<Square> evaluateCastleSquares() {
@@ -86,7 +88,7 @@ public class King extends Piece {
         ArrayList<Piece> rooks = getChessboard().getRooks(getPieceColour());
         double squareSize = getChessboard().getSquareSize();
 
-        // Evaluate queen's side
+        // Evaluate Queen's side
         double nextX = getChessboard().findNextHorizontalSquare(true, getCurrentX());
         int emptySquareCounter = 0;
         for (int i = 0; i < 4; i++) {
@@ -108,7 +110,7 @@ public class King extends Piece {
             nextX -= squareSize;
         }
 
-        // Evaluate king's side
+        // Evaluate King's side
         nextX = getChessboard().findNextHorizontalSquare(false, getCurrentX());
         emptySquareCounter = 0;
         for (int i = 0; i < 3; i++) {
