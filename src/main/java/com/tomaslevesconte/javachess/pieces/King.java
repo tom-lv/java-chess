@@ -32,10 +32,6 @@ public class King extends Piece {
         ArrayList<Square> opponentsMoves = new ArrayList<>();
         getChessboard().getPiecePositions().forEach(piece -> {
             if (piece.getPieceColour() != getPieceColour()
-                    && piece.getPieceType() != PieceType.KING
-                    && piece.getPieceType() != PieceType.PAWN) {
-                opponentsMoves.addAll(piece.getLegalMoves());
-            } else if (piece.getPieceColour() != getPieceColour()
                     && piece.getPieceType().equals(PieceType.KING)) {
                 opponentsMoves.addAll(piece.evaluateVerticalSquares(SQUARES_IT_CAN_MOVE));
                 opponentsMoves.addAll(piece.evaluateHorizontalSquares(SQUARES_IT_CAN_MOVE));
@@ -43,6 +39,8 @@ public class King extends Piece {
             } else if (piece.getPieceColour() != getPieceColour()
                     && piece.getPieceType().equals(PieceType.PAWN)) {
                 opponentsMoves.addAll(getEnemyPawnAttackPatterns(piece));
+            } else {
+                opponentsMoves.addAll(piece.getLegalMoves());
             }
         });
         return opponentsMoves;
