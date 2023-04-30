@@ -37,14 +37,17 @@ public class King extends Piece {
                 opponentsMoves.addAll(piece.evaluateVerticalSquares(SQUARES_IT_CAN_MOVE));
                 opponentsMoves.addAll(piece.evaluateHorizontalSquares(SQUARES_IT_CAN_MOVE));
                 opponentsMoves.addAll(piece.evaluateDiagonalSquares(SQUARES_IT_CAN_MOVE));
+
                 // If the piece's colour is different & == 'Pawn'
             } else if (piece.getPieceColour() != getPieceColour() && piece.getPieceType().equals(PieceType.PAWN)) {
                 opponentsMoves.addAll(getEnemyPawnAttackPatterns(piece));
-                // Every piece that != 'King' or 'Pawn'
-            } else {
+
+                // Every other enemy piece that != 'King' or 'Pawn'
+            } else if (piece.getPieceColour() != getPieceColour()){
                 opponentsMoves.addAll(piece.getLegalMoves());
             }
         });
+
         return opponentsMoves;
     }
 
@@ -52,6 +55,7 @@ public class King extends Piece {
         ArrayList<Square> pawnsAttackPatterns = new ArrayList<>();
         double squareSize = getChessboard().getSquareSize();
         double multiplier = piece.getPieceColour().equals(PieceColour.WHITE) ? -squareSize : squareSize; // Pawns move in different directions depending on colour
+
         // Evaluate Pawn's x coordinate down (<--) for capturing
         double[] nextDiagonal = {(piece.getCurrentX() - squareSize), (piece.getCurrentY() + multiplier)};
         // Do not evaluate a Pawn's moves if they are on the edge of the board
@@ -62,9 +66,10 @@ public class King extends Piece {
         } else {
             pawnsAttackPatterns.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
         }
+
         // Evaluate Pawn's x coordinate up (-->) for capturing
         nextDiagonal = new double[]{(piece.getCurrentX() + squareSize), (piece.getCurrentY() + multiplier)};
-        // Do not evaluate a Pawn's moves if they are on the edge of the board 
+        // Do not evaluate a Pawn's moves if they are on the edge of the board
         if (piece.getCurrentX() == (squareSize * 7)
                 || piece.getPieceColour().equals(PieceColour.WHITE) && piece.getCurrentY() == 0
                 || piece.getPieceColour().equals(PieceColour.BLACK) && piece.getCurrentY() == (squareSize * 7)) {
@@ -72,6 +77,7 @@ public class King extends Piece {
         } else {
             pawnsAttackPatterns.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
         }
+
         return pawnsAttackPatterns;
     }
 
@@ -79,6 +85,7 @@ public class King extends Piece {
         ArrayList<Square> castleSquares = new ArrayList<>();
         ArrayList<Piece> rooks = getChessboard().getRooks(getPieceColour());
         double squareSize = getChessboard().getSquareSize();
+
         // Evaluate Queen's side
         double nextX = getChessboard().findNextHorizontalSquare(true, getCurrentX());
         int emptySquareCounter = 0;
@@ -100,6 +107,7 @@ public class King extends Piece {
             }
             nextX -= squareSize;
         }
+
         // Evaluate King's side
         nextX = getChessboard().findNextHorizontalSquare(false, getCurrentX());
         emptySquareCounter = 0;
@@ -121,6 +129,7 @@ public class King extends Piece {
             }
             nextX += squareSize;
         }
+
         return castleSquares;
     }
 }
