@@ -89,47 +89,30 @@ public class King extends Piece {
         double squareSize = getChessboard().getSquareSize();
 
         // Evaluate Queen's side
-        double nextX = getChessboard().findNextHorizontalSquare(true, getCurrentX());
-        int emptySquareCounter = 0;
-        for (int i = 0; i < 4; i++) {
-            if (getCurrentX() == 0 || nextX < 0) {
-                break;
-            } else if (!hasMoved()
-                    && !rooks.get(0).hasMoved()
-                    && emptySquareCounter == 3
-                    && getChessboard().isSquareOccupied(nextX, getCurrentY())
-                    && getChessboard().getPiece(nextX, getCurrentY()).getPieceType().equals(PieceType.ROOK)) {
-                if (getPieceColour().equals(PieceColour.WHITE)) {
-                    castleSquares.add(Square.C1);
-                } else {
-                    castleSquares.add(Square.C8);
-                }
-            } else if (!getChessboard().isSquareOccupied(nextX, getCurrentY())) {
-                emptySquareCounter++;
-            }
-            nextX -= squareSize;
+        Square[] queenSide = getPieceColour().equals(PieceColour.WHITE)
+                ? new Square[]{Square.B1, Square.C1, Square.D1}
+                : new Square[]{Square.B8, Square.C8, Square.D8};
+        if (hasMoved() || rooks.get(0).hasMoved()
+                || getChessboard().isSquareOccupied(queenSide[0].getX(squareSize), queenSide[0].getY(squareSize))
+                || getChessboard().isSquareOccupied(queenSide[1].getX(squareSize), queenSide[1].getY(squareSize))
+                || getChessboard().isSquareOccupied(queenSide[2].getX(squareSize), queenSide[2].getY(squareSize))) {
+            // Do nothing
+        } else {
+            Square castleSquare = getPieceColour().equals(PieceColour.WHITE) ? Square.C1 : Square.C8;
+            castleSquares.add(castleSquare);
         }
 
         // Evaluate King's side
-        nextX = getChessboard().findNextHorizontalSquare(false, getCurrentX());
-        emptySquareCounter = 0;
-        for (int i = 0; i < 3; i++) {
-            if (getCurrentX() == 0 || nextX < 0) {
-                break;
-            } else if (!hasMoved()
-                    && !rooks.get(1).hasMoved()
-                    && emptySquareCounter == 2
-                    && getChessboard().isSquareOccupied(nextX, getCurrentY())
-                    && getChessboard().getPiece(nextX, getCurrentY()).getPieceType().equals(PieceType.ROOK)) {
-                if (getPieceColour().equals(PieceColour.WHITE)) {
-                    castleSquares.add(Square.G1);
-                } else {
-                    castleSquares.add(Square.G8);
-                }
-            } else if (!getChessboard().isSquareOccupied(nextX, getCurrentY())) {
-                emptySquareCounter++;
-            }
-            nextX += squareSize;
+        Square[] kingSide = getPieceColour().equals(PieceColour.WHITE)
+                ? new Square[]{Square.F1, Square.G1}
+                : new Square[]{Square.F8, Square.G8};
+        if (hasMoved() || rooks.get(1).hasMoved()
+                || getChessboard().isSquareOccupied(kingSide[0].getX(squareSize), kingSide[0].getY(squareSize))
+                || getChessboard().isSquareOccupied(kingSide[1].getX(squareSize), kingSide[1].getY(squareSize))) {
+            // Do nothing
+        } else {
+            Square castleSquare = getPieceColour().equals(PieceColour.WHITE) ? Square.G1 : Square.G8;
+            castleSquares.add(castleSquare);
         }
 
         return castleSquares;
