@@ -17,18 +17,21 @@ public abstract class Piece extends Rectangle {
     private static final String IMAGE_PATH = "com/tomaslevesconte/javachess/pieces/";
     private static final String IMAGE_TYPE = ".png";
     
-    private PieceType pieceType;
+    private final PieceType pieceType;
     private final PieceColour pieceColour;
     private double currentX;
     private double currentY;
+    private final int squaresItCanMove;
     private final Chessboard chessboard;
     private boolean hasMoved;
     private boolean isSelected;
 
-    public Piece(PieceColour pieceColour, Square square, Chessboard chessboard) {
+    public Piece(PieceType pieceType, PieceColour pieceColour, Square square, int squaresItCanMove, Chessboard chessboard) {
+        this.pieceType = pieceType;
         this.pieceColour = pieceColour;
         this.currentX = square.getX(chessboard.getSquareSize());
         this.currentY = square.getY(chessboard.getSquareSize());
+        this.squaresItCanMove = squaresItCanMove;
         this.chessboard = chessboard;
         this.hasMoved = false;
         this.isSelected = false;
@@ -40,7 +43,7 @@ public abstract class Piece extends Rectangle {
         setHeight(getChessboard().getSquareSize());
         setLayoutX(currentX);
         setLayoutY(currentY);
-//        setSmooth(false);
+        setSmooth(false);
         char pieceInitial = getPieceType().equals(PieceType.KNIGHT)
                 ? getPieceType().toString().toLowerCase().charAt(1)
                 : getPieceType().toString().toLowerCase().charAt(0);
@@ -74,13 +77,13 @@ public abstract class Piece extends Rectangle {
 
     public abstract ArrayList<Square> getLegalMoves();
 
-    public ArrayList<Square> evaluateVerticalSquares(int numOfSquares) {
+    public ArrayList<Square> evaluateVerticalSquares() {
         ArrayList<Square> verticalSquares = new ArrayList<>();
         double squareSize = getChessboard().getSquareSize();
 
         // Evaluate up squares
         double nextY = getChessboard().findNextVerticalSquare(true, getCurrentY());
-        for (int i = 0; i < numOfSquares; i++) {
+        for (int i = 0; i < getSquaresItCanMove(); i++) {
             if (getCurrentY() == 0 || nextY < 0) {
                 break;
             } else if (getChessboard().isSquareOccupied(getCurrentX(), nextY)
@@ -97,7 +100,7 @@ public abstract class Piece extends Rectangle {
 
         // Evaluate down squares
         nextY = getChessboard().findNextVerticalSquare(false, getCurrentY());
-        for (int i = 0; i < numOfSquares; i++) {
+        for (int i = 0; i < getSquaresItCanMove(); i++) {
             if (getCurrentY() == (squareSize * 7) || nextY > (squareSize * 7)) {
                 break;
             } else if (getChessboard().isSquareOccupied(getCurrentX(), nextY)
@@ -114,13 +117,13 @@ public abstract class Piece extends Rectangle {
         return verticalSquares;
     }
 
-    public ArrayList<Square> evaluateHorizontalSquares(int numOfSquares) {
+    public ArrayList<Square> evaluateHorizontalSquares() {
         ArrayList<Square> horizontalSquares = new ArrayList<>();
         double squareSize = getChessboard().getSquareSize();
 
         // Evaluate left squares
         double nextX = getChessboard().findNextHorizontalSquare(true, getCurrentX());
-        for (int i = 0; i < numOfSquares; i++) {
+        for (int i = 0; i < getSquaresItCanMove(); i++) {
             if (getCurrentX() == 0 || nextX < 0) {
                 break;
             } else if (getChessboard().isSquareOccupied(nextX, getCurrentY())
@@ -137,7 +140,7 @@ public abstract class Piece extends Rectangle {
 
         // Evaluate right squares
         nextX = getChessboard().findNextHorizontalSquare(false, getCurrentX());
-        for (int i = 0; i < numOfSquares; i++) {
+        for (int i = 0; i < getSquaresItCanMove(); i++) {
             if (getCurrentX() == (squareSize * 7) || nextX > (squareSize * 7)) {
                 break;
             } else if (getChessboard().isSquareOccupied(nextX, getCurrentY())
@@ -154,13 +157,13 @@ public abstract class Piece extends Rectangle {
         return horizontalSquares;
     }
 
-    public ArrayList<Square> evaluateDiagonalSquares(int numOfSquares) {
+    public ArrayList<Square> evaluateDiagonalSquares() {
         ArrayList<Square> diagonalSquares = new ArrayList<>();
         double squareSize = getChessboard().getSquareSize();
 
         // Evaluate diagonal up/left squares
         double[] nextDiagonal = getChessboard().findNextDiagonal(true, true, new double[]{getCurrentX(), getCurrentY()});
-        for (int i = 0; i < numOfSquares; i++) {
+        for (int i = 0; i < getSquaresItCanMove(); i++) {
             if (getCurrentX() == 0
                     || getCurrentY() == 0
                     || nextDiagonal[0] < 0
@@ -181,7 +184,7 @@ public abstract class Piece extends Rectangle {
 
         // Evaluate diagonal up/right squares
         nextDiagonal = getChessboard().findNextDiagonal(true, false, new double[]{getCurrentX(), getCurrentY()});
-        for (int i = 0; i < numOfSquares; i++) {
+        for (int i = 0; i < getSquaresItCanMove(); i++) {
             if (getCurrentX() == (squareSize * 7)
                     || getCurrentY() == 0
                     || nextDiagonal[0] > (squareSize * 7)
@@ -202,7 +205,7 @@ public abstract class Piece extends Rectangle {
 
         // Evaluate diagonal down/left squares
         nextDiagonal = getChessboard().findNextDiagonal(false, true, new double[]{getCurrentX(), getCurrentY()});
-        for (int i = 0; i < numOfSquares; i++) {
+        for (int i = 0; i < getSquaresItCanMove(); i++) {
             if (getCurrentY() == (squareSize * 7)
                     || getCurrentX() == 0
                     || nextDiagonal[0] < 0
@@ -223,7 +226,7 @@ public abstract class Piece extends Rectangle {
 
         // Evaluate diagonal down/right squares
         nextDiagonal = getChessboard().findNextDiagonal(false, false, new double[]{getCurrentX(), getCurrentY()});
-        for (int i = 0; i < numOfSquares; i++) {
+        for (int i = 0; i < getSquaresItCanMove(); i++) {
             if (getCurrentY() == (squareSize * 7)
                     || getCurrentX() == (squareSize * 7)
                     || nextDiagonal[0] > (squareSize * 7)
@@ -252,10 +255,6 @@ public abstract class Piece extends Rectangle {
         return pieceType;
     }
 
-    public void setPieceType(PieceType pieceType) {
-        this.pieceType = pieceType;
-    }
-
     public PieceColour getPieceColour() {
         return pieceColour;
     }
@@ -274,6 +273,10 @@ public abstract class Piece extends Rectangle {
 
     public void setCurrentY(double currentY) {
         this.currentY = currentY;
+    }
+
+    public int getSquaresItCanMove() {
+        return squaresItCanMove;
     }
 
     public Chessboard getChessboard() {

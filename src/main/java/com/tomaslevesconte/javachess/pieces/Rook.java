@@ -12,16 +12,15 @@ public class Rook extends Piece {
     private static final int SQUARES_IT_CAN_MOVE = 8;
 
     public Rook(PieceColour pieceColour, Square square, Chessboard chessboard) {
-        super(pieceColour, square, chessboard);
-        setPieceType(PieceType.ROOK);
+        super(PieceType.ROOK, pieceColour, square, SQUARES_IT_CAN_MOVE, chessboard);
         createPiece();
     }
 
     @Override
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
-        legalMoves.addAll(evaluateVerticalSquares(SQUARES_IT_CAN_MOVE));
-        legalMoves.addAll(evaluateHorizontalSquares(SQUARES_IT_CAN_MOVE));
+        legalMoves.addAll(evaluateVerticalSquares());
+        legalMoves.addAll(evaluateHorizontalSquares());
         return legalMoves;
     }
 }

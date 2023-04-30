@@ -12,8 +12,7 @@ public class Pawn extends Piece {
     private static final int SQUARES_IT_CAN_MOVE = 2;
 
     public Pawn(PieceColour pieceColour, Square square, Chessboard chessboard) {
-        super(pieceColour, square, chessboard);
-        setPieceType(PieceType.PAWN);
+        super(PieceType.PAWN, pieceColour, square, SQUARES_IT_CAN_MOVE, chessboard);
         createPiece();
     }
 
@@ -25,7 +24,7 @@ public class Pawn extends Piece {
 
         // Evaluate y coordinate up/down squares (depending on pieceColour)
         double nextY = (getCurrentY() + multiplier);
-        for (int i = 0; i < SQUARES_IT_CAN_MOVE; i++) {
+        for (int i = 0; i < getSquaresItCanMove(); i++) {
             if (!hasMoved() && !getChessboard().isSquareOccupied(getCurrentX(), nextY)) {
                 legalMoves.add(Square.findSquare(getCurrentX(), nextY, squareSize));
             } else if (getCurrentY() == 0 ||  getCurrentY() == (squareSize * 7)) {
