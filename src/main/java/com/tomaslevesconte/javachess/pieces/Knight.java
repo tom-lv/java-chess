@@ -22,153 +22,107 @@ public class Knight extends Piece {
         double squareSize = getChessboard().getSquareSize();
 
         // Evaluate vertical up/left squares
-        double[] nextLSquare = getChessboard().findNextLSquare(true, true, true, new double[]{getCurrentX(), getCurrentY()});
-        for (int i = 0; i < getSquaresItCanMove(); i++) {
-            if (getCurrentX() == 0
-                    || getCurrentY() == 0
-                    || nextLSquare[1] <= 0
-                    && getCurrentY() == squareSize) {
-                break;
-            } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
-                    && getPieceColour() != getChessboard().getPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()) {
-                legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
-                break;
-            } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
-                legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
-            } else {
-                break;
-            }
+        double[] nextLSquare = new double[]{(getCurrentX() - squareSize), (getCurrentY() - (squareSize * 2))};
+        // If out of bounds
+        if (getCurrentX() == 0
+                || getCurrentY() == 0
+                || nextLSquare[1] < 0) {
+            // Do nothing
+        } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
+                && getPieceColour() != getChessboard().getPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()
+                || !getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
+            legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
         }
 
         // Evaluate vertical up/right squares
-        nextLSquare = getChessboard().findNextLSquare(true, true, false, new double[]{getCurrentX(), getCurrentY()});
-        for (int i = 0; i < getSquaresItCanMove(); i++) {
-            if (getCurrentX() == (squareSize * 7)
-                    || getCurrentY() == 0
-                    || nextLSquare[1] <= 0
-                    && getCurrentY() == squareSize) {
-                break;
-            } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
-                    && getPieceColour() != getChessboard().getPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()) {
-                legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
-                break;
-            } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
-                legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
-            } else {
-                break;
-            }
+        nextLSquare = new double[]{(getCurrentX() + squareSize), (getCurrentY() - (squareSize * 2))};
+        // If out of bounds
+        if (getCurrentX() == (squareSize * 7)
+                || getCurrentY() == 0
+                || nextLSquare[1] < 0 ) {
+            // Do nothing
+        } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
+                && getPieceColour() != getChessboard().getPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()
+                || !getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
+            legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
         }
 
         // Evaluate vertical down/left squares
-        nextLSquare = getChessboard().findNextLSquare(true, false, true, new double[]{getCurrentX(), getCurrentY()});
-        for (int i = 0; i < getSquaresItCanMove(); i++) {
-            if (getCurrentY() == (squareSize * 7)
-                    || getCurrentX() == 0
-                    || nextLSquare[1] <= 0) {
-                break;
-            } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
-                    && getPieceColour() != getChessboard().getPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()) {
-                legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
-                break;
-            } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
-                legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
-            } else {
-                break;
-            }
+        nextLSquare = new double[]{(getCurrentX() - squareSize), (getCurrentY() + (squareSize * 2))};
+        // If out of bounds
+        if (getCurrentX() == 0
+                || getCurrentY() == (squareSize * 7)
+                || nextLSquare[1] > (squareSize * 7)) {
+            // Do nothing
+        } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
+                && getPieceColour() != getChessboard().getPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()
+                || !getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
+            legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
         }
 
         // Evaluate vertical down/right squares
-        nextLSquare = getChessboard().findNextLSquare(true, false, false, new double[]{getCurrentX(), getCurrentY()});
-        for (int i = 0; i < getSquaresItCanMove(); i++) {
-            if (getCurrentY() == (squareSize * 7)
-                    || getCurrentX() == (squareSize * 7)
-                    || nextLSquare[1] <= 0) {
-                break;
-            } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
-                    && getPieceColour() != getChessboard().getPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()) {
-                legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
-                break;
-            } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
-                legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
-            } else {
-                break;
-            }
+         nextLSquare = new double[]{(getCurrentX() + squareSize), (getCurrentY() + (squareSize * 2))};
+        // If out of bounds
+        if (getCurrentX() == (squareSize * 7)
+                || getCurrentY() == (squareSize * 7)
+                || nextLSquare[1] > (squareSize * 7)) {
+            // Do nothing
+        } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
+                && getPieceColour() != getChessboard().getPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()
+                || !getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
+            legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
         }
 
         // Evaluate horizontal left/up squares
-        nextLSquare = getChessboard().findNextLSquare(false, true, true, new double[]{getCurrentX(), getCurrentY()});
-        for (int i = 0; i < getSquaresItCanMove(); i++) {
-            if (getCurrentX() == 0
-                    || getCurrentY() == 0
-                    || nextLSquare[0] <= 0
-                    && getCurrentX() == squareSize) {
-                break;
-            } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
-                    && getPieceColour() != getChessboard().getPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()) {
-                legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
-                break;
-            } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
-                legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
-            } else {
-                break;
-            }
+        nextLSquare = new double[]{(getCurrentX() - (squareSize * 2)), (getCurrentY() - squareSize)};
+        // If out of bounds
+        if (getCurrentX() == 0
+                || getCurrentY() == 0
+                || nextLSquare[0] < 0) {
+            // Do nothing
+        } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
+                && getPieceColour() != getChessboard().getPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()
+                || !getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
+            legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
         }
 
         // Evaluate horizontal right/up squares
-        nextLSquare = getChessboard().findNextLSquare(false, true, false, new double[]{getCurrentX(), getCurrentY()});
-        for (int i = 0; i < getSquaresItCanMove(); i++) {
-            if (getCurrentX() == (squareSize * 7)
-                    || getCurrentY() == 0
-                    || nextLSquare[0] <= (squareSize * 7)
-                    && getCurrentX() == (squareSize * 6)) {
-                break;
-            } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
-                    && getPieceColour() != getChessboard().getPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()) {
-                legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
-                break;
-            } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
-                legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
-            } else {
-                break;
-            }
+        nextLSquare = new double[]{(getCurrentX() + (squareSize * 2)), (getCurrentY() - squareSize)};
+        // If out of bounds
+        if (getCurrentX() == (squareSize * 7)
+                || getCurrentY() == 0
+                || nextLSquare[0] > (squareSize * 7)) {
+            // Do nothing
+        } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
+                && getPieceColour() != getChessboard().getPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()
+                || !getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
+            legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
         }
 
         // Evaluate horizontal left/down squares
-        nextLSquare = getChessboard().findNextLSquare(false, false, true, new double[]{getCurrentX(), getCurrentY()});
-        for (int i = 0; i < getSquaresItCanMove(); i++) {
-            if (getCurrentY() == (squareSize * 7)
-                    || getCurrentX() == 0
-                    || nextLSquare[0] <= 0
-                    && getCurrentX() == squareSize) {
-                break;
-            } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
-                    && getPieceColour() != getChessboard().getPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()) {
-                legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
-                break;
-            } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
-                legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
-            } else {
-                break;
-            }
+        nextLSquare = new double[]{(getCurrentX() - (squareSize * 2)), (getCurrentY() + squareSize)};
+        // If out of bounds
+        if (getCurrentX() == 0
+                || getCurrentY() == (squareSize * 7)
+                || nextLSquare[0] < 0) {
+            // Do nothing
+        } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
+                && getPieceColour() != getChessboard().getPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()
+                || !getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
+            legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
         }
 
         // Evaluate horizontal right/down squares
-        nextLSquare = getChessboard().findNextLSquare(false, false, false, new double[]{getCurrentX(), getCurrentY()});
-        for (int i = 0; i < getSquaresItCanMove(); i++) {
-            if (getCurrentY() == (squareSize * 7)
-                    || getCurrentX() == (squareSize * 7)
-                    || nextLSquare[0] <= 0
-                    && getCurrentX() == (squareSize * 6)) {
-                break;
-            } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
-                    && getPieceColour() != getChessboard().getPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()) {
-                legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
-                break;
-            } else if (!getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
-                legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
-            } else {
-                break;
-            }
+        nextLSquare = new double[]{(getCurrentX() + (squareSize * 2)), (getCurrentY() + squareSize)};
+        // If out of bounds
+        if (getCurrentX() == (squareSize * 7)
+                || getCurrentY() == (squareSize * 7)
+                || nextLSquare[0] > (squareSize * 7)) {
+            // Do nothing
+        } else if (getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])
+                && getPieceColour() != getChessboard().getPiece(nextLSquare[0], nextLSquare[1]).getPieceColour()
+                || !getChessboard().isSquareOccupied(nextLSquare[0], nextLSquare[1])) {
+            legalMoves.add(Square.findSquare(nextLSquare[0], nextLSquare[1], squareSize));
         }
 
         return legalMoves;
