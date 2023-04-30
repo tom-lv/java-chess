@@ -16,7 +16,7 @@ public class Chessboard {
 
     private final double squareSize;
     private final AnchorPane anchorPane;
-    private final ArrayList<Piece> piecePositions = new ArrayList<>();
+    private final ArrayList<Piece> pieceList = new ArrayList<>();
 
     public Chessboard(double boardSize, AnchorPane anchorPane) {
         this.squareSize = boardSize / Math.sqrt(TOTAL_NUM_OF_SQUARES);
@@ -67,9 +67,19 @@ public class Chessboard {
     }
 
     public boolean isSquareOccupied(double squareX, double squareY) {
-        for (Piece piece : getPiecePositions()) {
+        for (Piece piece : getPieceList()) {
             if (Math.round(squareX) == Math.round(piece.getCurrentX())
                     && Math.round(squareY) == Math.round(piece.getCurrentY())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isSquareOccupied(Square square) {
+        for (Piece piece : getPieceList()) {
+            if (Math.round(square.getX(getSquareSize())) == Math.round(piece.getCurrentX())
+                    && Math.round(square.getY(getSquareSize())) == Math.round(piece.getCurrentY())) {
                 return true;
             }
         }
@@ -136,7 +146,7 @@ public class Chessboard {
     }
 
     public Piece getPiece(double squareX, double squareY) {
-        for (Piece piece : getPiecePositions()) {
+        for (Piece piece : getPieceList()) {
             if (Math.round(squareX) == Math.round(piece.getCurrentX())
                     && Math.round(squareY) == Math.round(piece.getCurrentY())) {
                 return piece;
@@ -145,9 +155,19 @@ public class Chessboard {
         return null;
     }
 
+    public Piece getPiece(Square square) {
+        for (Piece piece : getPieceList()) {
+            if (Math.round(square.getX(getSquareSize())) == Math.round(piece.getCurrentX())
+                    && Math.round(square.getY(getSquareSize())) == Math.round(piece.getCurrentY())) {
+                return piece;
+            }
+        }
+        return null;
+    }
+
     public ArrayList<Piece> getRooks(PieceColour pieceColour) {
         ArrayList<Piece> rooks = new ArrayList<>();
-        for (Piece piece : getPiecePositions()) {
+        for (Piece piece : getPieceList()) {
             if (piece.getPieceColour().equals(pieceColour)
                     && piece.getPieceType().equals(PieceType.ROOK)) {
                 rooks.add(piece);
@@ -156,13 +176,12 @@ public class Chessboard {
         return rooks;
     }
 
-
     public double getSquareSize() {
         return squareSize;
     }
 
-    public ArrayList<Piece> getPiecePositions() {
-        return piecePositions;
+    public ArrayList<Piece> getPieceList() {
+        return pieceList;
     }
 
     public AnchorPane getAnchorPane() {
