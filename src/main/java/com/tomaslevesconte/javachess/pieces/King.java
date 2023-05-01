@@ -6,6 +6,7 @@ import com.tomaslevesconte.javachess.PieceType;
 import com.tomaslevesconte.javachess.Square;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class King extends Piece {
 
@@ -20,6 +21,7 @@ public class King extends Piece {
     @Override
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
+
         // Evaluate all the King's possible moves
         legalMoves.addAll(evaluateVerticalSquares());
         legalMoves.addAll(evaluateHorizontalSquares());
@@ -56,34 +58,16 @@ public class King extends Piece {
     }
 
     private ArrayList<Square> getEnemyPawnAttackPatterns(Piece piece) {
-        ArrayList<Square> pAP = new ArrayList<>();
+        ArrayList<Square> attackPattern = new ArrayList<>();
+
         double squareSize = getChessboard().getSquareSize();
-        // Pawns move in different directions depending on colour
         double multiplier = piece.getPieceColour().equals(PieceColour.WHITE) ? -squareSize : squareSize;
 
-        // Evaluate Pawn's x coordinates downwards (<--) for capturing
-        double[] nextDiagonal = {(piece.getCurrentX() - squareSize), (piece.getCurrentY() + multiplier)};
-        // If out of bounds
-        if (piece.getCurrentX() == 0
-                || piece.getPieceColour().equals(PieceColour.WHITE) && piece.getCurrentY() == 0
-                || piece.getPieceColour().equals(PieceColour.BLACK) && piece.getCurrentY() == (squareSize * 7)) {
-            // Do nothing
-        } else {
-            pAP.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
-        }
+        attackPattern.add(Square.find((piece.getCurrentX() - squareSize), (piece.getCurrentY() + multiplier), squareSize));
+        attackPattern.add(Square.find((piece.getCurrentX() + squareSize), (piece.getCurrentY() + multiplier), squareSize));
+        attackPattern.removeIf(Objects::isNull); // Remove square if null
 
-        // Evaluate Pawn's x coordinates upwards (-->) for capturing
-        nextDiagonal = new double[]{(piece.getCurrentX() + squareSize), (piece.getCurrentY() + multiplier)};
-        // If out of bounds
-        if (piece.getCurrentX() == (squareSize * 7)
-                || piece.getPieceColour().equals(PieceColour.WHITE) && piece.getCurrentY() == 0
-                || piece.getPieceColour().equals(PieceColour.BLACK) && piece.getCurrentY() == (squareSize * 7)) {
-            // Do nothing
-        } else {
-            pAP.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
-        }
-
-        return pAP;
+        return attackPattern;
     }
 
     private ArrayList<Square> evaluateCastleSquares() {
