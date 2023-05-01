@@ -39,14 +39,12 @@ public class King extends Piece {
         // For each piece on the board
         getChessboard().getPieceList().forEach(piece -> {
             // If the piece's colour is different & =='King'
-            if (piece.getPieceColour() != getPieceColour()
-                    && piece.getPieceType().equals(PieceType.KING)) {
+            if (piece.getPieceColour() != getPieceColour() && piece.getPieceType().equals(PieceType.KING)) {
                 opponentsMoves.addAll(piece.evaluateVerticalSquares());
                 opponentsMoves.addAll(piece.evaluateHorizontalSquares());
                 opponentsMoves.addAll(piece.evaluateDiagonalSquares());
                 // If the piece's colour is different & == 'Pawn'
-            } else if (piece.getPieceColour() != getPieceColour()
-                    && piece.getPieceType().equals(PieceType.PAWN)) {
+            } else if (piece.getPieceColour() != getPieceColour() && piece.getPieceType().equals(PieceType.PAWN)) {
                 opponentsMoves.addAll(getEnemyPawnAttackPatterns(piece));
                 // If the piece colour is different & != 'King' or 'Pawn'
             } else if (piece.getPieceColour() != getPieceColour()) {
@@ -58,17 +56,18 @@ public class King extends Piece {
     }
 
     private ArrayList<Square> getEnemyPawnAttackPatterns(Piece piece) {
-        ArrayList<Square> attackPattern = new ArrayList<>();
+        ArrayList<Square> attackPatterns = new ArrayList<>();
 
         double squareSize = getChessboard().getSquareSize();
+        // Pawns move in different directions depending on colour
         double multiplier = piece.getPieceColour().equals(PieceColour.WHITE) ? -squareSize : squareSize;
 
         // Every pawn attack pattern
-        attackPattern.add(Square.find((piece.getCurrentX() - squareSize), (piece.getCurrentY() + multiplier), squareSize));
-        attackPattern.add(Square.find((piece.getCurrentX() + squareSize), (piece.getCurrentY() + multiplier), squareSize));
-        attackPattern.removeIf(Objects::isNull); // Remove square if null
+        attackPatterns.add(Square.find((piece.getCurrentX() - squareSize), (piece.getCurrentY() + multiplier), squareSize));
+        attackPatterns.add(Square.find((piece.getCurrentX() + squareSize), (piece.getCurrentY() + multiplier), squareSize));
+        attackPatterns.removeIf(Objects::isNull); // Remove square if null (out of bounds)
 
-        return attackPattern;
+        return attackPatterns;
     }
 
     private ArrayList<Square> evaluateCastleSquares() {
