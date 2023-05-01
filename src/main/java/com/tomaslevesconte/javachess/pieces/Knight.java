@@ -36,18 +36,19 @@ public class Knight extends Piece {
     }
 
     private ArrayList<Square> getKnightAttackPatterns() {
-        ArrayList<Square> aP = new ArrayList<>(); // Attack patterns
-        double squareSize = getChessboard().getSquareSize();
+        ArrayList<Square> attackPattern = new ArrayList<>(); // Attack patterns
         
-        aP.add(Square.findSquare((getCurrentX() - squareSize), (getCurrentY() - (squareSize * 2)), squareSize));
-        aP.add(Square.findSquare((getCurrentX() + squareSize), (getCurrentY() - (squareSize * 2)), squareSize));
-        aP.add(Square.findSquare((getCurrentX() - squareSize), (getCurrentY() + (squareSize * 2)), squareSize));
-        aP.add(Square.findSquare((getCurrentX() + squareSize), (getCurrentY() + (squareSize * 2)), squareSize));
-        aP.add(Square.findSquare((getCurrentX() - (squareSize * 2)), (getCurrentY() - squareSize), squareSize));
-        aP.add(Square.findSquare((getCurrentX() + (squareSize * 2)), (getCurrentY() - squareSize), squareSize));
-        aP.add(Square.findSquare((getCurrentX() - (squareSize * 2)), (getCurrentY() + squareSize), squareSize));
-        aP.add(Square.findSquare((getCurrentX() + (squareSize * 2)), (getCurrentY() + squareSize), squareSize));
+        double squareSize = getChessboard().getSquareSize();
 
-        return aP;
+        attackPattern.add(Square.find((getCurrentX() - squareSize), (getCurrentY() - (squareSize * 2)), squareSize));
+        attackPattern.add(Square.find((getCurrentX() + squareSize), (getCurrentY() - (squareSize * 2)), squareSize));
+        attackPattern.add(Square.find((getCurrentX() - squareSize), (getCurrentY() + (squareSize * 2)), squareSize));
+        attackPattern.add(Square.find((getCurrentX() + squareSize), (getCurrentY() + (squareSize * 2)), squareSize));
+        attackPattern.add(Square.find((getCurrentX() - (squareSize * 2)), (getCurrentY() - squareSize), squareSize));
+        attackPattern.add(Square.find((getCurrentX() + (squareSize * 2)), (getCurrentY() - squareSize), squareSize));
+        attackPattern.add(Square.find((getCurrentX() - (squareSize * 2)), (getCurrentY() + squareSize), squareSize));
+        attackPattern.add(Square.find((getCurrentX() + (squareSize * 2)), (getCurrentY() + squareSize), squareSize));
+
+        return attackPattern;
     }
 }
