@@ -19,37 +19,29 @@ public class Knight extends Piece {
 
     @Override
     public ArrayList<Square> getLegalMoves() {
-        ArrayList<Square> legalMoves = new ArrayList<>();
-
-        getKnightAttackPatterns().forEach(attackSquare -> {
-            // If out of bounds
-            if (attackSquare == null) {
-                // Do nothing
-            } else if (getChessboard().isSquareOccupied(attackSquare)
-                    && getChessboard().getPiece(attackSquare).getPieceColour() != getPieceColour()
-                    || !getChessboard().isSquareOccupied(attackSquare)) {
-                legalMoves.add(attackSquare);
-            }
-        });
-
-        return legalMoves;
+        return new ArrayList<>(getKnightAttackPatterns());
     }
 
     private ArrayList<Square> getKnightAttackPatterns() {
-        ArrayList<Square> attackPattern = new ArrayList<>();
+        ArrayList<Square> attackPatterns = new ArrayList<>();
 
         double squareSize = getChessboard().getSquareSize();
 
         // Every Knight attack pattern
-        attackPattern.add(Square.find((getCurrentX() - squareSize), (getCurrentY() - (squareSize * 2)), squareSize));
-        attackPattern.add(Square.find((getCurrentX() + squareSize), (getCurrentY() - (squareSize * 2)), squareSize));
-        attackPattern.add(Square.find((getCurrentX() - squareSize), (getCurrentY() + (squareSize * 2)), squareSize));
-        attackPattern.add(Square.find((getCurrentX() + squareSize), (getCurrentY() + (squareSize * 2)), squareSize));
-        attackPattern.add(Square.find((getCurrentX() - (squareSize * 2)), (getCurrentY() - squareSize), squareSize));
-        attackPattern.add(Square.find((getCurrentX() + (squareSize * 2)), (getCurrentY() - squareSize), squareSize));
-        attackPattern.add(Square.find((getCurrentX() - (squareSize * 2)), (getCurrentY() + squareSize), squareSize));
-        attackPattern.add(Square.find((getCurrentX() + (squareSize * 2)), (getCurrentY() + squareSize), squareSize));
+        attackPatterns.add(Square.find((getCurrentX() - squareSize), (getCurrentY() - (squareSize * 2)), squareSize));
+        attackPatterns.add(Square.find((getCurrentX() + squareSize), (getCurrentY() - (squareSize * 2)), squareSize));
+        attackPatterns.add(Square.find((getCurrentX() - squareSize), (getCurrentY() + (squareSize * 2)), squareSize));
+        attackPatterns.add(Square.find((getCurrentX() + squareSize), (getCurrentY() + (squareSize * 2)), squareSize));
+        attackPatterns.add(Square.find((getCurrentX() - (squareSize * 2)), (getCurrentY() - squareSize), squareSize));
+        attackPatterns.add(Square.find((getCurrentX() + (squareSize * 2)), (getCurrentY() - squareSize), squareSize));
+        attackPatterns.add(Square.find((getCurrentX() - (squareSize * 2)), (getCurrentY() + squareSize), squareSize));
+        attackPatterns.add(Square.find((getCurrentX() + (squareSize * 2)), (getCurrentY() + squareSize), squareSize));
 
-        return attackPattern;
+        // Remove if square !exist, or if square is occupied by the same colour
+        attackPatterns.removeIf(attackSquare -> (attackSquare == null // If null (out of bounds)
+                || getChessboard().isSquareOccupied(attackSquare)
+                && getChessboard().getPiece(attackSquare).getPieceColour().equals(getPieceColour())));
+
+        return attackPatterns;
     }
 }
