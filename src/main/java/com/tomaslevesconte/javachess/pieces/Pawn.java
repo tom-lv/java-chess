@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 public class Pawn extends Piece {
 
+    // Constant
     private static final int SQUARES_IT_CAN_MOVE = 2;
 
     public Pawn(PieceColour pieceColour, Square square, Chessboard chessboard) {

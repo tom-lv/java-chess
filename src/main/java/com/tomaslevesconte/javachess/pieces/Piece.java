@@ -14,9 +14,11 @@ import java.util.ArrayList;
 
 public abstract class Piece extends Rectangle {
 
+    // Constants
     private static final String IMAGE_PATH = "com/tomaslevesconte/javachess/pieces/";
     private static final String IMAGE_TYPE = ".png";
-    
+
+    // Instance variables
     private final PieceType pieceType;
     private final PieceColour pieceColour;
     private double currentX;

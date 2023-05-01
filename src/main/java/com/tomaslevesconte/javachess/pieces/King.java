@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 public class King extends Piece {
 
+    // Constant
     private static final int SQUARES_IT_CAN_MOVE = 1;
 
     public King(PieceColour pieceColour, Square square, Chessboard chessboard) {
@@ -23,13 +24,12 @@ public class King extends Piece {
         legalMoves.addAll(evaluateVerticalSquares());
         legalMoves.addAll(evaluateHorizontalSquares());
         legalMoves.addAll(evaluateDiagonalSquares());
-        legalMoves.addAll(evaluateCastleSquares());
+        legalMoves.addAll(evaluateCastleSquares()); // If castling is possible
         // Stop the King from putting itself in check by removing the opponent's moves from the possible pool
         legalMoves.removeAll(getOpponentsMoves());
 
         return legalMoves;
     }
-
 
     private ArrayList<Square> getOpponentsMoves() {
         ArrayList<Square> opponentsMoves = new ArrayList<>();
@@ -56,12 +56,12 @@ public class King extends Piece {
     }
 
     private ArrayList<Square> getEnemyPawnAttackPatterns(Piece piece) {
-        ArrayList<Square> pawnAttackPatterns = new ArrayList<>();
+        ArrayList<Square> pAP = new ArrayList<>();
         double squareSize = getChessboard().getSquareSize();
         // Pawns move in different directions depending on colour
         double multiplier = piece.getPieceColour().equals(PieceColour.WHITE) ? -squareSize : squareSize;
 
-        // Evaluate Pawn's x coordinate downwards (<--) for capturing
+        // Evaluate Pawn's x coordinates downwards (<--) for capturing
         double[] nextDiagonal = {(piece.getCurrentX() - squareSize), (piece.getCurrentY() + multiplier)};
         // If out of bounds
         if (piece.getCurrentX() == 0
@@ -69,10 +69,10 @@ public class King extends Piece {
                 || piece.getPieceColour().equals(PieceColour.BLACK) && piece.getCurrentY() == (squareSize * 7)) {
             // Do nothing
         } else {
-            pawnAttackPatterns.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
+            pAP.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
         }
 
-        // Evaluate Pawn's x coordinate upwards (-->) for capturing
+        // Evaluate Pawn's x coordinates upwards (-->) for capturing
         nextDiagonal = new double[]{(piece.getCurrentX() + squareSize), (piece.getCurrentY() + multiplier)};
         // If out of bounds
         if (piece.getCurrentX() == (squareSize * 7)
@@ -80,10 +80,10 @@ public class King extends Piece {
                 || piece.getPieceColour().equals(PieceColour.BLACK) && piece.getCurrentY() == (squareSize * 7)) {
             // Do nothing
         } else {
-            pawnAttackPatterns.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
+            pAP.add(Square.findSquare(nextDiagonal[0], nextDiagonal[1], squareSize));
         }
 
-        return pawnAttackPatterns;
+        return pAP;
     }
 
     private ArrayList<Square> evaluateCastleSquares() {

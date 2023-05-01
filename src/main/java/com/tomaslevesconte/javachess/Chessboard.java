@@ -10,10 +10,12 @@ import java.util.ArrayList;
 
 public class Chessboard {
 
+    // Constants
     private static final byte TOTAL_NUM_OF_SQUARES = 64;
     private static final Color LIGHT_SQUARE_COLOUR = Color.web("#f0eef1"); // off-white #f0eef1, beach #F2D8B5
     private static final Color DARK_SQUARE_COLOUR = Color.web("#8877B3"); // purple #8877B3, orange #B78B64
 
+    // Instance variables
     private final double squareSize;
     private final AnchorPane anchorPane;
     private final ArrayList<Piece> pieceList = new ArrayList<>();

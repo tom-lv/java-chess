@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 public class Queen extends Piece {
 
+    // Constant
     private static final int SQUARES_IT_CAN_MOVE = 8;
 
     public Queen(PieceColour pieceColour, Square square, Chessboard chessboard) {
