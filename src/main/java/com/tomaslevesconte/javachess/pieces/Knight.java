@@ -36,10 +36,11 @@ public class Knight extends Piece {
     }
 
     private ArrayList<Square> getKnightAttackPatterns() {
-        ArrayList<Square> attackPattern = new ArrayList<>(); // Attack patterns
-        
+        ArrayList<Square> attackPattern = new ArrayList<>();
+
         double squareSize = getChessboard().getSquareSize();
 
+        // Every Knight attack pattern
         attackPattern.add(Square.find((getCurrentX() - squareSize), (getCurrentY() - (squareSize * 2)), squareSize));
         attackPattern.add(Square.find((getCurrentX() + squareSize), (getCurrentY() - (squareSize * 2)), squareSize));
         attackPattern.add(Square.find((getCurrentX() - squareSize), (getCurrentY() + (squareSize * 2)), squareSize));

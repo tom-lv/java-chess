@@ -63,6 +63,7 @@ public class King extends Piece {
         double squareSize = getChessboard().getSquareSize();
         double multiplier = piece.getPieceColour().equals(PieceColour.WHITE) ? -squareSize : squareSize;
 
+        // Every pawn attack pattern
         attackPattern.add(Square.find((piece.getCurrentX() - squareSize), (piece.getCurrentY() + multiplier), squareSize));
         attackPattern.add(Square.find((piece.getCurrentX() + squareSize), (piece.getCurrentY() + multiplier), squareSize));
         attackPattern.removeIf(Objects::isNull); // Remove square if null
