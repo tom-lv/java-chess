@@ -16,6 +16,7 @@ import java.util.Objects;
 
 public class PieceBuilder {
 
+    // Instance variables
     private final Chessboard chessboard;
     private int pieceIndex = 0;
 
@@ -54,7 +55,7 @@ public class PieceBuilder {
             double oldY = piece.getCurrentY();
             Piece enemyPiece = chessboard.getPiece(newX, newY); // If exists, else null
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)
-                    && chessboard.getPiecePositions().get(currentPieceIndex).move(newX, newY)) {
+                    && chessboard.getPieceList().get(currentPieceIndex).move(newX, newY)) {
                 attemptCapture(enemyPiece); // If exists
                 attemptCastle(oldX, oldY, piece); // If possible and piece equals king
                 piece.setLayoutX(newX); // Update pos on board
@@ -66,7 +67,7 @@ public class PieceBuilder {
             }
         });
 
-        chessboard.getPiecePositions().add(piece);
+        chessboard.getPieceList().add(piece);
         chessboard.getAnchorPane().getChildren().add(piece);
     }
 
@@ -83,12 +84,12 @@ public class PieceBuilder {
             Square[] kingPos = king.getPieceColour().equals(PieceColour.WHITE) ? new Square[]{Square.C1, Square.G1} : new Square[]{Square.C8, Square.G8};
             Square[] rookPos = king.getPieceColour().equals(PieceColour.WHITE) ? new Square[]{Square.D1, Square.F1} : new Square[]{Square.D8, Square.F8};
 
-            if (Objects.equals(Square.findSquare(startX, startY, chessboard.getSquareSize()), startSquare)
+            if (Objects.equals(Square.find(startX, startY, chessboard.getSquareSize()), startSquare)
                     && king.getSquare().equals(kingPos[0])) {
                 Piece queenSideRook = chessboard.getRooks(king.getPieceColour()).get(0);
                 movePiece(queenSideRook, rookPos[0]);
 
-            } else if (Objects.equals(Square.findSquare(startX, startY, chessboard.getSquareSize()), startSquare)
+            } else if (Objects.equals(Square.find(startX, startY, chessboard.getSquareSize()), startSquare)
                     && king.getSquare().equals(kingPos[1])) {
                 Piece kingSideRook = chessboard.getRooks(king.getPieceColour()).get(1);
                 movePiece(kingSideRook, rookPos[1]);
@@ -166,7 +167,7 @@ public class PieceBuilder {
         currentSquare.setId("currentSquare");
         possibleMoves.setId("possibleMoves");
         chessboard.getAnchorPane().getChildren().addAll(possibleMoves, currentSquare);
-        chessboard.getPiecePositions().forEach(Node::toFront); // All pieces to front in terms of z-index
+        chessboard.getPieceList().forEach(Node::toFront); // All pieces to front in terms of z-index
     }
 
     public void hideLegalMoves() {
