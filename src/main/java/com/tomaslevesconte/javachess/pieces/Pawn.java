@@ -44,8 +44,6 @@ public class Pawn extends Piece {
                 || moveSquare.equals(movePatterns.get(1))
                 && hasMoved());
 
-        System.out.println(movePatterns);
-
         return movePatterns;
     }
 
