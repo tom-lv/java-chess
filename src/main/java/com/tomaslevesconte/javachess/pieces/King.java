@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class King extends Piece {
-    
+
     private static final int SQUARES_IT_CAN_MOVE = 1;
 
     public King(PieceColour pieceColour, Square square, Chessboard chessboard) {
@@ -25,7 +25,7 @@ public class King extends Piece {
         legalMoves.addAll(getVerticalAttackPatterns());
         legalMoves.addAll(getHorizontalAttackPatterns());
         legalMoves.addAll(evaluateDiagonalSquares());
-        legalMoves.addAll(getCastlingPattern()); // If castling is possible
+        legalMoves.addAll(getCastlePattern()); // If castling is possible
         // Stop the King from putting itself in check by removing the opponent's moves from the possible pool
         legalMoves.removeAll(getOpponentsMoves());
 
@@ -70,7 +70,7 @@ public class King extends Piece {
         return attackPattern;
     }
 
-    private ArrayList<Square> getCastlingPattern() {
+    private ArrayList<Square> getCastlePattern() {
         ArrayList<Square> castlePattern = new ArrayList<>();
         ArrayList<Piece> rooks = getChessboard().getRooks(getPieceColour());
 
