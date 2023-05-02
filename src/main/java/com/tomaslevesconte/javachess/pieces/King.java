@@ -23,10 +23,10 @@ public class King extends Piece {
         ArrayList<Square> legalMoves = new ArrayList<>();
 
         // Evaluate all the King's possible moves
-        legalMoves.addAll(evaluateVerticalSquares());
-        legalMoves.addAll(evaluateHorizontalSquares());
+        legalMoves.addAll(getVerticalAttackPatterns());
+        legalMoves.addAll(getHorizontalAttackPatterns());
         legalMoves.addAll(evaluateDiagonalSquares());
-        legalMoves.addAll(evaluateCastleSquares()); // If castling is possible
+        legalMoves.addAll(getCastlingPattern()); // If castling is possible
         // Stop the King from putting itself in check by removing the opponent's moves from the possible pool
         legalMoves.removeAll(getOpponentsMoves());
 
@@ -40,8 +40,8 @@ public class King extends Piece {
         getChessboard().getPieceList().forEach(piece -> {
             // If the piece's colour is different & =='King'
             if (piece.getPieceColour() != getPieceColour() && piece.getPieceType().equals(PieceType.KING)) {
-                opponentsMoves.addAll(piece.evaluateVerticalSquares());
-                opponentsMoves.addAll(piece.evaluateHorizontalSquares());
+                opponentsMoves.addAll(piece.getVerticalAttackPatterns());
+                opponentsMoves.addAll(piece.getHorizontalAttackPatterns());
                 opponentsMoves.addAll(piece.evaluateDiagonalSquares());
                 // If the piece's colour is different & == 'Pawn'
             } else if (piece.getPieceColour() != getPieceColour() && piece.getPieceType().equals(PieceType.PAWN)) {
@@ -65,12 +65,13 @@ public class King extends Piece {
         // Every pawn attack pattern
         attackPatterns.add(Square.find((piece.getCurrentX() - squareSize), (piece.getCurrentY() + multiplier), squareSize));
         attackPatterns.add(Square.find((piece.getCurrentX() + squareSize), (piece.getCurrentY() + multiplier), squareSize));
+
         attackPatterns.removeIf(Objects::isNull); // Remove square if null (out of bounds)
 
         return attackPatterns;
     }
 
-    private ArrayList<Square> evaluateCastleSquares() {
+    private ArrayList<Square> getCastlingPattern() {
         ArrayList<Square> castleSquares = new ArrayList<>();
         ArrayList<Piece> rooks = getChessboard().getRooks(getPieceColour());
 

@@ -20,8 +20,8 @@ public class Queen extends Piece {
     @Override
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
-        legalMoves.addAll(evaluateVerticalSquares());
-        legalMoves.addAll(evaluateHorizontalSquares());
+        legalMoves.addAll(getVerticalAttackPatterns());
+        legalMoves.addAll(getHorizontalAttackPatterns());
         legalMoves.addAll(evaluateDiagonalSquares());
         return legalMoves;
     }

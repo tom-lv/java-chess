@@ -20,8 +20,8 @@ public class Rook extends Piece {
     @Override
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
-        legalMoves.addAll(evaluateVerticalSquares());
-        legalMoves.addAll(evaluateHorizontalSquares());
+        legalMoves.addAll(getVerticalAttackPatterns());
+        legalMoves.addAll(getHorizontalAttackPatterns());
         return legalMoves;
     }
 }
