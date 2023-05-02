@@ -22,9 +22,9 @@ public class King extends Piece {
         ArrayList<Square> legalMoves = new ArrayList<>();
 
         // Evaluate all the King's possible moves
-        legalMoves.addAll(getVerticalAttackPatterns());
-        legalMoves.addAll(getHorizontalAttackPatterns());
-        legalMoves.addAll(evaluateDiagonalSquares());
+        legalMoves.addAll(getVerticalAttackPattern());
+        legalMoves.addAll(getHorizontalAttackPattern());
+        legalMoves.addAll(getDiagonalAttackPattern());
         legalMoves.addAll(getCastlePattern()); // If castling is possible
         // Stop the King from putting itself in check by removing the opponent's moves from the possible pool
         legalMoves.removeAll(getOpponentsMoves());
@@ -39,9 +39,9 @@ public class King extends Piece {
         getChessboard().getPieceList().forEach(piece -> {
             // If the piece's colour is different & =='King'
             if (piece.getPieceColour() != getPieceColour() && piece.getPieceType().equals(PieceType.KING)) {
-                opponentsMoves.addAll(piece.getVerticalAttackPatterns());
-                opponentsMoves.addAll(piece.getHorizontalAttackPatterns());
-                opponentsMoves.addAll(piece.evaluateDiagonalSquares());
+                opponentsMoves.addAll(piece.getVerticalAttackPattern());
+                opponentsMoves.addAll(piece.getHorizontalAttackPattern());
+                opponentsMoves.addAll(piece.getDiagonalAttackPattern());
                 // If the piece's colour is different & == 'Pawn'
             } else if (piece.getPieceColour() != getPieceColour() && piece.getPieceType().equals(PieceType.PAWN)) {
                 opponentsMoves.addAll(getEnemyPawnAttackPattern(piece));
@@ -56,7 +56,6 @@ public class King extends Piece {
 
     private ArrayList<Square> getEnemyPawnAttackPattern(Piece piece) {
         ArrayList<Square> attackPattern = new ArrayList<>();
-
         double squareSize = getChessboard().getSquareSize();
         // Pawns move in different directions depending on colour
         double multiplier = piece.getPieceColour().equals(PieceColour.WHITE) ? -squareSize : squareSize;

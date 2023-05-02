@@ -11,16 +11,13 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Objects;
 
 public abstract class Piece extends Rectangle {
 
-    // Constants
     private static final String IMAGE_PATH = "com/tomaslevesconte/javachess/pieces/";
     private static final String IMAGE_TYPE = ".png";
 
-    // Instance variables
     private final PieceType pieceType;
     private final PieceColour pieceColour;
     private double currentX;
@@ -94,144 +91,71 @@ public abstract class Piece extends Rectangle {
         return sList;
     }
 
-    public ArrayList<Square> getVerticalAttackPatterns() {
-        ArrayList<Square> attackPatterns = new ArrayList<>();
+    public ArrayList<Square> getVerticalAttackPattern() {
+        ArrayList<Square> attackPattern = new ArrayList<>();
+        ArrayList<Square> upPattern = new ArrayList<>(); // Up y
+        ArrayList<Square> downPattern = new ArrayList<>(); // Down y
 
-        double squareSize = getChessboard().getSquareSize();
-
-        // Up attack pattern (in terms of y)
-        ArrayList<Square> upAttackPatterns = new ArrayList<>();
         for (int i = 1; i <= getSquaresItCanMove(); i++) {
-            upAttackPatterns.add(Square.find(getCurrentX(), (getCurrentY() + (squareSize * i)), squareSize));
+            double squareSize = getChessboard().getSquareSize();
+            upPattern.add(Square.find(getCurrentX(), getCurrentY() + (squareSize * i), squareSize));
+            downPattern.add(Square.find(getCurrentX(), getCurrentY() + (-squareSize * i), squareSize));
         }
-        upAttackPatterns.removeIf(Objects::isNull); // Remove if square !exist
+        upPattern.removeIf(Objects::isNull);
+        downPattern.removeIf(Objects::isNull);
 
-        // Down attack pattern (in terms of y)
-        ArrayList<Square> downAttackPatterns = new ArrayList<>();
-        for (int i = 1; i <= getSquaresItCanMove(); i++) {
-            downAttackPatterns.add(Square.find(getCurrentX(), (getCurrentY() + (-squareSize * i)), squareSize));
-        }
-        downAttackPatterns.removeIf(Objects::isNull); // Remove if square !exist
+        attackPattern.addAll(removeBlockedSquares(upPattern));
+        attackPattern.addAll(removeBlockedSquares(downPattern));
 
-        attackPatterns.addAll(removeBlockedSquares(upAttackPatterns));
-        attackPatterns.addAll(removeBlockedSquares(downAttackPatterns));
-
-        return attackPatterns;
+        return attackPattern;
     }
 
-    public ArrayList<Square> getHorizontalAttackPatterns() {
-        ArrayList<Square> attackPatterns = new ArrayList<>();
+    public ArrayList<Square> getHorizontalAttackPattern() {
+        ArrayList<Square> attackPattern = new ArrayList<>();
+        ArrayList<Square> upPattern = new ArrayList<>(); // Up x
+        ArrayList<Square> downPattern = new ArrayList<>(); // Down x
 
-        double squareSize = getChessboard().getSquareSize();
-
-        // Up attack pattern (in terms of x)
-        ArrayList<Square> upAttackPatterns = new ArrayList<>();
         for (int i = 1; i <= getSquaresItCanMove(); i++) {
-            upAttackPatterns.add(Square.find((getCurrentX() + (squareSize * i)), getCurrentY(), squareSize));
+            double squareSize = getChessboard().getSquareSize();
+            upPattern.add(Square.find(getCurrentX() + (squareSize * i), getCurrentY(), squareSize));
+            downPattern.add(Square.find(getCurrentX() + (-squareSize * i), getCurrentY(), squareSize));
         }
-        upAttackPatterns.removeIf(Objects::isNull); // Remove if square !exist
 
-        // Down attack pattern (in terms of x)
-        ArrayList<Square> downAttackPatterns = new ArrayList<>();
-        for (int i = 1; i <= getSquaresItCanMove(); i++) {
-            downAttackPatterns.add(Square.find((getCurrentX() + (-squareSize * i)), getCurrentY(), squareSize));
-        }
-        downAttackPatterns.removeIf(Objects::isNull); // Remove if square !exist
+        upPattern.removeIf(Objects::isNull);
+        downPattern.removeIf(Objects::isNull);
 
-        attackPatterns.addAll(removeBlockedSquares(upAttackPatterns));
-        attackPatterns.addAll(removeBlockedSquares(downAttackPatterns));
+        attackPattern.addAll(removeBlockedSquares(upPattern));
+        attackPattern.addAll(removeBlockedSquares(downPattern));
 
-        return attackPatterns;
+        return attackPattern;
     }
 
-    public ArrayList<Square> evaluateDiagonalSquares() {
-        ArrayList<Square> diagonalSquares = new ArrayList<>();
-        double squareSize = getChessboard().getSquareSize();
+    public ArrayList<Square> getDiagonalAttackPattern() {
+        ArrayList<Square> attackPattern = new ArrayList<>();
+        ArrayList<Square> patternOne = new ArrayList<>(); // Down x, down y
+        ArrayList<Square> patternTwo = new ArrayList<>(); // Up x, down y
+        ArrayList<Square> patternThree = new ArrayList<>(); // Down x, up y
+        ArrayList<Square> patternFour = new ArrayList<>(); // Up x, up y
 
-        // Evaluate diagonal up/left squares
-        double[] nextDiagonal = getChessboard().findNextDiagonal(true, true, new double[]{getCurrentX(), getCurrentY()});
-        for (int i = 0; i < getSquaresItCanMove(); i++) {
-            if (getCurrentX() == 0
-                    || getCurrentY() == 0
-                    || nextDiagonal[0] < 0
-                    || nextDiagonal[1] < 0) {
-                break;
-            } else if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])
-                    && getPieceColour() != getChessboard().getPiece(nextDiagonal[0], nextDiagonal[1]).getPieceColour()) {
-                diagonalSquares.add(Square.find(nextDiagonal[0], nextDiagonal[1], squareSize));
-                break;
-            } else if (!getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
-                diagonalSquares.add(Square.find(nextDiagonal[0], nextDiagonal[1], squareSize));
-            } else {
-                break;
-            }
-            nextDiagonal[0] -= squareSize;
-            nextDiagonal[1] -= squareSize;
+        for (int i = 1; i < getSquaresItCanMove(); i++) {
+            double squareSize = getChessboard().getSquareSize();
+            patternOne.add(Square.find(getCurrentX() + (-squareSize * i), getCurrentY() + (-squareSize * i), squareSize));
+            patternTwo.add(Square.find(getCurrentX() + (squareSize * i), getCurrentY() + (-squareSize * i), squareSize));
+            patternThree.add(Square.find(getCurrentX() + (-squareSize * i), getCurrentY() + (squareSize * i), squareSize));
+            patternFour.add(Square.find(getCurrentX() + (squareSize * i), getCurrentY() + (squareSize * i), squareSize));
         }
 
-        // Evaluate diagonal up/right squares
-        nextDiagonal = getChessboard().findNextDiagonal(true, false, new double[]{getCurrentX(), getCurrentY()});
-        for (int i = 0; i < getSquaresItCanMove(); i++) {
-            if (getCurrentX() == (squareSize * 7)
-                    || getCurrentY() == 0
-                    || nextDiagonal[0] > (squareSize * 7)
-                    || nextDiagonal[1] < 0) {
-                break;
-            } else if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])
-                    && getPieceColour() != getChessboard().getPiece(nextDiagonal[0], nextDiagonal[1]).getPieceColour()) {
-                diagonalSquares.add(Square.find(nextDiagonal[0], nextDiagonal[1], squareSize));
-                break;
-            } else if (!getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
-                diagonalSquares.add(Square.find(nextDiagonal[0], nextDiagonal[1], squareSize));
-            } else {
-                break;
-            }
-            nextDiagonal[0] += squareSize;
-            nextDiagonal[1] -= squareSize;
-        }
+        patternOne.removeIf(Objects::isNull);
+        patternTwo.removeIf(Objects::isNull);
+        patternThree.removeIf(Objects::isNull);
+        patternFour.removeIf(Objects::isNull);
 
-        // Evaluate diagonal down/left squares
-        nextDiagonal = getChessboard().findNextDiagonal(false, true, new double[]{getCurrentX(), getCurrentY()});
-        for (int i = 0; i < getSquaresItCanMove(); i++) {
-            if (getCurrentY() == (squareSize * 7)
-                    || getCurrentX() == 0
-                    || nextDiagonal[0] < 0
-                    || nextDiagonal[1] > (squareSize * 7)) {
-                break;
-            } else if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])
-                    && getPieceColour() != getChessboard().getPiece(nextDiagonal[0], nextDiagonal[1]).getPieceColour()) {
-                diagonalSquares.add(Square.find(nextDiagonal[0], nextDiagonal[1], squareSize));
-                break;
-            } else if (!getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
-                diagonalSquares.add(Square.find(nextDiagonal[0], nextDiagonal[1], squareSize));
-            } else if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
-                break;
-            }
-            nextDiagonal[0] -= squareSize;
-            nextDiagonal[1] += squareSize;
-        }
+        attackPattern.addAll(removeBlockedSquares(patternOne));
+        attackPattern.addAll(removeBlockedSquares(patternTwo));
+        attackPattern.addAll(removeBlockedSquares(patternThree));
+        attackPattern.addAll(removeBlockedSquares(patternFour));
 
-        // Evaluate diagonal down/right squares
-        nextDiagonal = getChessboard().findNextDiagonal(false, false, new double[]{getCurrentX(), getCurrentY()});
-        for (int i = 0; i < getSquaresItCanMove(); i++) {
-            if (getCurrentY() == (squareSize * 7)
-                    || getCurrentX() == (squareSize * 7)
-                    || nextDiagonal[0] > (squareSize * 7)
-                    || nextDiagonal[1] > (squareSize * 7)) {
-                break;
-            } else if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])
-                    && getPieceColour() != getChessboard().getPiece(nextDiagonal[0], nextDiagonal[1]).getPieceColour()) {
-                diagonalSquares.add(Square.find(nextDiagonal[0], nextDiagonal[1], squareSize));
-                break;
-            } else if (!getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
-                diagonalSquares.add(Square.find(nextDiagonal[0], nextDiagonal[1], squareSize));
-            } else if (getChessboard().isSquareOccupied(nextDiagonal[0], nextDiagonal[1])) {
-                break;
-            }
-            nextDiagonal[0] += squareSize;
-            nextDiagonal[1] += squareSize;
-        }
-        return diagonalSquares;
+        return attackPattern;
     }
 
     public Square getSquare() {
@@ -276,10 +200,6 @@ public abstract class Piece extends Rectangle {
 
     public void setHasMoved(boolean hasMoved) {
         this.hasMoved = hasMoved;
-    }
-
-    public boolean isHasMoved() {
-        return hasMoved;
     }
 
     public boolean isSelected() {

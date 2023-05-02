@@ -23,18 +23,17 @@ public class Knight extends Piece {
 
     private ArrayList<Square> getAttackPattern() {
         ArrayList<Square> attackPattern = new ArrayList<>();
-
         double squareSize = getChessboard().getSquareSize();
 
         // Every Knight attack pattern
-        attackPattern.add(Square.find((getCurrentX() - squareSize), (getCurrentY() - (squareSize * 2)), squareSize));
-        attackPattern.add(Square.find((getCurrentX() + squareSize), (getCurrentY() - (squareSize * 2)), squareSize));
-        attackPattern.add(Square.find((getCurrentX() - squareSize), (getCurrentY() + (squareSize * 2)), squareSize));
-        attackPattern.add(Square.find((getCurrentX() + squareSize), (getCurrentY() + (squareSize * 2)), squareSize));
-        attackPattern.add(Square.find((getCurrentX() - (squareSize * 2)), (getCurrentY() - squareSize), squareSize));
-        attackPattern.add(Square.find((getCurrentX() + (squareSize * 2)), (getCurrentY() - squareSize), squareSize));
-        attackPattern.add(Square.find((getCurrentX() - (squareSize * 2)), (getCurrentY() + squareSize), squareSize));
-        attackPattern.add(Square.find((getCurrentX() + (squareSize * 2)), (getCurrentY() + squareSize), squareSize));
+        attackPattern.add(Square.find(getCurrentX() - squareSize, getCurrentY() - (squareSize * 2), squareSize));
+        attackPattern.add(Square.find(getCurrentX() + squareSize, getCurrentY() - (squareSize * 2), squareSize));
+        attackPattern.add(Square.find(getCurrentX() - squareSize, getCurrentY() + (squareSize * 2), squareSize));
+        attackPattern.add(Square.find(getCurrentX() + squareSize, getCurrentY() + (squareSize * 2), squareSize));
+        attackPattern.add(Square.find(getCurrentX() - (squareSize * 2), getCurrentY() - squareSize, squareSize));
+        attackPattern.add(Square.find(getCurrentX() + (squareSize * 2), getCurrentY() - squareSize, squareSize));
+        attackPattern.add(Square.find(getCurrentX() - (squareSize * 2), getCurrentY() + squareSize, squareSize));
+        attackPattern.add(Square.find(getCurrentX() + (squareSize * 2), getCurrentY() + squareSize, squareSize));
 
         // Remove if square !exist, or if square is occupied by the same colour
         attackPattern.removeIf(attackSquare -> (attackSquare == null // If null (out of bounds)

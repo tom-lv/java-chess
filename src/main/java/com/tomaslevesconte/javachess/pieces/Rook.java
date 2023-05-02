@@ -9,7 +9,6 @@ import java.util.ArrayList;
 
 public class Rook extends Piece {
 
-    // Constant
     private static final int SQUARES_IT_CAN_MOVE = 8;
 
     public Rook(PieceColour pieceColour, Square square, Chessboard chessboard) {
@@ -20,8 +19,8 @@ public class Rook extends Piece {
     @Override
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
-        legalMoves.addAll(getVerticalAttackPatterns());
-        legalMoves.addAll(getHorizontalAttackPatterns());
+        legalMoves.addAll(getVerticalAttackPattern());
+        legalMoves.addAll(getHorizontalAttackPattern());
         return legalMoves;
     }
 }

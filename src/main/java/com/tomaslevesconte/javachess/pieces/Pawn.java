@@ -28,14 +28,13 @@ public class Pawn extends Piece {
 
     private ArrayList<Square> getMovePattern() {
         ArrayList<Square> movePattern = new ArrayList<>();
-
         double squareSize = getChessboard().getSquareSize();
         // Pawns move in different directions depending on colour
         double multiplier = getPieceColour().equals(PieceColour.WHITE) ? -squareSize : squareSize;
 
         // Every pawn move pattern
-        movePattern.add(Square.find(getCurrentX(), (getCurrentY() + multiplier), squareSize));
-        movePattern.add(Square.find(getCurrentX(), (getCurrentY() + (multiplier * 2)), squareSize));
+        movePattern.add(Square.find(getCurrentX(), getCurrentY() + multiplier, squareSize));
+        movePattern.add(Square.find(getCurrentX(), getCurrentY() + (multiplier * 2), squareSize));
 
         // Remove if square !exist, or if square is occupied, or if square == 2nd square and pawn has moved
         movePattern.removeIf(moveSquare -> (moveSquare == null
@@ -48,14 +47,13 @@ public class Pawn extends Piece {
 
     private ArrayList<Square> getAttackPattern() {
         ArrayList<Square> attackPattern = new ArrayList<>();
-
         double squareSize = getChessboard().getSquareSize();
         // Pawns move in different directions depending on colour
         double multiplier = getPieceColour().equals(PieceColour.WHITE) ? -squareSize : squareSize;
 
         // Every pawn attack pattern
-        attackPattern.add(Square.find((getCurrentX() - squareSize), (getCurrentY() + multiplier), squareSize));
-        attackPattern.add(Square.find((getCurrentX() + squareSize), (getCurrentY() + multiplier), squareSize));
+        attackPattern.add(Square.find(getCurrentX() - squareSize, getCurrentY() + multiplier, squareSize));
+        attackPattern.add(Square.find(getCurrentX() + squareSize, getCurrentY() + multiplier, squareSize));
 
         // Remove if square !exist, or if square is !occupied, or if square is occupied by the same colour
         attackPattern.removeIf(attackSquare -> (attackSquare == null // If null (out of bounds)
