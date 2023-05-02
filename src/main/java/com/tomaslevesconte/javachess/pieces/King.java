@@ -9,8 +9,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class King extends Piece {
-
-    // Constant
+    
     private static final int SQUARES_IT_CAN_MOVE = 1;
 
     public King(PieceColour pieceColour, Square square, Chessboard chessboard) {
@@ -45,7 +44,7 @@ public class King extends Piece {
                 opponentsMoves.addAll(piece.evaluateDiagonalSquares());
                 // If the piece's colour is different & == 'Pawn'
             } else if (piece.getPieceColour() != getPieceColour() && piece.getPieceType().equals(PieceType.PAWN)) {
-                opponentsMoves.addAll(getEnemyPawnAttackPatterns(piece));
+                opponentsMoves.addAll(getEnemyPawnAttackPattern(piece));
                 // If the piece colour is different & != 'King' or 'Pawn'
             } else if (piece.getPieceColour() != getPieceColour()) {
                 opponentsMoves.addAll(piece.getLegalMoves());
@@ -55,24 +54,24 @@ public class King extends Piece {
         return opponentsMoves;
     }
 
-    private ArrayList<Square> getEnemyPawnAttackPatterns(Piece piece) {
-        ArrayList<Square> attackPatterns = new ArrayList<>();
+    private ArrayList<Square> getEnemyPawnAttackPattern(Piece piece) {
+        ArrayList<Square> attackPattern = new ArrayList<>();
 
         double squareSize = getChessboard().getSquareSize();
         // Pawns move in different directions depending on colour
         double multiplier = piece.getPieceColour().equals(PieceColour.WHITE) ? -squareSize : squareSize;
 
         // Every pawn attack pattern
-        attackPatterns.add(Square.find((piece.getCurrentX() - squareSize), (piece.getCurrentY() + multiplier), squareSize));
-        attackPatterns.add(Square.find((piece.getCurrentX() + squareSize), (piece.getCurrentY() + multiplier), squareSize));
+        attackPattern.add(Square.find((piece.getCurrentX() - squareSize), (piece.getCurrentY() + multiplier), squareSize));
+        attackPattern.add(Square.find((piece.getCurrentX() + squareSize), (piece.getCurrentY() + multiplier), squareSize));
 
-        attackPatterns.removeIf(Objects::isNull); // Remove square if null (out of bounds)
+        attackPattern.removeIf(Objects::isNull); // Remove square if null (out of bounds)
 
-        return attackPatterns;
+        return attackPattern;
     }
 
     private ArrayList<Square> getCastlingPattern() {
-        ArrayList<Square> castleSquares = new ArrayList<>();
+        ArrayList<Square> castlePattern = new ArrayList<>();
         ArrayList<Piece> rooks = getChessboard().getRooks(getPieceColour());
 
         // Evaluate Queen's side
@@ -86,7 +85,7 @@ public class King extends Piece {
             // Do nothing
         } else {
             Square castleSquare = getPieceColour().equals(PieceColour.WHITE) ? Square.C1 : Square.C8;
-            castleSquares.add(castleSquare);
+            castlePattern.add(castleSquare);
         }
 
         // Evaluate King's side
@@ -99,9 +98,9 @@ public class King extends Piece {
             // Do nothing
         } else {
             Square castleSquare = getPieceColour().equals(PieceColour.WHITE) ? Square.G1 : Square.G8;
-            castleSquares.add(castleSquare);
+            castlePattern.add(castleSquare);
         }
 
-        return castleSquares;
+        return castlePattern;
     }
 }

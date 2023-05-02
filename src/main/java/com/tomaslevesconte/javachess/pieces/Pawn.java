@@ -9,7 +9,6 @@ import java.util.ArrayList;
 
 public class Pawn extends Piece {
 
-    // Constant
     private static final int SQUARES_IT_CAN_MOVE = 2;
 
     public Pawn(PieceColour pieceColour, Square square, Chessboard chessboard) {
@@ -21,49 +20,49 @@ public class Pawn extends Piece {
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
 
-        legalMoves.addAll(getPawnMovePatterns()); // Add move patterns
-        legalMoves.addAll(getPawnAttackPatterns()); // Add attack patterns
+        legalMoves.addAll(getMovePattern()); // Add move patterns
+        legalMoves.addAll(getAttackPattern()); // Add attack patterns
 
         return legalMoves;
     }
 
-    private ArrayList<Square> getPawnMovePatterns() {
-        ArrayList<Square> movePatterns = new ArrayList<>();
+    private ArrayList<Square> getMovePattern() {
+        ArrayList<Square> movePattern = new ArrayList<>();
 
         double squareSize = getChessboard().getSquareSize();
         // Pawns move in different directions depending on colour
         double multiplier = getPieceColour().equals(PieceColour.WHITE) ? -squareSize : squareSize;
 
         // Every pawn move pattern
-        movePatterns.add(Square.find(getCurrentX(), (getCurrentY() + multiplier), squareSize));
-        movePatterns.add(Square.find(getCurrentX(), (getCurrentY() + (multiplier * 2)), squareSize));
+        movePattern.add(Square.find(getCurrentX(), (getCurrentY() + multiplier), squareSize));
+        movePattern.add(Square.find(getCurrentX(), (getCurrentY() + (multiplier * 2)), squareSize));
 
         // Remove if square !exist, or if square is occupied, or if square == 2nd square and pawn has moved
-        movePatterns.removeIf(moveSquare -> (moveSquare == null
+        movePattern.removeIf(moveSquare -> (moveSquare == null
                 || getChessboard().isSquareOccupied(moveSquare))
-                || moveSquare.equals(movePatterns.get(1))
+                || moveSquare.equals(movePattern.get(1))
                 && hasMoved());
 
-        return movePatterns;
+        return movePattern;
     }
 
-    private ArrayList<Square> getPawnAttackPatterns() {
-        ArrayList<Square> attackPatterns = new ArrayList<>();
+    private ArrayList<Square> getAttackPattern() {
+        ArrayList<Square> attackPattern = new ArrayList<>();
 
         double squareSize = getChessboard().getSquareSize();
         // Pawns move in different directions depending on colour
         double multiplier = getPieceColour().equals(PieceColour.WHITE) ? -squareSize : squareSize;
 
         // Every pawn attack pattern
-        attackPatterns.add(Square.find((getCurrentX() - squareSize), (getCurrentY() + multiplier), squareSize));
-        attackPatterns.add(Square.find((getCurrentX() + squareSize), (getCurrentY() + multiplier), squareSize));
+        attackPattern.add(Square.find((getCurrentX() - squareSize), (getCurrentY() + multiplier), squareSize));
+        attackPattern.add(Square.find((getCurrentX() + squareSize), (getCurrentY() + multiplier), squareSize));
 
         // Remove if square !exist, or if square is !occupied, or if square is occupied by the same colour
-        attackPatterns.removeIf(attackSquare -> (attackSquare == null // If null (out of bounds)
+        attackPattern.removeIf(attackSquare -> (attackSquare == null // If null (out of bounds)
                 || !getChessboard().isSquareOccupied(attackSquare)
                 || getChessboard().isSquareOccupied(attackSquare)
                 && getChessboard().getPiece(attackSquare).getPieceColour().equals(getPieceColour())));
 
-        return attackPatterns;
+        return attackPattern;
     }
 }
