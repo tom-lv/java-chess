@@ -137,7 +137,7 @@ public abstract class Piece extends Rectangle {
         ArrayList<Square> patternThree = new ArrayList<>(); // Down x, up y
         ArrayList<Square> patternFour = new ArrayList<>(); // Up x, up y
 
-        for (int i = 1; i < getSquaresItCanMove(); i++) {
+        for (int i = 1; i <= getSquaresItCanMove(); i++) {
             double squareSize = getChessboard().getSquareSize();
             patternOne.add(Square.find(getCurrentX() + (-squareSize * i), getCurrentY() + (-squareSize * i), squareSize));
             patternTwo.add(Square.find(getCurrentX() + (squareSize * i), getCurrentY() + (-squareSize * i), squareSize));
