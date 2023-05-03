@@ -25,7 +25,7 @@ public class King extends Piece {
         legalMoves.addAll(getVerticalAttackPattern());
         legalMoves.addAll(getHorizontalAttackPattern());
         legalMoves.addAll(getDiagonalAttackPattern());
-        legalMoves.addAll(getCastlePattern()); // If castling is possible
+//        legalMoves.addAll(getCastlePattern()); // If castling is possible (need to fix)
         // Stop the King from putting itself in check by removing the opponent's moves from the possible pool
         legalMoves.removeAll(getOpponentsMoves());
 
