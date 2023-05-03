@@ -52,15 +52,13 @@ public abstract class Piece extends Rectangle {
         setFill(new ImagePattern(new Image(IMAGE_PATH + colourInitial + pieceInitial + IMAGE_TYPE)));
     }
 
-    public boolean move(double newX, double newY) {
+    public boolean move(Square newSquare) {
         double squareSize = getChessboard().getSquareSize();
-        for (Square legalMove : getLegalMoves()) {
-            double lmX = Math.round(legalMove.getX(squareSize));
-            double lmY = Math.round(legalMove.getY(squareSize));
-            if (Math.round(newX) == lmX && Math.round(newY) == lmY) {
+        for (Square legalSquare : getLegalMoves()) {
+            if (newSquare.equals(legalSquare)) {
                 setHasMoved(true);
-                setCurrentX(newX);
-                setCurrentY(newY);
+                setCurrentX(newSquare.getX(squareSize));
+                setCurrentY(newSquare.getY(squareSize));
                 return true;
             }
         }
@@ -75,19 +73,6 @@ public abstract class Piece extends Rectangle {
     }
 
     public abstract ArrayList<Square> getLegalMoves();
-
-    private ArrayList<Square> removeBlockedSquares(ArrayList<Square> sList) {
-        for (int i = 0; i < sList.size(); i++) {
-            if (getChessboard().isSquareOccupied(sList.get(i))
-                    && getChessboard().getPiece(sList.get(i)).getPieceColour() != getPieceColour()) {
-                sList.removeAll(sList.subList(i + 1, sList.size()));
-            } else if (getChessboard().isSquareOccupied(sList.get(i))
-                    && getChessboard().getPiece(sList.get(i)).getPieceColour().equals(getPieceColour())) {
-                sList.removeAll(sList.subList(i, sList.size()));
-            }
-        }
-        return sList;
-    }
 
     public ArrayList<Square> getVerticalAttackPattern() {
         ArrayList<Square> attackPattern = new ArrayList<>();
@@ -154,6 +139,19 @@ public abstract class Piece extends Rectangle {
         attackPattern.addAll(removeBlockedSquares(patternFour));
 
         return attackPattern;
+    }
+
+    private ArrayList<Square> removeBlockedSquares(ArrayList<Square> sList) {
+        for (int i = 0; i < sList.size(); i++) {
+            if (getChessboard().isSquareOccupied(sList.get(i))
+                    && getChessboard().getPiece(sList.get(i)).getPieceColour() != getPieceColour()) {
+                sList.removeAll(sList.subList(i + 1, sList.size()));
+            } else if (getChessboard().isSquareOccupied(sList.get(i))
+                    && getChessboard().getPiece(sList.get(i)).getPieceColour().equals(getPieceColour())) {
+                sList.removeAll(sList.subList(i, sList.size()));
+            }
+        }
+        return sList;
     }
 
     public Square getSquare() {

@@ -95,7 +95,7 @@ public class Chessboard {
             }
             index++;
         }
-        return 0;
+        return index;
     }
 
     public Piece getQueenSideRook(PieceColour pieceColour) {

@@ -47,12 +47,13 @@ public class PieceBuilder {
             piece.setCursor(Cursor.OPEN_HAND);
             double newX = chessboard.findClosestSquare(mouseEvent.getSceneX(), chessboard.getPossibleXAndYCoordinates());
             double newY = chessboard.findClosestSquare(mouseEvent.getSceneY(), chessboard.getPossibleXAndYCoordinates());
+            Square newSquare = Square.find(newX, newY, chessboard.getSquareSize());
             double oldX = piece.getCurrentX();
             double oldY = piece.getCurrentY();
             int pieceIndex = chessboard.getPieceIndex(Square.find(piece.getCurrentX(), piece.getCurrentY(), chessboard.getSquareSize()));
-            Piece enemyPiece = chessboard.getPiece(Square.find(newX, newY, chessboard.getSquareSize())); // If exists, else null
+            Piece enemyPiece = chessboard.getPiece(newSquare); // If exists, else null
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)
-                    && chessboard.getPieceList().get(pieceIndex).move(newX, newY)) {
+                    && chessboard.getPieceList().get(pieceIndex).move(newSquare)) {
                 attemptCapture(enemyPiece); // If exists
                 attemptCastle(oldX, oldY, piece); // If possible and piece equals king
                 piece.setLayoutX(newX); // Update pos on board
