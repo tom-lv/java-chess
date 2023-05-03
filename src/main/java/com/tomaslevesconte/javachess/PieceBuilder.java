@@ -27,7 +27,6 @@ public class PieceBuilder {
     private void addPiece(Piece piece) {
         piece.setOnMousePressed(mouseEvent -> {
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-                piece.setSelected(true);
                 showLegalMoves(piece);
                 piece.setCursor(Cursor.CLOSED_HAND);
                 piece.toFront(); // Move piece in front of its siblings in terms of z-order
@@ -45,28 +44,51 @@ public class PieceBuilder {
 
         piece.setOnMouseReleased(mouseEvent -> {
             piece.setCursor(Cursor.OPEN_HAND);
-            double newX = chessboard.findClosestSquare(mouseEvent.getSceneX(), chessboard.getPossibleXAndYCoordinates());
-            double newY = chessboard.findClosestSquare(mouseEvent.getSceneY(), chessboard.getPossibleXAndYCoordinates());
-            Square newSquare = Square.find(newX, newY, chessboard.getSquareSize());
-            double oldX = piece.getCurrentX();
-            double oldY = piece.getCurrentY();
-            int pieceIndex = chessboard.getPieceIndex(Square.find(piece.getCurrentX(), piece.getCurrentY(), chessboard.getSquareSize()));
-            Piece enemyPiece = chessboard.getPiece(newSquare); // If exists, else null
+
+            Square newSquare = Square.find(
+                    chessboard.findClosestSquare(mouseEvent.getSceneX(), chessboard.getPossibleXAndYCoordinates()),
+                    chessboard.findClosestSquare(mouseEvent.getSceneY(), chessboard.getPossibleXAndYCoordinates()),
+                    chessboard.getSquareSize());
+
+            Square lastSquare = Square.find(piece.getCurrentX(), piece.getCurrentY(), chessboard.getSquareSize());
+
+            int pieceIndex = chessboard.getPieceIndex(lastSquare);
+            Piece enemyPiece = chessboard.getPiece(newSquare);
+
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)
+                    && newSquare != null
                     && chessboard.getPieceList().get(pieceIndex).move(newSquare)) {
-                attemptCapture(enemyPiece); // If exists
-                attemptCastle(oldX, oldY, piece); // If possible and piece equals king
-                piece.setLayoutX(newX); // Update pos on board
-                piece.setLayoutY(newY); // Update pos on board
-                hideLegalMoves(); // Once placed, hide legal moves
+                attemptCapture(enemyPiece);
+                attemptCastle(piece, lastSquare);
+                updatePositionOnBoard(piece, newSquare);
+                hideLegalMoves();
             } else {
-                piece.setLayoutX(piece.getCurrentX());
-                piece.setLayoutY(piece.getCurrentY());
+                updatePositionOnBoard(piece, Square.find(
+                        piece.getCurrentX(),
+                        piece.getCurrentY(),
+                        chessboard.getSquareSize()
+                ));
             }
         });
 
         chessboard.getPieceList().add(piece);
         chessboard.getAnchorPane().getChildren().add(piece);
+    }
+
+    private void updatePositionOnBoard(Piece piece, Square square) {
+        if (piece != null && square != null) {
+            piece.setLayoutX(square.getX(chessboard.getSquareSize()));
+            piece.setLayoutY(square.getY(chessboard.getSquareSize()));
+        }
+    }
+
+    private void updatePositionOnBoardAndList(Piece piece, Square square) {
+        if (piece != null && square != null) {
+            piece.setCurrentX(square.getX(chessboard.getSquareSize()));
+            piece.setCurrentY(square.getY(chessboard.getSquareSize()));
+            piece.setLayoutX(square.getX(chessboard.getSquareSize()));
+            piece.setLayoutY(square.getY(chessboard.getSquareSize()));
+        }
     }
 
     private void attemptCapture(Piece capturedPiece) {
@@ -76,30 +98,29 @@ public class PieceBuilder {
         }
     }
 
-    private void attemptCastle(double startX, double startY, Piece king) {
+    private void attemptCastle(Piece king, Square square) {
         if (king.getPieceType().equals(PieceType.KING)) {
-            Square startSquare = king.getPieceColour().equals(PieceColour.WHITE) ? Square.E1 : Square.E8;
-            Square[] kingPos = king.getPieceColour().equals(PieceColour.WHITE) ? new Square[]{Square.C1, Square.G1} : new Square[]{Square.C8, Square.G8};
-            Square[] rookPos = king.getPieceColour().equals(PieceColour.WHITE) ? new Square[]{Square.D1, Square.F1} : new Square[]{Square.D8, Square.F8};
+            Square startSquare = king.getPieceColour().equals(PieceColour.WHITE)
+                    ? Square.E1
+                    : Square.E8;
+            Square[] kingPos = king.getPieceColour().equals(PieceColour.WHITE)
+                    ? new Square[]{Square.C1, Square.G1}
+                    : new Square[]{Square.C8, Square.G8};
+            Square[] rookPos = king.getPieceColour().equals(PieceColour.WHITE)
+                    ? new Square[]{Square.D1, Square.F1}
+                    : new Square[]{Square.D8, Square.F8};
 
-            if (Objects.equals(Square.find(startX, startY, chessboard.getSquareSize()), startSquare)
+            if (Objects.equals(square, startSquare)
                     && king.getSquare().equals(kingPos[0])) {
-                Piece queenSideRook = chessboard.getRooks(king.getPieceColour()).get(0);
-                movePiece(queenSideRook, rookPos[0]);
+                Piece queenSideRook = chessboard.getQueenSideRook(king.getPieceColour());
+                updatePositionOnBoardAndList(queenSideRook, rookPos[0]);
 
-            } else if (Objects.equals(Square.find(startX, startY, chessboard.getSquareSize()), startSquare)
+            } else if (Objects.equals(square, startSquare)
                     && king.getSquare().equals(kingPos[1])) {
-                Piece kingSideRook = chessboard.getRooks(king.getPieceColour()).get(1);
-                movePiece(kingSideRook, rookPos[1]);
+                Piece kingSideRook = chessboard.getKingSideRook(king.getPieceColour());
+                updatePositionOnBoardAndList(kingSideRook, rookPos[1]);
             }
         }
-    }
-
-    private void movePiece(Piece piece, Square square) {
-        piece.setCurrentX(square.getX(chessboard.getSquareSize()));
-        piece.setCurrentY(square.getY(chessboard.getSquareSize()));
-        piece.setLayoutX(square.getX(chessboard.getSquareSize()));
-        piece.setLayoutY(square.getY(chessboard.getSquareSize()));
     }
 
     private void addWhitePieces() {

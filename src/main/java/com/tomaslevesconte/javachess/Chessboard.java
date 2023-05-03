@@ -126,17 +126,6 @@ public class Chessboard {
         }
     }
 
-    public ArrayList<Piece> getRooks(PieceColour pieceColour) {
-        ArrayList<Piece> rooks = new ArrayList<>();
-        for (Piece piece : getPieceList()) {
-            if (piece.getPieceColour().equals(pieceColour)
-                    && piece.getPieceType().equals(PieceType.ROOK)) {
-                rooks.add(piece);
-            }
-        }
-        return rooks;
-    }
-
     public double getSquareSize() {
         return squareSize;
     }

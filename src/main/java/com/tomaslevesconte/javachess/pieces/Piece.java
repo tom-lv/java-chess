@@ -25,7 +25,6 @@ public abstract class Piece extends Rectangle {
     private final int squaresItCanMove;
     private final Chessboard chessboard;
     private boolean hasMoved;
-    private boolean isSelected;
 
     public Piece(PieceType pieceType, PieceColour pieceColour, Square square, int squaresItCanMove, Chessboard chessboard) {
         this.pieceType = pieceType;
@@ -35,7 +34,6 @@ public abstract class Piece extends Rectangle {
         this.squaresItCanMove = squaresItCanMove;
         this.chessboard = chessboard;
         this.hasMoved = false;
-        this.isSelected = false;
     }
 
     public void createPiece() {
@@ -196,13 +194,5 @@ public abstract class Piece extends Rectangle {
 
     public void setHasMoved(boolean hasMoved) {
         this.hasMoved = hasMoved;
-    }
-
-    public boolean isSelected() {
-        return isSelected;
-    }
-
-    public void setSelected(boolean selected) {
-        isSelected = selected;
     }
 }
