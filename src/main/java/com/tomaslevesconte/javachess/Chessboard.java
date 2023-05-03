@@ -10,12 +10,10 @@ import java.util.ArrayList;
 
 public class Chessboard {
 
-    // Constants
     private static final byte TOTAL_NUM_OF_SQUARES = 64;
     private static final Color LIGHT_SQUARE_COLOUR = Color.web("#f0eef1"); // off-white #f0eef1, beach #F2D8B5
     private static final Color DARK_SQUARE_COLOUR = Color.web("#8877B3"); // purple #8877B3, orange #B78B64
 
-    // Instance variables
     private final double squareSize;
     private final AnchorPane anchorPane;
     private final ArrayList<Piece> pieceList = new ArrayList<>();
@@ -68,16 +66,6 @@ public class Chessboard {
         return result;
     }
 
-    public boolean isSquareOccupied(double squareX, double squareY) {
-        for (Piece piece : getPieceList()) {
-            if (Math.round(squareX) == Math.round(piece.getCurrentX())
-                    && Math.round(squareY) == Math.round(piece.getCurrentY())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public boolean isSquareOccupied(Square square) {
         for (Piece piece : getPieceList()) {
             if (Math.round(square.getX(getSquareSize())) == Math.round(piece.getCurrentX())
@@ -88,16 +76,6 @@ public class Chessboard {
         return false;
     }
 
-    public Piece getPiece(double squareX, double squareY) {
-        for (Piece piece : getPieceList()) {
-            if (Math.round(squareX) == Math.round(piece.getCurrentX())
-                    && Math.round(squareY) == Math.round(piece.getCurrentY())) {
-                return piece;
-            }
-        }
-        return null;
-    }
-
     public Piece getPiece(Square square) {
         for (Piece piece : getPieceList()) {
             if (Math.round(square.getX(getSquareSize())) == Math.round(piece.getCurrentX())
@@ -106,6 +84,46 @@ public class Chessboard {
             }
         }
         return null;
+    }
+
+    public int getPieceIndex(Square square) {
+        int index = 0;
+        for (Piece piece : getPieceList()) {
+            if (Math.round(square.getX(getSquareSize())) == Math.round(piece.getCurrentX())
+                    && Math.round(square.getY(getSquareSize())) == Math.round(piece.getCurrentY())) {
+                return index;
+            }
+            index++;
+        }
+        return 0;
+    }
+
+    public Piece getQueenSideRook(PieceColour pieceColour) {
+        if (pieceColour.equals(PieceColour.WHITE)
+                && getPiece(Square.A1) != null
+                && getPiece(Square.A1).getPieceType().equals(PieceType.ROOK)) {
+            return getPiece(Square.A1);
+        } else if (pieceColour.equals(PieceColour.BLACK)
+                && getPiece(Square.A8) != null
+                && getPiece(Square.A8).getPieceType().equals(PieceType.ROOK)) {
+            return getPiece(Square.A8);
+        } else {
+            return null;
+        }
+    }
+
+    public Piece getKingSideRook(PieceColour pieceColour) {
+        if (pieceColour.equals(PieceColour.WHITE)
+                && getPiece(Square.H1) != null
+                && getPiece(Square.H1).getPieceType().equals(PieceType.ROOK)) {
+            return getPiece(Square.H1);
+        } else if (pieceColour.equals(PieceColour.BLACK)
+                && getPiece(Square.H8) != null
+                && getPiece(Square.H8).getPieceType().equals(PieceType.ROOK)) {
+            return getPiece(Square.H8);
+        } else {
+            return null;
+        }
     }
 
     public ArrayList<Piece> getRooks(PieceColour pieceColour) {

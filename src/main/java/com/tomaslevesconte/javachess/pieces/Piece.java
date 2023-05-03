@@ -67,12 +67,10 @@ public abstract class Piece extends Rectangle {
         return false;
     }
 
-    // Change
     public void setCaptured() {
         // King cannot be captured
         if (!getPieceType().equals(PieceType.KING)) {
-            setCurrentX(-1); // No longer on the board
-            setCurrentY(-1); // No longer on the board
+            getChessboard().getPieceList().remove(this);
         }
     }
 

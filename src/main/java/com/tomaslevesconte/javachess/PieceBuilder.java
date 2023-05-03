@@ -16,9 +16,7 @@ import java.util.Objects;
 
 public class PieceBuilder {
 
-    // Instance variables
     private final Chessboard chessboard;
-    private int pieceIndex = 0;
 
     public PieceBuilder(Chessboard chessboard) {
         this.chessboard = chessboard;
@@ -27,8 +25,6 @@ public class PieceBuilder {
     }
 
     private void addPiece(Piece piece) {
-        int currentPieceIndex = pieceIndex++;
-        
         piece.setOnMousePressed(mouseEvent -> {
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                 piece.setSelected(true);
@@ -53,9 +49,10 @@ public class PieceBuilder {
             double newY = chessboard.findClosestSquare(mouseEvent.getSceneY(), chessboard.getPossibleXAndYCoordinates());
             double oldX = piece.getCurrentX();
             double oldY = piece.getCurrentY();
-            Piece enemyPiece = chessboard.getPiece(newX, newY); // If exists, else null
+            int pieceIndex = chessboard.getPieceIndex(Square.find(piece.getCurrentX(), piece.getCurrentY(), chessboard.getSquareSize()));
+            Piece enemyPiece = chessboard.getPiece(Square.find(newX, newY, chessboard.getSquareSize())); // If exists, else null
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)
-                    && chessboard.getPieceList().get(currentPieceIndex).move(newX, newY)) {
+                    && chessboard.getPieceList().get(pieceIndex).move(newX, newY)) {
                 attemptCapture(enemyPiece); // If exists
                 attemptCastle(oldX, oldY, piece); // If possible and piece equals king
                 piece.setLayoutX(newX); // Update pos on board
@@ -157,7 +154,7 @@ public class PieceBuilder {
             legalMove.setSmooth(false);
             legalMove.setLayoutX(move.getX(chessboard.getSquareSize()));
             legalMove.setLayoutY(move.getY(chessboard.getSquareSize()));
-            if (chessboard.isSquareOccupied(move.getX(squareSize), move.getY(squareSize))) {
+            if (chessboard.isSquareOccupied(Square.find(move.getX(squareSize), move.getY(squareSize), chessboard.getSquareSize()))) {
                 legalMove.setFill(Color.web("#9A3048", 1));
             } else {
                 legalMove.setFill(new ImagePattern(new Image("com/tomaslevesconte/javachess/hc.png")));

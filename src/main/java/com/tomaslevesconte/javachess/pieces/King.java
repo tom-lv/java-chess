@@ -25,7 +25,7 @@ public class King extends Piece {
         legalMoves.addAll(getVerticalAttackPattern());
         legalMoves.addAll(getHorizontalAttackPattern());
         legalMoves.addAll(getDiagonalAttackPattern());
-//        legalMoves.addAll(getCastlePattern()); // If castling is possible (need to fix)
+        legalMoves.addAll(getCastlePattern()); // If castling is possible (need to fix)
         // Stop the King from putting itself in check by removing the opponent's moves from the possible pool
         legalMoves.removeAll(getOpponentsMoves());
 
@@ -71,31 +71,32 @@ public class King extends Piece {
 
     private ArrayList<Square> getCastlePattern() {
         ArrayList<Square> castlePattern = new ArrayList<>();
-        ArrayList<Piece> rooks = getChessboard().getRooks(getPieceColour());
 
         // Evaluate Queen's side
+        Piece queenSideRook = getChessboard().getQueenSideRook(getPieceColour());
         Square[] queenSideSquares = getPieceColour().equals(PieceColour.WHITE)
                 ? new Square[]{Square.B1, Square.C1, Square.D1}
                 : new Square[]{Square.B8, Square.C8, Square.D8};
-        if (hasMoved() || rooks.get(0).hasMoved()
+        if (hasMoved() || queenSideRook != null && queenSideRook.hasMoved()
                 || getChessboard().isSquareOccupied(queenSideSquares[0])
                 || getChessboard().isSquareOccupied(queenSideSquares[1])
                 || getChessboard().isSquareOccupied(queenSideSquares[2])) {
             // Do nothing
-        } else {
+        } else if (queenSideRook != null) {
             Square castleSquare = getPieceColour().equals(PieceColour.WHITE) ? Square.C1 : Square.C8;
             castlePattern.add(castleSquare);
         }
 
         // Evaluate King's side
+        Piece kingSideRook = getChessboard().getKingSideRook(getPieceColour());
         Square[] kingSideSquares = getPieceColour().equals(PieceColour.WHITE)
                 ? new Square[]{Square.F1, Square.G1}
                 : new Square[]{Square.F8, Square.G8};
-        if (hasMoved() || rooks.get(1).hasMoved()
+        if (hasMoved() || kingSideRook != null && kingSideRook.hasMoved()
                 || getChessboard().isSquareOccupied(kingSideSquares[0])
                 || getChessboard().isSquareOccupied(kingSideSquares[1])) {
             // Do nothing
-        } else {
+        } else if (kingSideRook != null) {
             Square castleSquare = getPieceColour().equals(PieceColour.WHITE) ? Square.G1 : Square.G8;
             castlePattern.add(castleSquare);
         }
