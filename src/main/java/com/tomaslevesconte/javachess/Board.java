@@ -1,27 +1,31 @@
 package com.tomaslevesconte.javachess;
 
-import com.tomaslevesconte.javachess.pieces.*;
-
+import com.tomaslevesconte.javachess.pieces.Piece;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 
-public class Chessboard {
+public class Board {
 
     private static final byte TOTAL_NUM_OF_SQUARES = 64;
     private static final Color LIGHT_SQUARE_COLOUR = Color.web("#f0eef1"); // off-white #f0eef1, beach #F2D8B5
     private static final Color DARK_SQUARE_COLOUR = Color.web("#8877B3"); // purple #8877B3, orange #B78B64
 
+    private boolean isWhitesTurn = true;
+
     private final double squareSize;
     private final AnchorPane anchorPane;
     private final ArrayList<Piece> pieceList = new ArrayList<>();
+    private final GameState gameState;
 
-    public Chessboard(double boardSize, AnchorPane anchorPane) {
+    public Board(double boardSize, AnchorPane anchorPane) {
         this.squareSize = boardSize / Math.sqrt(TOTAL_NUM_OF_SQUARES);
         this.anchorPane = anchorPane;
+        this.gameState = new GameState(this);
         createBoard();
+        new PieceBuilder(this);
     }
 
     private void createBoard() {
@@ -31,10 +35,10 @@ public class Chessboard {
             for (int j = 0; j < Math.sqrt(TOTAL_NUM_OF_SQUARES); j++) {
                 Rectangle rectangle = new Rectangle(x, y, squareSize, squareSize);
                 rectangle.setSmooth(false); // Remove antialiasing
-                if ((i+j) % 2 == 0) {
-                    rectangle.setFill(Chessboard.LIGHT_SQUARE_COLOUR);
+                if ((i + j) % 2 == 0) {
+                    rectangle.setFill(Board.LIGHT_SQUARE_COLOUR);
                 } else {
-                    rectangle.setFill(Chessboard.DARK_SQUARE_COLOUR);
+                    rectangle.setFill(Board.DARK_SQUARE_COLOUR);
                 }
                 getAnchorPane().getChildren().add(rectangle);
                 x += rectangle.getWidth();
@@ -44,8 +48,18 @@ public class Chessboard {
         }
     }
 
+    public void update() {
+        if (isWhitesTurn) {
+            System.out.println("White moved.");
+        } else {
+            System.out.println("Black moved.");
+        }
+        isWhitesTurn = !isWhitesTurn;
+        gameState.checkGameState();
+    }
+
     public double[] getPossibleXAndYCoordinates() {
-        double[] possibleXAndYCoordinates = new double[(int) (Math.sqrt(Chessboard.TOTAL_NUM_OF_SQUARES))];
+        double[] possibleXAndYCoordinates = new double[(int) (Math.sqrt(Board.TOTAL_NUM_OF_SQUARES))];
         for (int i = 0; i < possibleXAndYCoordinates.length; i++) {
             possibleXAndYCoordinates[i] = squareSize * i;
         }
@@ -55,7 +69,9 @@ public class Chessboard {
     public double findClosestSquare(double input, double[] possibleCoordinates) {
         double result = 0.0;
         for (int i = 0; i < possibleCoordinates.length; i++) {
-            if (input >= possibleCoordinates[i] && input <= possibleCoordinates[i+1] || input < 0) {
+            if (input >= possibleCoordinates[i]
+                    && input <= possibleCoordinates[i + 1]
+                    || input < 0) {
                 result = possibleCoordinates[i];
                 break;
             } else if (input > possibleCoordinates[possibleCoordinates.length - 1]) {
@@ -68,8 +84,11 @@ public class Chessboard {
 
     public boolean isSquareOccupied(Square square) {
         for (Piece piece : getPieceList()) {
-            if (Math.round(square.getX(getSquareSize())) == Math.round(piece.getCurrentX())
-                    && Math.round(square.getY(getSquareSize())) == Math.round(piece.getCurrentY())) {
+            Square pieceSquare = Square.find(
+                    piece.getPosX(),
+                    piece.getPosY(),
+                    getSquareSize());
+            if (square.equals(pieceSquare)) {
                 return true;
             }
         }
@@ -78,8 +97,11 @@ public class Chessboard {
 
     public Piece getPiece(Square square) {
         for (Piece piece : getPieceList()) {
-            if (Math.round(square.getX(getSquareSize())) == Math.round(piece.getCurrentX())
-                    && Math.round(square.getY(getSquareSize())) == Math.round(piece.getCurrentY())) {
+            Square pieceSquare = Square.find(
+                    piece.getPosX(),
+                    piece.getPosY(),
+                    getSquareSize());
+            if (square.equals(pieceSquare)) {
                 return piece;
             }
         }
@@ -89,8 +111,11 @@ public class Chessboard {
     public int getPieceIndex(Square square) {
         int index = 0;
         for (Piece piece : getPieceList()) {
-            if (Math.round(square.getX(getSquareSize())) == Math.round(piece.getCurrentX())
-                    && Math.round(square.getY(getSquareSize())) == Math.round(piece.getCurrentY())) {
+            Square pieceSquare = Square.find(
+                    piece.getPosX(),
+                    piece.getPosY(),
+                    getSquareSize());
+            if (square.equals(pieceSquare)) {
                 return index;
             }
             index++;
@@ -124,6 +149,10 @@ public class Chessboard {
         } else {
             return null;
         }
+    }
+
+    public boolean isWhitesTurn() {
+        return isWhitesTurn;
     }
 
     public double getSquareSize() {

@@ -16,17 +16,21 @@ import java.util.Objects;
 
 public class PieceBuilder {
 
-    private final Chessboard chessboard;
+    private final Board board;
 
-    public PieceBuilder(Chessboard chessboard) {
-        this.chessboard = chessboard;
-        addWhitePieces();
-        addBlackPieces();
+    public PieceBuilder(Board board) {
+        this.board = board;
+        initialiseWhitePieces();
+        initialiseBlackPieces();
     }
 
-    private void addPiece(Piece piece) {
+    private void initialisePiece(Piece piece) {
+
         piece.setOnMousePressed(mouseEvent -> {
-            if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
+            if (mouseEvent.getButton().equals(MouseButton.PRIMARY)
+                    && piece.getPieceColour().equals(PieceColour.WHITE) && board.isWhitesTurn()
+                    || mouseEvent.getButton().equals(MouseButton.PRIMARY)
+                    && piece.getPieceColour().equals(PieceColour.BLACK) && !board.isWhitesTurn()) {
                 showLegalMoves(piece);
                 piece.setCursor(Cursor.CLOSED_HAND);
                 piece.toFront(); // Move piece in front of its siblings in terms of z-order
@@ -36,7 +40,10 @@ public class PieceBuilder {
         });
 
         piece.setOnMouseDragged(mouseEvent -> {
-            if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
+            if (mouseEvent.getButton().equals(MouseButton.PRIMARY)
+                    && piece.getPieceColour().equals(PieceColour.WHITE) && board.isWhitesTurn()
+                    || mouseEvent.getButton().equals(MouseButton.PRIMARY)
+                    && piece.getPieceColour().equals(PieceColour.BLACK) && !board.isWhitesTurn()) {
                 piece.setLayoutX(mouseEvent.getSceneX() - (piece.getWidth() / 2)); // - half the size of the image to find the center
                 piece.setLayoutY(mouseEvent.getSceneY() - (piece.getHeight() / 2));
             }
@@ -46,137 +53,139 @@ public class PieceBuilder {
             piece.setCursor(Cursor.OPEN_HAND);
 
             Square newSquare = Square.find(
-                    chessboard.findClosestSquare(mouseEvent.getSceneX(), chessboard.getPossibleXAndYCoordinates()),
-                    chessboard.findClosestSquare(mouseEvent.getSceneY(), chessboard.getPossibleXAndYCoordinates()),
-                    chessboard.getSquareSize());
+                    board.findClosestSquare(mouseEvent.getSceneX(), board.getPossibleXAndYCoordinates()),
+                    board.findClosestSquare(mouseEvent.getSceneY(), board.getPossibleXAndYCoordinates()),
+                    board.getSquareSize());
 
-            Square lastSquare = Square.find(piece.getCurrentX(), piece.getCurrentY(), chessboard.getSquareSize());
+            Square lastSquare = Square.find(piece.getPosX(), piece.getPosY(), board.getSquareSize());
 
-            int pieceIndex = chessboard.getPieceIndex(lastSquare);
-            Piece enemyPiece = chessboard.getPiece(newSquare);
+            int pieceIndex = board.getPieceIndex(lastSquare);
+            Piece enemyPiece = board.getPiece(newSquare);
 
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)
                     && newSquare != null
-                    && chessboard.getPieceList().get(pieceIndex).move(newSquare)) {
+                    && piece.getPieceColour().equals(PieceColour.WHITE) && board.isWhitesTurn()
+                    && board.getPieceList().get(pieceIndex).move(newSquare)
+                    || mouseEvent.getButton().equals(MouseButton.PRIMARY)
+                    && newSquare != null
+                    && piece.getPieceColour().equals(PieceColour.BLACK) && !board.isWhitesTurn()
+                    && board.getPieceList().get(pieceIndex).move(newSquare)) {
+                hideLegalMoves();
                 attemptCapture(enemyPiece);
                 attemptCastle(piece, lastSquare);
                 updatePositionOnBoard(piece, newSquare);
-                hideLegalMoves();
             } else {
-                updatePositionOnBoard(piece, Square.find(
-                        piece.getCurrentX(),
-                        piece.getCurrentY(),
-                        chessboard.getSquareSize()
-                ));
+                piece.setLayoutX(piece.getPosX());
+                piece.setLayoutY(piece.getPosY());
             }
         });
 
-        chessboard.getPieceList().add(piece);
-        chessboard.getAnchorPane().getChildren().add(piece);
+        board.getPieceList().add(piece);
+        board.getAnchorPane().getChildren().add(piece);
     }
 
     private void updatePositionOnBoard(Piece piece, Square square) {
         if (piece != null && square != null) {
-            piece.setLayoutX(square.getX(chessboard.getSquareSize()));
-            piece.setLayoutY(square.getY(chessboard.getSquareSize()));
+            piece.setLayoutX(square.getX(board.getSquareSize()));
+            piece.setLayoutY(square.getY(board.getSquareSize()));
         }
     }
 
     private void updatePositionOnBoardAndList(Piece piece, Square square) {
         if (piece != null && square != null) {
-            piece.setCurrentX(square.getX(chessboard.getSquareSize()));
-            piece.setCurrentY(square.getY(chessboard.getSquareSize()));
-            piece.setLayoutX(square.getX(chessboard.getSquareSize()));
-            piece.setLayoutY(square.getY(chessboard.getSquareSize()));
+            piece.setPosX(square.getX(board.getSquareSize()));
+            piece.setPosY(square.getY(board.getSquareSize()));
+            piece.setLayoutX(square.getX(board.getSquareSize()));
+            piece.setLayoutY(square.getY(board.getSquareSize()));
         }
     }
 
     private void attemptCapture(Piece capturedPiece) {
         if (capturedPiece != null && !capturedPiece.getPieceType().equals(PieceType.KING)) {
-            chessboard.getAnchorPane().getChildren().remove(capturedPiece); // Remove piece from the board
+            board.getAnchorPane().getChildren().remove(capturedPiece); // Remove piece from the board
             capturedPiece.setCaptured();
         }
     }
 
     private void attemptCastle(Piece king, Square square) {
         if (king.getPieceType().equals(PieceType.KING)) {
-            Square startSquare = king.getPieceColour().equals(PieceColour.WHITE)
+            Square kSquare = king.getPieceColour().equals(PieceColour.WHITE)
                     ? Square.E1
                     : Square.E8;
-            Square[] kingPos = king.getPieceColour().equals(PieceColour.WHITE)
+            Square[] kPos = king.getPieceColour().equals(PieceColour.WHITE)
                     ? new Square[]{Square.C1, Square.G1}
                     : new Square[]{Square.C8, Square.G8};
-            Square[] rookPos = king.getPieceColour().equals(PieceColour.WHITE)
+            Square[] rPos = king.getPieceColour().equals(PieceColour.WHITE)
                     ? new Square[]{Square.D1, Square.F1}
                     : new Square[]{Square.D8, Square.F8};
 
-            if (Objects.equals(square, startSquare)
-                    && king.getSquare().equals(kingPos[0])) {
-                Piece queenSideRook = chessboard.getQueenSideRook(king.getPieceColour());
-                updatePositionOnBoardAndList(queenSideRook, rookPos[0]);
+            if (Objects.equals(square, kSquare)
+                    && king.getSquare().equals(kPos[0])) {
+                Piece qSR = board.getQueenSideRook(king.getPieceColour());
+                updatePositionOnBoardAndList(qSR, rPos[0]);
 
-            } else if (Objects.equals(square, startSquare)
-                    && king.getSquare().equals(kingPos[1])) {
-                Piece kingSideRook = chessboard.getKingSideRook(king.getPieceColour());
-                updatePositionOnBoardAndList(kingSideRook, rookPos[1]);
+            } else if (Objects.equals(square, kSquare)
+                    && king.getSquare().equals(kPos[1])) {
+                Piece kSR = board.getKingSideRook(king.getPieceColour());
+                updatePositionOnBoardAndList(kSR, rPos[1]);
             }
         }
     }
 
-    private void addWhitePieces() {
-        addPiece(new Rook(PieceColour.WHITE, Square.A1, chessboard));
-        addPiece(new Knight(PieceColour.WHITE, Square.B1, chessboard));
-        addPiece(new Bishop(PieceColour.WHITE, Square.C1, chessboard));
-        addPiece(new Queen(PieceColour.WHITE, Square.D1, chessboard));
-        addPiece(new King(PieceColour.WHITE, Square.E1, chessboard));
-        addPiece(new Bishop(PieceColour.WHITE, Square.F1, chessboard));
-        addPiece(new Knight(PieceColour.WHITE, Square.G1, chessboard));
-        addPiece(new Rook(PieceColour.WHITE, Square.H1, chessboard));
-        addPiece(new Pawn(PieceColour.WHITE, Square.A2, chessboard));
-        addPiece(new Pawn(PieceColour.WHITE, Square.B2, chessboard));
-        addPiece(new Pawn(PieceColour.WHITE, Square.C2, chessboard));
-        addPiece(new Pawn(PieceColour.WHITE, Square.D2, chessboard));
-        addPiece(new Pawn(PieceColour.WHITE, Square.E2, chessboard));
-        addPiece(new Pawn(PieceColour.WHITE, Square.F2, chessboard));
-        addPiece(new Pawn(PieceColour.WHITE, Square.G2, chessboard));
-        addPiece(new Pawn(PieceColour.WHITE, Square.H2, chessboard));
+    private void initialiseWhitePieces() {
+        initialisePiece(new Rook(PieceColour.WHITE, Square.A1, board));
+        initialisePiece(new Knight(PieceColour.WHITE, Square.B1, board));
+        initialisePiece(new Bishop(PieceColour.WHITE, Square.C1, board));
+        initialisePiece(new Queen(PieceColour.WHITE, Square.D1, board));
+        initialisePiece(new King(PieceColour.WHITE, Square.E1, board));
+        initialisePiece(new Bishop(PieceColour.WHITE, Square.F1, board));
+        initialisePiece(new Knight(PieceColour.WHITE, Square.G1, board));
+        initialisePiece(new Rook(PieceColour.WHITE, Square.H1, board));
+        initialisePiece(new Pawn(PieceColour.WHITE, Square.A2, board));
+        initialisePiece(new Pawn(PieceColour.WHITE, Square.B2, board));
+        initialisePiece(new Pawn(PieceColour.WHITE, Square.C2, board));
+        initialisePiece(new Pawn(PieceColour.WHITE, Square.D2, board));
+        initialisePiece(new Pawn(PieceColour.WHITE, Square.E2, board));
+        initialisePiece(new Pawn(PieceColour.WHITE, Square.F2, board));
+        initialisePiece(new Pawn(PieceColour.WHITE, Square.G2, board));
+        initialisePiece(new Pawn(PieceColour.WHITE, Square.H2, board));
     }
 
-    private void addBlackPieces() {
-        addPiece(new Rook(PieceColour.BLACK, Square.A8, chessboard));
-        addPiece(new Knight(PieceColour.BLACK, Square.B8, chessboard));
-        addPiece(new Bishop(PieceColour.BLACK, Square.C8, chessboard));
-        addPiece(new Queen(PieceColour.BLACK, Square.D8, chessboard));
-        addPiece(new King(PieceColour.BLACK, Square.E8, chessboard));
-        addPiece(new Bishop(PieceColour.BLACK, Square.F8, chessboard));
-        addPiece(new Knight(PieceColour.BLACK, Square.G8, chessboard));
-        addPiece(new Rook(PieceColour.BLACK, Square.H8, chessboard));
-        addPiece(new Pawn(PieceColour.BLACK, Square.A7, chessboard));
-        addPiece(new Pawn(PieceColour.BLACK, Square.B7, chessboard));
-        addPiece(new Pawn(PieceColour.BLACK, Square.C7, chessboard));
-        addPiece(new Pawn(PieceColour.BLACK, Square.D7, chessboard));
-        addPiece(new Pawn(PieceColour.BLACK, Square.E7, chessboard));
-        addPiece(new Pawn(PieceColour.BLACK, Square.F7, chessboard));
-        addPiece(new Pawn(PieceColour.BLACK, Square.G7, chessboard));
-        addPiece(new Pawn(PieceColour.BLACK, Square.H7, chessboard));
+    private void initialiseBlackPieces() {
+        initialisePiece(new Rook(PieceColour.BLACK, Square.A8, board));
+        initialisePiece(new Knight(PieceColour.BLACK, Square.B8, board));
+        initialisePiece(new Bishop(PieceColour.BLACK, Square.C8, board));
+        initialisePiece(new Queen(PieceColour.BLACK, Square.D8, board));
+        initialisePiece(new King(PieceColour.BLACK, Square.E8, board));
+        initialisePiece(new Bishop(PieceColour.BLACK, Square.F8, board));
+        initialisePiece(new Knight(PieceColour.BLACK, Square.G8, board));
+        initialisePiece(new Rook(PieceColour.BLACK, Square.H8, board));
+        initialisePiece(new Pawn(PieceColour.BLACK, Square.A7, board));
+        initialisePiece(new Pawn(PieceColour.BLACK, Square.B7, board));
+        initialisePiece(new Pawn(PieceColour.BLACK, Square.C7, board));
+        initialisePiece(new Pawn(PieceColour.BLACK, Square.D7, board));
+        initialisePiece(new Pawn(PieceColour.BLACK, Square.E7, board));
+        initialisePiece(new Pawn(PieceColour.BLACK, Square.F7, board));
+        initialisePiece(new Pawn(PieceColour.BLACK, Square.G7, board));
+        initialisePiece(new Pawn(PieceColour.BLACK, Square.H7, board));
     }
 
     private void showLegalMoves(Piece piece) {
         hideLegalMoves(); // Hide last selected piece's moves
         ArrayList<Square> legalMoves = piece.getLegalMoves();
-        double squareSize = chessboard.getSquareSize();
+        double squareSize = board.getSquareSize();
         Rectangle currentSquare = new Rectangle(squareSize, squareSize);
         currentSquare.setFill(Color.web("#FEF250", 0.5));
         currentSquare.setSmooth(false);
-        currentSquare.setLayoutX(piece.getCurrentX());
-        currentSquare.setLayoutY(piece.getCurrentY());
+        currentSquare.setLayoutX(piece.getPosX());
+        currentSquare.setLayoutY(piece.getPosY());
         Group possibleMoves = new Group();
         legalMoves.forEach(move -> {
             Rectangle legalMove = new Rectangle(squareSize, squareSize);
             legalMove.setSmooth(false);
-            legalMove.setLayoutX(move.getX(chessboard.getSquareSize()));
-            legalMove.setLayoutY(move.getY(chessboard.getSquareSize()));
-            if (chessboard.isSquareOccupied(Square.find(move.getX(squareSize), move.getY(squareSize), chessboard.getSquareSize()))) {
+            legalMove.setLayoutX(move.getX(board.getSquareSize()));
+            legalMove.setLayoutY(move.getY(board.getSquareSize()));
+            if (board.isSquareOccupied(Square.find(move.getX(squareSize), move.getY(squareSize), board.getSquareSize()))) {
                 legalMove.setFill(Color.web("#9A3048", 1));
             } else {
                 legalMove.setFill(new ImagePattern(new Image("com/tomaslevesconte/javachess/hc.png")));
@@ -185,12 +194,12 @@ public class PieceBuilder {
         });
         currentSquare.setId("currentSquare");
         possibleMoves.setId("possibleMoves");
-        chessboard.getAnchorPane().getChildren().addAll(possibleMoves, currentSquare);
-        chessboard.getPieceList().forEach(Node::toFront); // All pieces to front in terms of z-index
+        board.getAnchorPane().getChildren().addAll(possibleMoves, currentSquare);
+        board.getPieceList().forEach(Node::toFront); // All pieces to front in terms of z-index
     }
 
     public void hideLegalMoves() {
-        chessboard.getAnchorPane().getChildren().remove(chessboard.getAnchorPane().lookup("#currentSquare"));
-        chessboard.getAnchorPane().getChildren().remove(chessboard.getAnchorPane().lookup("#possibleMoves"));
+        board.getAnchorPane().getChildren().remove(board.getAnchorPane().lookup("#currentSquare"));
+        board.getAnchorPane().getChildren().remove(board.getAnchorPane().lookup("#possibleMoves"));
     }
 }

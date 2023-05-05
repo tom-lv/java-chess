@@ -1,6 +1,6 @@
 package com.tomaslevesconte.javachess.pieces;
 
-import com.tomaslevesconte.javachess.Chessboard;
+import com.tomaslevesconte.javachess.Board;
 import com.tomaslevesconte.javachess.PieceColour;
 import com.tomaslevesconte.javachess.PieceType;
 
@@ -20,28 +20,28 @@ public abstract class Piece extends Rectangle {
 
     private final PieceType pieceType;
     private final PieceColour pieceColour;
-    private double currentX;
-    private double currentY;
-    private final int squaresItCanMove;
-    private final Chessboard chessboard;
+    private double posX;
+    private double posY;
+    private final int SQUARES_IT_CAN_MOVE;
+    private final Board board;
     private boolean hasMoved;
 
-    public Piece(PieceType pieceType, PieceColour pieceColour, Square square, int squaresItCanMove, Chessboard chessboard) {
+    public Piece(PieceType pieceType, PieceColour pieceColour, Square square, int SQUARES_IT_CAN_MOVE, Board board) {
         this.pieceType = pieceType;
         this.pieceColour = pieceColour;
-        this.currentX = square.getX(chessboard.getSquareSize());
-        this.currentY = square.getY(chessboard.getSquareSize());
-        this.squaresItCanMove = squaresItCanMove;
-        this.chessboard = chessboard;
+        this.posX = square.getX(board.getSquareSize());
+        this.posY = square.getY(board.getSquareSize());
+        this.SQUARES_IT_CAN_MOVE = SQUARES_IT_CAN_MOVE;
+        this.board = board;
         this.hasMoved = false;
     }
 
     public void createPiece() {
         setCursor(Cursor.OPEN_HAND);
-        setWidth(getChessboard().getSquareSize());
-        setHeight(getChessboard().getSquareSize());
-        setLayoutX(currentX);
-        setLayoutY(currentY);
+        setWidth(getBoard().getSquareSize());
+        setHeight(getBoard().getSquareSize());
+        setLayoutX(posX);
+        setLayoutY(posY);
         setSmooth(false);
         char pieceInitial = getPieceType().equals(PieceType.KNIGHT)
                 ? getPieceType().toString().toLowerCase().charAt(1)
@@ -51,12 +51,13 @@ public abstract class Piece extends Rectangle {
     }
 
     public boolean move(Square newSquare) {
-        double squareSize = getChessboard().getSquareSize();
+        double squareSize = getBoard().getSquareSize();
         for (Square legalSquare : getLegalMoves()) {
             if (newSquare.equals(legalSquare)) {
+                setPosX(newSquare.getX(squareSize));
+                setPosY(newSquare.getY(squareSize));
                 setHasMoved(true);
-                setCurrentX(newSquare.getX(squareSize));
-                setCurrentY(newSquare.getY(squareSize));
+                board.update();
                 return true;
             }
         }
@@ -66,7 +67,7 @@ public abstract class Piece extends Rectangle {
     public void setCaptured() {
         // King cannot be captured
         if (!getPieceType().equals(PieceType.KING)) {
-            getChessboard().getPieceList().remove(this);
+            getBoard().getPieceList().remove(this);
         }
     }
 
@@ -77,10 +78,10 @@ public abstract class Piece extends Rectangle {
         ArrayList<Square> upPattern = new ArrayList<>(); // Up y
         ArrayList<Square> downPattern = new ArrayList<>(); // Down y
 
-        for (int i = 1; i <= getSquaresItCanMove(); i++) {
-            double squareSize = getChessboard().getSquareSize();
-            upPattern.add(Square.find(getCurrentX(), getCurrentY() + (squareSize * i), squareSize));
-            downPattern.add(Square.find(getCurrentX(), getCurrentY() + (-squareSize * i), squareSize));
+        for (int i = 1; i <= SQUARES_IT_CAN_MOVE; i++) {
+            double squareSize = getBoard().getSquareSize();
+            upPattern.add(Square.find(getPosX(), getPosY() + (squareSize * i), squareSize));
+            downPattern.add(Square.find(getPosX(), getPosY() + (-squareSize * i), squareSize));
         }
         upPattern.removeIf(Objects::isNull);
         downPattern.removeIf(Objects::isNull);
@@ -96,10 +97,10 @@ public abstract class Piece extends Rectangle {
         ArrayList<Square> upPattern = new ArrayList<>(); // Up x
         ArrayList<Square> downPattern = new ArrayList<>(); // Down x
 
-        for (int i = 1; i <= getSquaresItCanMove(); i++) {
-            double squareSize = getChessboard().getSquareSize();
-            upPattern.add(Square.find(getCurrentX() + (squareSize * i), getCurrentY(), squareSize));
-            downPattern.add(Square.find(getCurrentX() + (-squareSize * i), getCurrentY(), squareSize));
+        for (int i = 1; i <= SQUARES_IT_CAN_MOVE; i++) {
+            double squareSize = getBoard().getSquareSize();
+            upPattern.add(Square.find(getPosX() + (squareSize * i), getPosY(), squareSize));
+            downPattern.add(Square.find(getPosX() + (-squareSize * i), getPosY(), squareSize));
         }
 
         upPattern.removeIf(Objects::isNull);
@@ -118,12 +119,12 @@ public abstract class Piece extends Rectangle {
         ArrayList<Square> patternThree = new ArrayList<>(); // Down x, up y
         ArrayList<Square> patternFour = new ArrayList<>(); // Up x, up y
 
-        for (int i = 1; i <= getSquaresItCanMove(); i++) {
-            double squareSize = getChessboard().getSquareSize();
-            patternOne.add(Square.find(getCurrentX() + (-squareSize * i), getCurrentY() + (-squareSize * i), squareSize));
-            patternTwo.add(Square.find(getCurrentX() + (squareSize * i), getCurrentY() + (-squareSize * i), squareSize));
-            patternThree.add(Square.find(getCurrentX() + (-squareSize * i), getCurrentY() + (squareSize * i), squareSize));
-            patternFour.add(Square.find(getCurrentX() + (squareSize * i), getCurrentY() + (squareSize * i), squareSize));
+        for (int i = 1; i <= SQUARES_IT_CAN_MOVE; i++) {
+            double squareSize = getBoard().getSquareSize();
+            patternOne.add(Square.find(getPosX() + (-squareSize * i), getPosY() + (-squareSize * i), squareSize));
+            patternTwo.add(Square.find(getPosX() + (squareSize * i), getPosY() + (-squareSize * i), squareSize));
+            patternThree.add(Square.find(getPosX() + (-squareSize * i), getPosY() + (squareSize * i), squareSize));
+            patternFour.add(Square.find(getPosX() + (squareSize * i), getPosY() + (squareSize * i), squareSize));
         }
 
         patternOne.removeIf(Objects::isNull);
@@ -141,11 +142,11 @@ public abstract class Piece extends Rectangle {
 
     private ArrayList<Square> removeBlockedSquares(ArrayList<Square> sList) {
         for (int i = 0; i < sList.size(); i++) {
-            if (getChessboard().isSquareOccupied(sList.get(i))
-                    && getChessboard().getPiece(sList.get(i)).getPieceColour() != getPieceColour()) {
+            if (getBoard().isSquareOccupied(sList.get(i))
+                    && getBoard().getPiece(sList.get(i)).getPieceColour() != getPieceColour()) {
                 sList.removeAll(sList.subList(i + 1, sList.size()));
-            } else if (getChessboard().isSquareOccupied(sList.get(i))
-                    && getChessboard().getPiece(sList.get(i)).getPieceColour().equals(getPieceColour())) {
+            } else if (getBoard().isSquareOccupied(sList.get(i))
+                    && getBoard().getPiece(sList.get(i)).getPieceColour().equals(getPieceColour())) {
                 sList.removeAll(sList.subList(i, sList.size()));
             }
         }
@@ -153,7 +154,7 @@ public abstract class Piece extends Rectangle {
     }
 
     public Square getSquare() {
-        return Square.find(getCurrentX(), getCurrentY(), getChessboard().getSquareSize());
+        return Square.find(getPosX(), getPosY(), getBoard().getSquareSize());
     }
 
     public PieceType getPieceType() {
@@ -164,28 +165,24 @@ public abstract class Piece extends Rectangle {
         return pieceColour;
     }
 
-    public double getCurrentX() {
-        return currentX;
+    public double getPosX() {
+        return posX;
     }
 
-    public void setCurrentX(double currentX) {
-        this.currentX = currentX;
+    public void setPosX(double posX) {
+        this.posX = posX;
     }
 
-    public double getCurrentY() {
-        return currentY;
+    public double getPosY() {
+        return posY;
     }
 
-    public void setCurrentY(double currentY) {
-        this.currentY = currentY;
+    public void setPosY(double posY) {
+        this.posY = posY;
     }
 
-    public int getSquaresItCanMove() {
-        return squaresItCanMove;
-    }
-
-    public Chessboard getChessboard() {
-        return chessboard;
+    public Board getBoard() {
+        return board;
     }
 
     public boolean hasMoved() {
