@@ -3,6 +3,7 @@ package com.tomaslevesconte.javachess;
 import com.tomaslevesconte.javachess.pieces.Piece;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class GameState {
 
@@ -46,10 +47,6 @@ public class GameState {
         ArrayList<Square> ownMoves = board.getMoves(pieceColour);
         Piece attacker = board.getAttacker(king);
 
-        // Get the piece which is putting the king in check and find the path it's using to do so
-        // Can we capture that piece? can we block the attack? can we move out of the way?
-
-
         // Can it move/capture
         // Maybe filter out the king's attack in certain scenarios
         if (king.getLegalMoves().isEmpty()) {
@@ -58,18 +55,23 @@ public class GameState {
             System.out.println("King can move.");
         }
 
-        // If the king can capture, can it capture without putting itself in check?
 
         // Can it block
+        for (Square move : ownMoves) {
+            for (Square aP : Objects.requireNonNull(getAttackPath(king, attacker))) {
+                if (move.equals(aP)) {
+                    System.out.println("Can block attacker.");
+                }
+            }
+        }
 
-        // Can it capture
+        // Can it capture (Piece other than king)
         for (Square move : ownMoves) {
             if (move.equals(attacker.getSquare())) {
                 System.out.println("Can capture attacker.");
             }
         }
 
-        getAttackPath(king, attacker);
     }
 
     private ArrayList<Square> getAttackPath(Piece king, Piece attacker) {
@@ -84,8 +86,6 @@ public class GameState {
 
             double diffX = (aX - kX);
             double diffY = (aY - kY);
-
-            System.out.println("x: " + diffX + ", y: " + diffY);
 
             if (diffX == 0) {
                 aP.addAll(getVerticalAttackPath(kX, kY, diffY));
