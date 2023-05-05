@@ -8,14 +8,14 @@ public class GameState {
 
     private final Board board;
     private boolean isKingInCheck;
-    private boolean isCheckMate;
-    private boolean isStaleMate;
+    private boolean isKingInCheckMate;
+    private boolean isKingInStaleMate;
 
     public GameState(Board board) {
         this.board = board;
         isKingInCheck = false;
-        isCheckMate = false;
-        isStaleMate = false;
+        isKingInCheckMate = false;
+        isKingInStaleMate = false;
     }
 
     public void checkGameState() {
@@ -70,7 +70,6 @@ public class GameState {
         }
 
         getAttackPath(king, attacker);
-
     }
 
     private ArrayList<Square> getAttackPath(Piece king, Piece attacker) {
@@ -93,7 +92,7 @@ public class GameState {
             } else if (diffY == 0) {
                 aP.addAll(getHorizontalAttackPath(kX, kY, diffX));
             } else {
-                // Diagonal
+                aP.addAll(getDiagonalAttackPath(kX, kY, diffX, diffY));
             }
 
             return aP;
@@ -118,7 +117,6 @@ public class GameState {
             kY += board.getSquareSize();
             Square pS = Square.find(kX, kY, board.getSquareSize());
             if (diffY != board.getSquareSize()) {
-                System.out.println(pS);
                 aP.add(pS);
             }
             diffY = (diffY - board.getSquareSize());
@@ -134,7 +132,6 @@ public class GameState {
             kX -= board.getSquareSize();
             Square pS = Square.find(kX, kY, board.getSquareSize());
             if (diffX != -board.getSquareSize()) {
-                System.out.println(pS);
                 aP.add(pS);
             }
             diffX = (diffX + board.getSquareSize());
@@ -144,7 +141,6 @@ public class GameState {
             kX += board.getSquareSize();
             Square pS = Square.find(kX, kY, board.getSquareSize());
             if (diffX != board.getSquareSize()) {
-                System.out.println(pS);
                 aP.add(pS);
             }
             diffX = (diffX - board.getSquareSize());
@@ -153,8 +149,52 @@ public class GameState {
         return aP;
     }
 
-    private ArrayList<Square> getDiagonalAttackPath() {
+    private ArrayList<Square> getDiagonalAttackPath(double kX, double kY, double diffX, double diffY) {
         ArrayList<Square> aP = new ArrayList<>();
+
+        while (diffX < 0 && diffY > 0) {
+            kX -= board.getSquareSize();
+            kY += board.getSquareSize();
+            Square pS = Square.find(kX, kY, board.getSquareSize());
+            if (diffX != -board.getSquareSize()) {
+                aP.add(pS);
+            }
+            diffX = (diffX + board.getSquareSize());
+            diffY = (diffY - board.getSquareSize());
+        }
+
+        while (diffX > 0 && diffY > 0) {
+            kX += board.getSquareSize();
+            kY += board.getSquareSize();
+            Square pS = Square.find(kX, kY, board.getSquareSize());
+            if (diffX != board.getSquareSize()) {
+                aP.add(pS);
+            }
+            diffX = (diffX - board.getSquareSize());
+            diffY = (diffY - board.getSquareSize());
+        }
+
+        while (diffX > 0 && diffY < 0) {
+            kX += board.getSquareSize();
+            kY -= board.getSquareSize();
+            Square pS = Square.find(kX, kY, board.getSquareSize());
+            if (diffX != board.getSquareSize()) {
+                aP.add(pS);
+            }
+            diffX = (diffX - board.getSquareSize());
+            diffY = (diffY + board.getSquareSize());
+        }
+
+        while (diffX < 0 && diffY < 0) {
+            kX -= board.getSquareSize();
+            kY -= board.getSquareSize();
+            Square pS = Square.find(kX, kY, board.getSquareSize());
+            if (diffX != board.getSquareSize()) {
+                aP.add(pS);
+            }
+            diffX = (diffX + board.getSquareSize());
+            diffY = (diffY + board.getSquareSize());
+        }
 
         return aP;
     }
