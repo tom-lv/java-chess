@@ -9,7 +9,6 @@ import java.util.ArrayList;
 
 public class Board {
 
-    private static final byte TOTAL_NUM_OF_SQUARES = 64;
     private static final Color LIGHT_SQUARE_COLOUR = Color.web("#f0eef1"); // off-white #f0eef1, beach #F2D8B5
     private static final Color DARK_SQUARE_COLOUR = Color.web("#8877B3"); // purple #8877B3, orange #B78B64
 
@@ -20,7 +19,7 @@ public class Board {
     private boolean isWhitesTurn;
 
     public Board(double boardSize, AnchorPane anchorPane) {
-        this.squareSize = boardSize / Math.sqrt(TOTAL_NUM_OF_SQUARES);
+        this.squareSize = boardSize / 8;
         this.anchorPane = anchorPane;
         this.gameState = new GameState(this);
         createBoard();
@@ -31,8 +30,8 @@ public class Board {
     private void createBoard() {
         double x = 0;
         double y = 0;
-        for (int i = 0; i < Math.sqrt(TOTAL_NUM_OF_SQUARES); i++) {
-            for (int j = 0; j < Math.sqrt(TOTAL_NUM_OF_SQUARES); j++) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
                 Rectangle rectangle = new Rectangle(x, y, squareSize, squareSize);
                 rectangle.setSmooth(false); // Remove antialiasing
                 if ((i + j) % 2 == 0) {
@@ -59,27 +58,24 @@ public class Board {
     }
 
     public double[] getPossibleXAndYCoordinates() {
-        double[] possibleXAndYCoordinates = new double[(int) (Math.sqrt(Board.TOTAL_NUM_OF_SQUARES))];
-        for (int i = 0; i < possibleXAndYCoordinates.length; i++) {
-            possibleXAndYCoordinates[i] = squareSize * i;
+        double[] pXAYC = new double[8];
+        for (int i = 0; i < pXAYC.length; i++) {
+            pXAYC[i] = squareSize * i;
         }
-        return possibleXAndYCoordinates;
+        return pXAYC;
     }
 
-    public double findClosestSquare(double input, double[] possibleCoordinates) {
-        double result = 0.0;
-        for (int i = 0; i < possibleCoordinates.length; i++) {
-            if (input >= possibleCoordinates[i]
-                    && input <= possibleCoordinates[i + 1]
+    public double findClosestSquare(double input, double[] pC) {
+        for (int i = 0; i < pC.length; i++) {
+            if (input >= pC[i]
+                    && input <= pC[i + 1]
                     || input < 0) {
-                result = possibleCoordinates[i];
-                break;
-            } else if (input > possibleCoordinates[possibleCoordinates.length - 1]) {
-                result = possibleCoordinates[possibleCoordinates.length - 1];
-                break;
+                return pC[i];
+            } else if (input > pC[pC.length - 1]) {
+                return pC[pC.length - 1];
             }
         }
-        return result;
+        return 0.0;
     }
 
     public boolean isSquareOccupied(Square square) {
