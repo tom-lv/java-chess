@@ -19,18 +19,31 @@ public class GameState {
     }
 
     private void isKingInCheck() {
-        if (board.isWhitesTurn()) {
-            Square kingsSquare;
-            for (Piece piece : pieceList) {
-                if (piece.getPieceType().equals(PieceType.KING)) {
-                    kingsSquare = Square.find(
-                            piece.getPosX(),
-                            piece.getPosY(),
-                            board.getSquareSize()
-                    );
-                }
+        PieceColour pieceColour = board.isWhitesTurn() ? PieceColour.WHITE : PieceColour.BLACK;
+        ArrayList<Square> opponentsMoves = new ArrayList<>();
+        Square kingsSquare = null;
+        for (Piece piece : pieceList) {
+            if (piece.getPieceColour() != pieceColour) {
+                opponentsMoves.addAll(piece.getLegalMoves());
+            } else if (piece.getPieceType().equals(PieceType.KING)
+                        && piece.getPieceColour().equals(pieceColour)) {
+                kingsSquare = Square.find(
+                        piece.getPosX(),
+                        piece.getPosY(),
+                        board.getSquareSize()
+                );
             }
-
         }
+        Square finalKingsSquare = kingsSquare;
+        opponentsMoves.forEach(move -> {
+            if (move.equals(finalKingsSquare)) {
+                System.out.println("King is in check!");
+                isKingInCheckMate();
+            }
+        });
+    }
+
+    private void isKingInCheckMate() {
+
     }
 }
