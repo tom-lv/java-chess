@@ -152,22 +152,22 @@ public class PieceBuilder {
     }
 
     private void initialiseBlackPieces() {
-//        initialisePiece(new Rook(PieceColour.BLACK, Square.A8, board));
-//        initialisePiece(new Knight(PieceColour.BLACK, Square.B8, board));
-//        initialisePiece(new Bishop(PieceColour.BLACK, Square.C8, board));
-//        initialisePiece(new Queen(PieceColour.BLACK, Square.D8, board));
+        initialisePiece(new Rook(PieceColour.BLACK, Square.A8, board));
+        initialisePiece(new Knight(PieceColour.BLACK, Square.B8, board));
+        initialisePiece(new Bishop(PieceColour.BLACK, Square.C8, board));
+        initialisePiece(new Queen(PieceColour.BLACK, Square.D8, board));
         initialisePiece(new King(PieceColour.BLACK, Square.E8, board));
-//        initialisePiece(new Bishop(PieceColour.BLACK, Square.F8, board));
-//        initialisePiece(new Knight(PieceColour.BLACK, Square.G8, board));
-//        initialisePiece(new Rook(PieceColour.BLACK, Square.H8, board));
-//        initialisePiece(new Pawn(PieceColour.BLACK, Square.A7, board));
-//        initialisePiece(new Pawn(PieceColour.BLACK, Square.B7, board));
-//        initialisePiece(new Pawn(PieceColour.BLACK, Square.C7, board));
-//        initialisePiece(new Pawn(PieceColour.BLACK, Square.D7, board));
-//        initialisePiece(new Pawn(PieceColour.BLACK, Square.E7, board));
-//        initialisePiece(new Pawn(PieceColour.BLACK, Square.F7, board));
-//        initialisePiece(new Pawn(PieceColour.BLACK, Square.G7, board));
-//        initialisePiece(new Pawn(PieceColour.BLACK, Square.H7, board));
+        initialisePiece(new Bishop(PieceColour.BLACK, Square.F8, board));
+        initialisePiece(new Knight(PieceColour.BLACK, Square.G8, board));
+        initialisePiece(new Rook(PieceColour.BLACK, Square.H8, board));
+        initialisePiece(new Pawn(PieceColour.BLACK, Square.A7, board));
+        initialisePiece(new Pawn(PieceColour.BLACK, Square.B7, board));
+        initialisePiece(new Pawn(PieceColour.BLACK, Square.C7, board));
+        initialisePiece(new Pawn(PieceColour.BLACK, Square.D7, board));
+        initialisePiece(new Pawn(PieceColour.BLACK, Square.E7, board));
+        initialisePiece(new Pawn(PieceColour.BLACK, Square.F7, board));
+        initialisePiece(new Pawn(PieceColour.BLACK, Square.G7, board));
+        initialisePiece(new Pawn(PieceColour.BLACK, Square.H7, board));
     }
 
     private void showLegalMoves(Piece piece) {
