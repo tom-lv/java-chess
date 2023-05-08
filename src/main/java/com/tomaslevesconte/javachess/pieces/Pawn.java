@@ -17,24 +17,24 @@ public class Pawn extends Piece {
     }
 
     @Override
-    public ArrayList<Square> getLegalMoves() {
+    public ArrayList<Square> getLegalMoves(boolean filterCoveredSquares) {
         ArrayList<Square> legalMoves = new ArrayList<>();
 
         legalMoves.addAll(getMovePattern()); // Add move patterns
-        legalMoves.addAll(getAttackPattern()); // Add attack patterns
+        legalMoves.addAll(getAttackPattern(filterCoveredSquares)); // Add attack patterns
 
         return legalMoves;
     }
 
     private ArrayList<Square> getMovePattern() {
         ArrayList<Square> movePattern = new ArrayList<>();
-        double squareSize = getBoard().getSquareSize();
+        double sqrSize = getBoard().getSquareSize();
         // Pawns move in different directions depending on colour
-        double multiplier = getPieceColour().equals(PieceColour.WHITE) ? -squareSize : squareSize;
+        double multiplier = getPieceColour().equals(PieceColour.WHITE) ? -sqrSize : sqrSize;
 
         // Every pawn move pattern
-        movePattern.add(Square.find(getPosX(), getPosY() + multiplier, squareSize));
-        movePattern.add(Square.find(getPosX(), getPosY() + (multiplier * 2), squareSize));
+        movePattern.add(Square.find(getPosX(), getPosY() + multiplier, sqrSize));
+        movePattern.add(Square.find(getPosX(), getPosY() + (multiplier * 2), sqrSize));
 
         // Remove if square !exist, or if square is occupied, or if square == 2nd square and pawn has moved
         movePattern.removeIf(moveSquare -> (moveSquare == null
@@ -45,15 +45,15 @@ public class Pawn extends Piece {
         return movePattern;
     }
 
-    private ArrayList<Square> getAttackPattern() {
+    private ArrayList<Square> getAttackPattern(boolean filterCoveredSquares) {
         ArrayList<Square> attackPattern = new ArrayList<>();
-        double squareSize = getBoard().getSquareSize();
+        double sqrSize = getBoard().getSquareSize();
         // Pawns move in different directions depending on colour
-        double multiplier = getPieceColour().equals(PieceColour.WHITE) ? -squareSize : squareSize;
+        double multiplier = getPieceColour().equals(PieceColour.WHITE) ? -sqrSize : sqrSize;
 
         // Every pawn attack pattern
-        attackPattern.add(Square.find(getPosX() - squareSize, getPosY() + multiplier, squareSize));
-        attackPattern.add(Square.find(getPosX() + squareSize, getPosY() + multiplier, squareSize));
+        attackPattern.add(Square.find(getPosX() - sqrSize, getPosY() + multiplier, sqrSize));
+        attackPattern.add(Square.find(getPosX() + sqrSize, getPosY() + multiplier, sqrSize));
 
         // Remove if square !exist, or if square is !occupied, or if square is occupied by the same colour
         attackPattern.removeIf(attackSquare -> (attackSquare == null // If null (out of bounds)

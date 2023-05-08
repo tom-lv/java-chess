@@ -17,23 +17,23 @@ public class Knight extends Piece {
     }
 
     @Override
-    public ArrayList<Square> getLegalMoves() {
-        return new ArrayList<>(getAttackPattern());
+    public ArrayList<Square> getLegalMoves(boolean filterCoveredSquares) {
+        return new ArrayList<>(getAttackPattern(filterCoveredSquares));
     }
 
-    private ArrayList<Square> getAttackPattern() {
+    private ArrayList<Square> getAttackPattern(boolean filterCoveredSquares) {
         ArrayList<Square> attackPattern = new ArrayList<>();
-        double squareSize = getBoard().getSquareSize();
+        double sqrSize = getBoard().getSquareSize();
 
         // Every Knight attack pattern
-        attackPattern.add(Square.find(getPosX() - squareSize, getPosY() - (squareSize * 2), squareSize));
-        attackPattern.add(Square.find(getPosX() + squareSize, getPosY() - (squareSize * 2), squareSize));
-        attackPattern.add(Square.find(getPosX() - squareSize, getPosY() + (squareSize * 2), squareSize));
-        attackPattern.add(Square.find(getPosX() + squareSize, getPosY() + (squareSize * 2), squareSize));
-        attackPattern.add(Square.find(getPosX() - (squareSize * 2), getPosY() - squareSize, squareSize));
-        attackPattern.add(Square.find(getPosX() + (squareSize * 2), getPosY() - squareSize, squareSize));
-        attackPattern.add(Square.find(getPosX() - (squareSize * 2), getPosY() + squareSize, squareSize));
-        attackPattern.add(Square.find(getPosX() + (squareSize * 2), getPosY() + squareSize, squareSize));
+        attackPattern.add(Square.find(getPosX() - sqrSize, getPosY() - (sqrSize * 2), sqrSize));
+        attackPattern.add(Square.find(getPosX() + sqrSize, getPosY() - (sqrSize * 2), sqrSize));
+        attackPattern.add(Square.find(getPosX() - sqrSize, getPosY() + (sqrSize * 2), sqrSize));
+        attackPattern.add(Square.find(getPosX() + sqrSize, getPosY() + (sqrSize * 2), sqrSize));
+        attackPattern.add(Square.find(getPosX() - (sqrSize * 2), getPosY() - sqrSize, sqrSize));
+        attackPattern.add(Square.find(getPosX() + (sqrSize * 2), getPosY() - sqrSize, sqrSize));
+        attackPattern.add(Square.find(getPosX() - (sqrSize * 2), getPosY() + sqrSize, sqrSize));
+        attackPattern.add(Square.find(getPosX() + (sqrSize * 2), getPosY() + sqrSize, sqrSize));
 
         // Remove if square !exist, or if square is occupied by the same colour
         attackPattern.removeIf(attackSquare -> (attackSquare == null // If null (out of bounds)

@@ -200,7 +200,7 @@ public class PieceBuilder {
 
     private void showLegalMoves(Piece piece) {
         hideLegalMoves(); // Hide last selected piece's moves
-        ArrayList<Square> legalMoves = piece.getLegalMoves();
+        ArrayList<Square> legalMoves = piece.getLegalMoves(true);
         double squareSize = board.getSquareSize();
         Rectangle currentSquare = new Rectangle(squareSize, squareSize);
         currentSquare.setFill(Color.web("#FEF250", 0.5));

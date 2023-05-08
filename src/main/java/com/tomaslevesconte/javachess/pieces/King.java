@@ -18,13 +18,13 @@ public class King extends Piece {
     }
 
     @Override
-    public ArrayList<Square> getLegalMoves() {
+    public ArrayList<Square> getLegalMoves(boolean filterCoveredSquares) {
         ArrayList<Square> legalMoves = new ArrayList<>();
 
         // Evaluate all the King's possible moves
-        legalMoves.addAll(getVerticalAttackPattern());
-        legalMoves.addAll(getHorizontalAttackPattern());
-        legalMoves.addAll(getDiagonalAttackPattern());
+        legalMoves.addAll(getVerticalAttackPattern(filterCoveredSquares));
+        legalMoves.addAll(getHorizontalAttackPattern(filterCoveredSquares));
+        legalMoves.addAll(getDiagonalAttackPattern(filterCoveredSquares));
         legalMoves.addAll(getCastlePattern()); // If castling is possible (need to fix)
         // Stop the King from putting itself in check by removing the opponent's moves from the possible pool
         legalMoves.removeAll(getOpponentsMoves());
@@ -39,15 +39,15 @@ public class King extends Piece {
         getBoard().getPieceList().forEach(piece -> {
             // If the piece's colour is different & =='King'
             if (piece.getPieceColour() != getPieceColour() && piece.getPieceType().equals(PieceType.KING)) {
-                opponentsMoves.addAll(piece.getVerticalAttackPattern());
-                opponentsMoves.addAll(piece.getHorizontalAttackPattern());
-                opponentsMoves.addAll(piece.getDiagonalAttackPattern());
+                opponentsMoves.addAll(piece.getVerticalAttackPattern(true));
+                opponentsMoves.addAll(piece.getHorizontalAttackPattern(true));
+                opponentsMoves.addAll(piece.getDiagonalAttackPattern(true));
                 // If the piece's colour is different & == 'Pawn'
             } else if (piece.getPieceColour() != getPieceColour() && piece.getPieceType().equals(PieceType.PAWN)) {
                 opponentsMoves.addAll(getEnemyPawnAttackPattern(piece));
                 // If the piece colour is different & != 'King' or 'Pawn'
             } else if (piece.getPieceColour() != getPieceColour()) {
-                opponentsMoves.addAll(piece.getLegalMoves());
+                opponentsMoves.addAll(piece.getLegalMoves(true));
             }
         });
 
@@ -56,13 +56,13 @@ public class King extends Piece {
 
     private ArrayList<Square> getEnemyPawnAttackPattern(Piece piece) {
         ArrayList<Square> attackPattern = new ArrayList<>();
-        double squareSize = getBoard().getSquareSize();
+        double sqrSize = getBoard().getSquareSize();
         // Pawns move in different directions depending on colour
-        double multiplier = piece.getPieceColour().equals(PieceColour.WHITE) ? -squareSize : squareSize;
+        double multiplier = piece.getPieceColour().equals(PieceColour.WHITE) ? -sqrSize : sqrSize;
 
         // Every pawn attack pattern
-        attackPattern.add(Square.find((piece.getPosX() - squareSize), (piece.getPosY() + multiplier), squareSize));
-        attackPattern.add(Square.find((piece.getPosX() + squareSize), (piece.getPosY() + multiplier), squareSize));
+        attackPattern.add(Square.find((piece.getPosX() - sqrSize), (piece.getPosY() + multiplier), sqrSize));
+        attackPattern.add(Square.find((piece.getPosX() + sqrSize), (piece.getPosY() + multiplier), sqrSize));
 
         attackPattern.removeIf(Objects::isNull); // Remove square if null (out of bounds)
 

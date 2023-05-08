@@ -17,11 +17,11 @@ public class Queen extends Piece {
     }
 
     @Override
-    public ArrayList<Square> getLegalMoves() {
+    public ArrayList<Square> getLegalMoves(boolean filterCoveredSquares) {
         ArrayList<Square> legalMoves = new ArrayList<>();
-        legalMoves.addAll(getVerticalAttackPattern());
-        legalMoves.addAll(getHorizontalAttackPattern());
-        legalMoves.addAll(getDiagonalAttackPattern());
+        legalMoves.addAll(getVerticalAttackPattern(filterCoveredSquares));
+        legalMoves.addAll(getHorizontalAttackPattern(filterCoveredSquares));
+        legalMoves.addAll(getDiagonalAttackPattern(filterCoveredSquares));
         return legalMoves;
     }
 }

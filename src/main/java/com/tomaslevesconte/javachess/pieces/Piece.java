@@ -49,11 +49,11 @@ public abstract class Piece extends Rectangle {
     }
 
     public boolean move(Square newSquare) {
-        double squareSize = getBoard().getSquareSize();
-        for (Square legalSquare : getLegalMoves()) {
+        double sqrSize = getBoard().getSquareSize();
+        for (Square legalSquare : getLegalMoves(true)) {
             if (newSquare.equals(legalSquare)) {
-                setPosX(newSquare.getX(squareSize));
-                setPosY(newSquare.getY(squareSize));
+                setPosX(newSquare.getX(sqrSize));
+                setPosY(newSquare.getY(sqrSize));
                 setHasMoved(true);
                 board.getGameState().update();
                 return true;
@@ -69,48 +69,58 @@ public abstract class Piece extends Rectangle {
         }
     }
 
-    public abstract ArrayList<Square> getLegalMoves();
+    public abstract ArrayList<Square> getLegalMoves(boolean filterCoveredSquares);
 
-    public ArrayList<Square> getVerticalAttackPattern() {
+    public ArrayList<Square> getVerticalAttackPattern(boolean filterCoveredSquares) {
         ArrayList<Square> attackPattern = new ArrayList<>();
         ArrayList<Square> upPattern = new ArrayList<>(); // Up y
         ArrayList<Square> downPattern = new ArrayList<>(); // Down y
 
         for (int i = 1; i <= SQUARES_IT_CAN_MOVE; i++) {
-            double squareSize = getBoard().getSquareSize();
-            upPattern.add(Square.find(getPosX(), getPosY() + (squareSize * i), squareSize));
-            downPattern.add(Square.find(getPosX(), getPosY() + (-squareSize * i), squareSize));
+            double sqrSize = getBoard().getSquareSize();
+            upPattern.add(Square.find(getPosX(), getPosY() + (sqrSize * i), sqrSize));
+            downPattern.add(Square.find(getPosX(), getPosY() + (-sqrSize * i), sqrSize));
         }
         upPattern.removeIf(Objects::isNull);
         downPattern.removeIf(Objects::isNull);
 
-        attackPattern.addAll(removeBlockedSquares(upPattern));
-        attackPattern.addAll(removeBlockedSquares(downPattern));
+        if (filterCoveredSquares) {
+            attackPattern.addAll(filterAll(upPattern));
+            attackPattern.addAll(filterAll(downPattern));
+        } else {
+            attackPattern.addAll(filterBlockedSquares(upPattern));
+            attackPattern.addAll(filterBlockedSquares(downPattern));
+        }
 
         return attackPattern;
     }
 
-    public ArrayList<Square> getHorizontalAttackPattern() {
+    public ArrayList<Square> getHorizontalAttackPattern(boolean filterCoveredSquares) {
         ArrayList<Square> attackPattern = new ArrayList<>();
         ArrayList<Square> upPattern = new ArrayList<>(); // Up x
         ArrayList<Square> downPattern = new ArrayList<>(); // Down x
 
         for (int i = 1; i <= SQUARES_IT_CAN_MOVE; i++) {
-            double squareSize = getBoard().getSquareSize();
-            upPattern.add(Square.find(getPosX() + (squareSize * i), getPosY(), squareSize));
-            downPattern.add(Square.find(getPosX() + (-squareSize * i), getPosY(), squareSize));
+            double sqrSize = getBoard().getSquareSize();
+            upPattern.add(Square.find(getPosX() + (sqrSize * i), getPosY(), sqrSize));
+            downPattern.add(Square.find(getPosX() + (-sqrSize * i), getPosY(), sqrSize));
         }
 
         upPattern.removeIf(Objects::isNull);
         downPattern.removeIf(Objects::isNull);
 
-        attackPattern.addAll(removeBlockedSquares(upPattern));
-        attackPattern.addAll(removeBlockedSquares(downPattern));
+        if (filterCoveredSquares) {
+            attackPattern.addAll(filterAll(upPattern));
+            attackPattern.addAll(filterAll(downPattern));
+        } else {
+            attackPattern.addAll(filterBlockedSquares(upPattern));
+            attackPattern.addAll(filterBlockedSquares(downPattern));
+        }
 
         return attackPattern;
     }
 
-    public ArrayList<Square> getDiagonalAttackPattern() {
+    public ArrayList<Square> getDiagonalAttackPattern(boolean filterCoveredSquares) {
         ArrayList<Square> attackPattern = new ArrayList<>();
         ArrayList<Square> patternOne = new ArrayList<>(); // Down x, down y
         ArrayList<Square> patternTwo = new ArrayList<>(); // Up x, down y
@@ -118,11 +128,11 @@ public abstract class Piece extends Rectangle {
         ArrayList<Square> patternFour = new ArrayList<>(); // Up x, up y
 
         for (int i = 1; i <= SQUARES_IT_CAN_MOVE; i++) {
-            double squareSize = getBoard().getSquareSize();
-            patternOne.add(Square.find(getPosX() + (-squareSize * i), getPosY() + (-squareSize * i), squareSize));
-            patternTwo.add(Square.find(getPosX() + (squareSize * i), getPosY() + (-squareSize * i), squareSize));
-            patternThree.add(Square.find(getPosX() + (-squareSize * i), getPosY() + (squareSize * i), squareSize));
-            patternFour.add(Square.find(getPosX() + (squareSize * i), getPosY() + (squareSize * i), squareSize));
+            double sqrSize = getBoard().getSquareSize();
+            patternOne.add(Square.find(getPosX() + (-sqrSize * i), getPosY() + (-sqrSize * i), sqrSize));
+            patternTwo.add(Square.find(getPosX() + (sqrSize * i), getPosY() + (-sqrSize * i), sqrSize));
+            patternThree.add(Square.find(getPosX() + (-sqrSize * i), getPosY() + (sqrSize * i), sqrSize));
+            patternFour.add(Square.find(getPosX() + (sqrSize * i), getPosY() + (sqrSize * i), sqrSize));
         }
 
         patternOne.removeIf(Objects::isNull);
@@ -130,15 +140,22 @@ public abstract class Piece extends Rectangle {
         patternThree.removeIf(Objects::isNull);
         patternFour.removeIf(Objects::isNull);
 
-        attackPattern.addAll(removeBlockedSquares(patternOne));
-        attackPattern.addAll(removeBlockedSquares(patternTwo));
-        attackPattern.addAll(removeBlockedSquares(patternThree));
-        attackPattern.addAll(removeBlockedSquares(patternFour));
+        if (filterCoveredSquares) {
+            attackPattern.addAll(filterAll(patternOne));
+            attackPattern.addAll(filterAll(patternTwo));
+            attackPattern.addAll(filterAll(patternThree));
+            attackPattern.addAll(filterAll(patternFour));
+        } else {
+            attackPattern.addAll(filterBlockedSquares(patternOne));
+            attackPattern.addAll(filterBlockedSquares(patternTwo));
+            attackPattern.addAll(filterBlockedSquares(patternThree));
+            attackPattern.addAll(filterBlockedSquares(patternFour));
+        }
 
         return attackPattern;
     }
 
-    private ArrayList<Square> removeBlockedSquares(ArrayList<Square> sList) {
+    private ArrayList<Square> filterAll(ArrayList<Square> sList) {
         for (int i = 0; i < sList.size(); i++) {
             if (getBoard().isSquareOccupied(sList.get(i))
                     && getBoard().getPiece(sList.get(i)).getPieceColour() != getPieceColour()) {
@@ -146,6 +163,15 @@ public abstract class Piece extends Rectangle {
             } else if (getBoard().isSquareOccupied(sList.get(i))
                     && getBoard().getPiece(sList.get(i)).getPieceColour().equals(getPieceColour())) {
                 sList.removeAll(sList.subList(i, sList.size()));
+            }
+        }
+        return sList;
+    }
+
+    private ArrayList<Square> filterBlockedSquares(ArrayList<Square> sList) {
+        for (int i = 0; i < sList.size(); i++) {
+            if (getBoard().isSquareOccupied(sList.get(i))) {
+                sList.removeAll(sList.subList(i + 1, sList.size()));
             }
         }
         return sList;

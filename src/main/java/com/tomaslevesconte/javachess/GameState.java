@@ -58,7 +58,7 @@ public class GameState {
     }
 
     private boolean canEvade() {
-        ArrayList<Square> kMvs = king.getLegalMoves();
+        ArrayList<Square> kMvs = king.getLegalMoves(true);
 
         if (kMvs.isEmpty() || kMvs.get(0).equals(attacker.getSquare())) {
             System.out.println("King cannot evade.");
@@ -86,6 +86,7 @@ public class GameState {
     private boolean canCapture() {
         ArrayList<Square> mvs = getMoves(PieceType.KING, currentColour);
         ArrayList<Square> kMvs = getKingsMoves(currentColour);
+        ArrayList<Square> uOMvs = getMovesUnfiltered(nextColour);
 
         for (Square mv : mvs) {
             if (mv.equals(attacker.getSquare())) {
@@ -96,10 +97,18 @@ public class GameState {
 
         for (Square mv : kMvs) {
             if (mv.equals(attacker.getSquare())) {
-                System.out.println("King can capture attacker.");
+                for (Square uMv : uOMvs) {
+                    if (uMv.equals(attacker.getSquare())) {
+                        System.out.println("Attacker is covered. King cannot capture.");
+                        return false;
+                    }
+                }
+                System.out.println("Attacker is not covered. King can capture.");
                 return true;
             }
         }
+
+
 
         return false;
     }
@@ -116,7 +125,7 @@ public class GameState {
 
     public Piece getAttacker() {
         for (Piece piece : board.getPieceList()) {
-            for (Square move : piece.getLegalMoves()) {
+            for (Square move : piece.getLegalMoves(true)) {
                 if (move.equals(king.getSquare())) {
                     return piece;
                 }
@@ -130,7 +139,7 @@ public class GameState {
 
         for (Piece piece : board.getPieceList()) {
             if (piece.getPieceColour().equals(pieceColour)) {
-                mvs.addAll(piece.getLegalMoves());
+                mvs.addAll(piece.getLegalMoves(true));
             }
         }
         return mvs;
@@ -142,10 +151,21 @@ public class GameState {
         for (Piece piece : board.getPieceList()) {
             if (piece.getPieceColour().equals(pieceColour)
                     && piece.getPieceType() != excludeType) {
-                mvs.addAll(piece.getLegalMoves());
+                mvs.addAll(piece.getLegalMoves(true));
             }
         }
         return mvs;
+    }
+
+    public ArrayList<Square> getMovesUnfiltered(PieceColour pieceColour) {
+        ArrayList<Square> uMvs = new ArrayList<>();
+
+        for (Piece piece : board.getPieceList()) {
+            if (piece.getPieceColour().equals(pieceColour)) {
+                uMvs.addAll(piece.getLegalMoves(false));
+            }
+        }
+        return uMvs;
     }
 
     public ArrayList<Square> getKingsMoves(PieceColour pieceColour) {
@@ -154,7 +174,7 @@ public class GameState {
         for (Piece piece : board.getPieceList()) {
             if (piece.getPieceColour().equals(pieceColour)
                     && piece.getPieceType().equals(PieceType.KING)) {
-                kMvs.addAll(piece.getLegalMoves());
+                kMvs.addAll(piece.getLegalMoves(true));
             }
         }
         return kMvs;
@@ -189,24 +209,24 @@ public class GameState {
 
     private ArrayList<Square> getVerticalAttackPath(double kX, double kY, double diffY) {
         ArrayList<Square> aP = new ArrayList<>();
-        double sSize = board.getSquareSize();
+        double sqrSize = board.getSquareSize();
 
         while (diffY < 0) {
-            kY -= sSize;
-            Square pS = Square.find(kX, kY, sSize);
-            if (diffY != -sSize) {
+            kY -= sqrSize;
+            Square pS = Square.find(kX, kY, sqrSize);
+            if (diffY != -sqrSize) {
                 aP.add(pS);
             }
-            diffY = (diffY + sSize);
+            diffY = (diffY + sqrSize);
         }
 
         while (diffY > 0) {
-            kY += sSize;
-            Square pS = Square.find(kX, kY, sSize);
-            if (diffY != sSize) {
+            kY += sqrSize;
+            Square pS = Square.find(kX, kY, sqrSize);
+            if (diffY != sqrSize) {
                 aP.add(pS);
             }
-            diffY = (diffY - sSize);
+            diffY = (diffY - sqrSize);
         }
 
         return aP;
@@ -214,24 +234,24 @@ public class GameState {
 
     private ArrayList<Square> getHorizontalAttackPath(double kX, double kY, double diffX) {
         ArrayList<Square> aP = new ArrayList<>();
-        double sSize = board.getSquareSize();
+        double sqrSize = board.getSquareSize();
 
         while (diffX < 0) {
-            kX -= sSize;
-            Square pS = Square.find(kX, kY, sSize);
-            if (diffX != -sSize) {
+            kX -= sqrSize;
+            Square pS = Square.find(kX, kY, sqrSize);
+            if (diffX != -sqrSize) {
                 aP.add(pS);
             }
-            diffX = (diffX + sSize);
+            diffX = (diffX + sqrSize);
         }
 
         while (diffX > 0) {
-            kX += sSize;
-            Square pS = Square.find(kX, kY, sSize);
-            if (diffX != sSize) {
+            kX += sqrSize;
+            Square pS = Square.find(kX, kY, sqrSize);
+            if (diffX != sqrSize) {
                 aP.add(pS);
             }
-            diffX = (diffX - sSize);
+            diffX = (diffX - sqrSize);
         }
 
         return aP;
@@ -239,50 +259,50 @@ public class GameState {
 
     private ArrayList<Square> getDiagonalAttackPath(double kX, double kY, double diffX, double diffY) {
         ArrayList<Square> aP = new ArrayList<>();
-        double sSize = board.getSquareSize();
+        double sqrSize = board.getSquareSize();
 
         while (diffX < 0 && diffY > 0) {
-            kX -= sSize;
-            kY += sSize;
-            Square pS = Square.find(kX, kY, sSize);
-            if (diffX != -sSize) {
+            kX -= sqrSize;
+            kY += sqrSize;
+            Square pS = Square.find(kX, kY, sqrSize);
+            if (diffX != -sqrSize) {
                 aP.add(pS);
             }
-            diffX = (diffX + sSize);
-            diffY = (diffY - sSize);
+            diffX = (diffX + sqrSize);
+            diffY = (diffY - sqrSize);
         }
 
         while (diffX > 0 && diffY > 0) {
-            kX += sSize;
-            kY += sSize;
-            Square pS = Square.find(kX, kY, sSize);
-            if (diffX != sSize) {
+            kX += sqrSize;
+            kY += sqrSize;
+            Square pS = Square.find(kX, kY, sqrSize);
+            if (diffX != sqrSize) {
                 aP.add(pS);
             }
-            diffX = (diffX - sSize);
-            diffY = (diffY - sSize);
+            diffX = (diffX - sqrSize);
+            diffY = (diffY - sqrSize);
         }
 
         while (diffX > 0 && diffY < 0) {
-            kX += sSize;
-            kY -= sSize;
-            Square pS = Square.find(kX, kY, sSize);
-            if (diffX != sSize) {
+            kX += sqrSize;
+            kY -= sqrSize;
+            Square pS = Square.find(kX, kY, sqrSize);
+            if (diffX != sqrSize) {
                 aP.add(pS);
             }
-            diffX = (diffX - sSize);
-            diffY = (diffY + sSize);
+            diffX = (diffX - sqrSize);
+            diffY = (diffY + sqrSize);
         }
 
         while (diffX < 0 && diffY < 0) {
-            kX -= sSize;
-            kY -= sSize;
-            Square pS = Square.find(kX, kY, sSize);
-            if (diffX != sSize) {
+            kX -= sqrSize;
+            kY -= sqrSize;
+            Square pS = Square.find(kX, kY, sqrSize);
+            if (diffX != sqrSize) {
                 aP.add(pS);
             }
-            diffX = (diffX + sSize);
-            diffY = (diffY + sSize);
+            diffX = (diffX + sqrSize);
+            diffY = (diffY + sqrSize);
         }
 
         return aP;
