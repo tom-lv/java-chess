@@ -13,7 +13,7 @@ public class ChessApplication extends Application {
     @Override
     public void start(Stage stage) {
         AnchorPane anchorPane = new AnchorPane();
-        new Board(ChessApplication.WINDOW_SIZE, anchorPane);
+        new Board(WINDOW_SIZE, anchorPane);
         Scene scene = new Scene(anchorPane, WINDOW_SIZE, WINDOW_SIZE);
         stage.setTitle("Chess");
         stage.setResizable(false);

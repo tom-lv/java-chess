@@ -5,7 +5,6 @@ import com.tomaslevesconte.javachess.PieceColour;
 import com.tomaslevesconte.javachess.PieceType;
 
 import com.tomaslevesconte.javachess.Square;
-import javafx.scene.Cursor;
 import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
@@ -37,7 +36,6 @@ public abstract class Piece extends Rectangle {
     }
 
     public void createPiece() {
-        setCursor(Cursor.OPEN_HAND);
         setWidth(getBoard().getSquareSize());
         setHeight(getBoard().getSquareSize());
         setLayoutX(posX);
@@ -57,7 +55,7 @@ public abstract class Piece extends Rectangle {
                 setPosX(newSquare.getX(squareSize));
                 setPosY(newSquare.getY(squareSize));
                 setHasMoved(true);
-                board.update();
+                board.getGameState().update();
                 return true;
             }
         }

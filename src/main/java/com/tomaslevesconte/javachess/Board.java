@@ -12,11 +12,11 @@ public class Board {
     private static final Color LIGHT_SQUARE_COLOUR = Color.web("#f0eef1"); // off-white #f0eef1, beach #F2D8B5
     private static final Color DARK_SQUARE_COLOUR = Color.web("#8877B3"); // purple #8877B3, orange #B78B64
 
-    private final double squareSize;
     private final AnchorPane anchorPane;
+
+    private final double squareSize;
     private final ArrayList<Piece> pieceList = new ArrayList<>();
     private final GameState gameState;
-    private boolean isWhitesTurn;
 
     public Board(double boardSize, AnchorPane anchorPane) {
         this.squareSize = boardSize / 8;
@@ -24,7 +24,6 @@ public class Board {
         this.gameState = new GameState(this);
         createBoard();
         new PieceBuilder(this);
-        isWhitesTurn = true;
     }
 
     private void createBoard() {
@@ -32,29 +31,19 @@ public class Board {
         double y = 0;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                Rectangle rectangle = new Rectangle(x, y, squareSize, squareSize);
-                rectangle.setSmooth(false); // Remove antialiasing
+                Rectangle rec = new Rectangle(x, y, squareSize, squareSize);
+                rec.setSmooth(false); // Remove antialiasing
                 if ((i + j) % 2 == 0) {
-                    rectangle.setFill(Board.LIGHT_SQUARE_COLOUR);
+                    rec.setFill(Board.LIGHT_SQUARE_COLOUR);
                 } else {
-                    rectangle.setFill(Board.DARK_SQUARE_COLOUR);
+                    rec.setFill(Board.DARK_SQUARE_COLOUR);
                 }
-                getAnchorPane().getChildren().add(rectangle);
-                x += rectangle.getWidth();
+                getAnchorPane().getChildren().add(rec);
+                x += rec.getWidth();
             }
             x = 0;
             y += squareSize;
         }
-    }
-
-    public void update() {
-        if (isWhitesTurn) {
-            System.out.println("White moved.");
-        } else {
-            System.out.println("Black moved.");
-        }
-        isWhitesTurn = !isWhitesTurn;
-        gameState.checkGameState();
     }
 
     public double[] getPossibleXAndYCoordinates() {
@@ -119,16 +108,6 @@ public class Board {
         return index;
     }
 
-    public Piece getKing(PieceColour pieceColour) {
-        for (Piece piece : getPieceList()) {
-            if (piece.getPieceType().equals(PieceType.KING)
-                    && piece.getPieceColour().equals(pieceColour)) {
-                return piece;
-            }
-        }
-        return null;
-    }
-
     public Piece getQueenSideRook(PieceColour pieceColour) {
         if (pieceColour.equals(PieceColour.WHITE)
                 && getPiece(Square.A1) != null
@@ -157,29 +136,8 @@ public class Board {
         }
     }
 
-    public ArrayList<Square> getMoves(PieceColour pieceColour) {
-        ArrayList<Square> moves = new ArrayList<>();
-        for (Piece piece : getPieceList()) {
-            if (piece.getPieceColour().equals(pieceColour)) {
-                moves.addAll(piece.getLegalMoves());
-            }
-        }
-        return moves;
-    }
-
-    public Piece getAttacker(Piece king) {
-        for (Piece piece : getPieceList()) {
-            for (Square move : piece.getLegalMoves()) {
-                if (move.equals(king.getSquare())) {
-                    return piece;
-                }
-            }
-        }
-        return null;
-    }
-
-    public boolean isWhitesTurn() {
-        return isWhitesTurn;
+    public GameState getGameState() {
+        return gameState;
     }
 
     public double getSquareSize() {

@@ -26,31 +26,55 @@ public class PieceBuilder {
 
     private void initialisePiece(Piece piece) {
 
+        piece.setOnMouseEntered(mouseEvent -> {
+
+            piece.setCursor(Cursor.DEFAULT);
+            if (piece.getPieceColour().equals(PieceColour.WHITE) && board.getGameState().isWhitesTurn()) {
+                piece.setCursor(Cursor.OPEN_HAND);
+            } else if (piece.getPieceColour().equals(PieceColour.BLACK) && !board.getGameState().isWhitesTurn()) {
+                piece.setCursor(Cursor.OPEN_HAND);
+            }
+
+        });
+
         piece.setOnMousePressed(mouseEvent -> {
+
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)
-                    && piece.getPieceColour().equals(PieceColour.WHITE) && board.isWhitesTurn()
+                    && piece.getPieceColour().equals(PieceColour.WHITE) && board.getGameState().isWhitesTurn()
                     || mouseEvent.getButton().equals(MouseButton.PRIMARY)
-                    && piece.getPieceColour().equals(PieceColour.BLACK) && !board.isWhitesTurn()) {
+                    && piece.getPieceColour().equals(PieceColour.BLACK) && !board.getGameState().isWhitesTurn()) {
+
                 showLegalMoves(piece);
                 piece.setCursor(Cursor.CLOSED_HAND);
                 piece.toFront(); // Move piece in front of its siblings in terms of z-order
                 piece.setLayoutX(mouseEvent.getSceneX() - (piece.getWidth() / 2)); // - half the size of the image to find the center
                 piece.setLayoutY(mouseEvent.getSceneY() - (piece.getHeight() / 2));
+
             }
+
         });
 
         piece.setOnMouseDragged(mouseEvent -> {
+
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)
-                    && piece.getPieceColour().equals(PieceColour.WHITE) && board.isWhitesTurn()
+                    && piece.getPieceColour().equals(PieceColour.WHITE) && board.getGameState().isWhitesTurn()
                     || mouseEvent.getButton().equals(MouseButton.PRIMARY)
-                    && piece.getPieceColour().equals(PieceColour.BLACK) && !board.isWhitesTurn()) {
+                    && piece.getPieceColour().equals(PieceColour.BLACK) && !board.getGameState().isWhitesTurn()) {
+
                 piece.setLayoutX(mouseEvent.getSceneX() - (piece.getWidth() / 2)); // - half the size of the image to find the center
                 piece.setLayoutY(mouseEvent.getSceneY() - (piece.getHeight() / 2));
             }
+
         });
 
         piece.setOnMouseReleased(mouseEvent -> {
-            piece.setCursor(Cursor.OPEN_HAND);
+
+
+            if (piece.getPieceColour().equals(PieceColour.WHITE) && board.getGameState().isWhitesTurn()) {
+                piece.setCursor(Cursor.OPEN_HAND);
+            } else if (piece.getPieceColour().equals(PieceColour.BLACK) && !board.getGameState().isWhitesTurn()) {
+                piece.setCursor(Cursor.OPEN_HAND);
+            }
 
             Square newSquare = Square.find(
                     board.findClosestSquare(mouseEvent.getSceneX(), board.getPossibleXAndYCoordinates()),
@@ -64,19 +88,23 @@ public class PieceBuilder {
 
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)
                     && newSquare != null
-                    && piece.getPieceColour().equals(PieceColour.WHITE) && board.isWhitesTurn()
+                    && piece.getPieceColour().equals(PieceColour.WHITE) && board.getGameState().isWhitesTurn()
                     && board.getPieceList().get(pieceIndex).move(newSquare)
                     || mouseEvent.getButton().equals(MouseButton.PRIMARY)
                     && newSquare != null
-                    && piece.getPieceColour().equals(PieceColour.BLACK) && !board.isWhitesTurn()
+                    && piece.getPieceColour().equals(PieceColour.BLACK) && !board.getGameState().isWhitesTurn()
                     && board.getPieceList().get(pieceIndex).move(newSquare)) {
+
                 hideLegalMoves();
                 attemptCapture(enemyPiece);
                 attemptCastle(piece, lastSquare);
                 updatePositionOnBoard(piece, newSquare);
+
             } else {
+
                 piece.setLayoutX(piece.getPosX());
                 piece.setLayoutY(piece.getPosY());
+
             }
         });
 
