@@ -85,7 +85,7 @@ public class GameState {
 
     private boolean canCapture() {
         ArrayList<Square> mvs = getMoves(PieceType.KING, currentColour);
-        ArrayList<Square> kMvs = getMoves(currentColour);
+        ArrayList<Square> kMvs = getKingsMoves(currentColour);
 
         for (Square mv : mvs) {
             if (mv.equals(attacker.getSquare())) {
@@ -148,7 +148,7 @@ public class GameState {
         return mvs;
     }
 
-    public ArrayList<Square> getKingMoves(PieceColour pieceColour) {
+    public ArrayList<Square> getKingsMoves(PieceColour pieceColour) {
         ArrayList<Square> kMvs = new ArrayList<>();
 
         for (Piece piece : board.getPieceList()) {
