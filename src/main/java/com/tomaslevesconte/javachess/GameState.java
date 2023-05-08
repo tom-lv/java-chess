@@ -57,6 +57,10 @@ public class GameState {
         return isKingInCheck() && !canEvade() && !canBlock() && !canCapture();
     }
 
+    public boolean isKingInStalemate() {
+        return false;
+    }
+
     private boolean canEvade() {
         ArrayList<Square> kMvs = king.getLegalMoves(true);
 
