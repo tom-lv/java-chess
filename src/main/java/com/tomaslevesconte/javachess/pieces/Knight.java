@@ -6,6 +6,7 @@ import com.tomaslevesconte.javachess.PieceType;
 import com.tomaslevesconte.javachess.Square;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Knight extends Piece {
 
@@ -35,10 +36,14 @@ public class Knight extends Piece {
         attackPattern.add(Square.find(getPosX() - (sqrSize * 2), getPosY() + sqrSize, sqrSize));
         attackPattern.add(Square.find(getPosX() + (sqrSize * 2), getPosY() + sqrSize, sqrSize));
 
-        // Remove if square !exist, or if square is occupied by the same colour
-        attackPattern.removeIf(attackSquare -> (attackSquare == null // If null (out of bounds)
-                || getBoard().isSquareOccupied(attackSquare)
-                && getBoard().getPiece(attackSquare).getPieceColour().equals(getPieceColour())));
+        if (filterCoveredSquares) {
+            // Remove if square !exist, or if square is occupied by the same colour
+            attackPattern.removeIf(attackSquare -> (attackSquare == null // If null (out of bounds)
+                    || getBoard().isSquareOccupied(attackSquare)
+                    && getBoard().getPiece(attackSquare).getPieceColour().equals(getPieceColour())));
+        } else {
+            attackPattern.removeIf(Objects::isNull);
+        }
 
         return attackPattern;
     }
