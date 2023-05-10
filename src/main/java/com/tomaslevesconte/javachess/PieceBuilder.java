@@ -87,15 +87,17 @@ public class PieceBuilder {
             Piece enemyPiece = board.getPiece(newSquare);
 
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY)
-                    && newSquare != null
+                    && newSquare != null && lastSquare != null
                     && piece.getPieceColour().equals(PieceColour.WHITE) && board.getGameState().isWhitesTurn()
                     && board.getPieceList().get(pieceIndex).move(newSquare)
                     || mouseEvent.getButton().equals(MouseButton.PRIMARY)
-                    && newSquare != null
+                    && newSquare != null && lastSquare != null
                     && piece.getPieceColour().equals(PieceColour.BLACK) && !board.getGameState().isWhitesTurn()
                     && board.getPieceList().get(pieceIndex).move(newSquare)) {
 
                 hideLegalMoves();
+                hideLastMove();
+                showLastMove(newSquare, lastSquare);
                 attemptCapture(enemyPiece);
                 attemptCastle(piece, lastSquare);
                 updatePositionOnBoard(piece, newSquare);
@@ -198,13 +200,18 @@ public class PieceBuilder {
         initialisePiece(new Pawn(PieceColour.BLACK, Square.H7, board));
     }
 
+    private Rectangle createHighlightSquare() {
+        Rectangle rec = new Rectangle(board.getSquareSize(), board.getSquareSize());
+        rec.setSmooth(false);
+        rec.setFill(Color.web("#FEF250", 0.5));
+        return rec;
+    }
+
     private void showLegalMoves(Piece piece) {
         hideLegalMoves(); // Hide last selected piece's moves
         ArrayList<Square> legalMoves = piece.getLegalMoves(true);
         double squareSize = board.getSquareSize();
-        Rectangle currentSquare = new Rectangle(squareSize, squareSize);
-        currentSquare.setFill(Color.web("#FEF250", 0.5));
-        currentSquare.setSmooth(false);
+        Rectangle currentSquare = createHighlightSquare();
         currentSquare.setLayoutX(piece.getPosX());
         currentSquare.setLayoutY(piece.getPosY());
         Group possibleMoves = new Group();
@@ -229,5 +236,27 @@ public class PieceBuilder {
     public void hideLegalMoves() {
         board.getAnchorPane().getChildren().remove(board.getAnchorPane().lookup("#currentSquare"));
         board.getAnchorPane().getChildren().remove(board.getAnchorPane().lookup("#possibleMoves"));
+    }
+
+    public void showLastMove(Square newPos, Square lastPos) {
+        double sqrSize = board.getSquareSize();
+
+        Rectangle newSquare = createHighlightSquare();
+        newSquare.setId("newSquare");
+        newSquare.setLayoutX(newPos.getX(sqrSize));
+        newSquare.setLayoutY(newPos.getY(sqrSize));
+
+        Rectangle lastSquare = createHighlightSquare();
+        lastSquare.setId("lastSquare");
+        lastSquare.setLayoutX(lastPos.getX(sqrSize));
+        lastSquare.setLayoutY(lastPos.getY(sqrSize));
+
+        board.getAnchorPane().getChildren().addAll(newSquare, lastSquare);
+        board.getPieceList().forEach(Node::toFront); // All pieces to front in terms of z-index
+    }
+
+    public void hideLastMove() {
+        board.getAnchorPane().getChildren().remove(board.getAnchorPane().lookup("#lastSquare"));
+        board.getAnchorPane().getChildren().remove(board.getAnchorPane().lookup("#newSquare"));
     }
 }
