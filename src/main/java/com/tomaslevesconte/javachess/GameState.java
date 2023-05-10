@@ -67,6 +67,8 @@ public class GameState {
         if (kMvs.isEmpty() || kMvs.get(0).equals(attacker.getSquare())) {
             System.out.println("King cannot evade.");
             return false;
+        } else {
+            System.out.println("King can evade.");
         }
 
         return true;
@@ -74,9 +76,9 @@ public class GameState {
 
     private boolean canBlock() {
         ArrayList<Square> mvs = getMoves(PieceType.KING, currentColour);
+        ArrayList<Square> aPs = Objects.requireNonNull(getAttackPath());
 
         for (Square mv : mvs) {
-            ArrayList<Square> aPs = Objects.requireNonNull(getAttackPath());
             for (Square aP : aPs) {
                 if (mv.equals(aP)) {
                     System.out.println("Can block attacker.");
@@ -84,6 +86,8 @@ public class GameState {
                 }
             }
         }
+
+        System.out.println("Cannot block attacker.");
         return false;
     }
 
@@ -112,22 +116,21 @@ public class GameState {
             }
         }
 
-
-
         return false;
     }
 
-    public Piece getKing(PieceColour pieceColour) {
+    private Piece getKing(PieceColour pieceColour) {
         for (Piece piece : board.getPieceList()) {
             if (piece.getPieceType().equals(PieceType.KING)
                     && piece.getPieceColour().equals(pieceColour)) {
                 return piece;
             }
         }
+
         return null;
     }
 
-    public Piece getAttacker() {
+    private Piece getAttacker() {
         for (Piece piece : board.getPieceList()) {
             for (Square move : piece.getLegalMoves(true)) {
                 if (move.equals(king.getSquare())) {
@@ -135,10 +138,11 @@ public class GameState {
                 }
             }
         }
+
         return null;
     }
 
-    public ArrayList<Square> getMoves(PieceColour pieceColour) {
+    private ArrayList<Square> getMoves(PieceColour pieceColour) {
         ArrayList<Square> mvs = new ArrayList<>();
 
         for (Piece piece : board.getPieceList()) {
@@ -146,10 +150,11 @@ public class GameState {
                 mvs.addAll(piece.getLegalMoves(true));
             }
         }
+
         return mvs;
     }
 
-    public ArrayList<Square> getMoves(PieceType excludeType, PieceColour pieceColour) {
+    private ArrayList<Square> getMoves(PieceType excludeType, PieceColour pieceColour) {
         ArrayList<Square> mvs = new ArrayList<>();
 
         for (Piece piece : board.getPieceList()) {
@@ -158,10 +163,11 @@ public class GameState {
                 mvs.addAll(piece.getLegalMoves(true));
             }
         }
+
         return mvs;
     }
 
-    public ArrayList<Square> getMovesUnfiltered(PieceColour pieceColour) {
+    private ArrayList<Square> getMovesUnfiltered(PieceColour pieceColour) {
         ArrayList<Square> uMvs = new ArrayList<>();
 
         for (Piece piece : board.getPieceList()) {
@@ -169,10 +175,11 @@ public class GameState {
                 uMvs.addAll(piece.getLegalMoves(false));
             }
         }
+
         return uMvs;
     }
 
-    public ArrayList<Square> getKingsMoves(PieceColour pieceColour) {
+    private ArrayList<Square> getKingsMoves(PieceColour pieceColour) {
         ArrayList<Square> kMvs = new ArrayList<>();
 
         for (Piece piece : board.getPieceList()) {
@@ -181,6 +188,7 @@ public class GameState {
                 kMvs.addAll(piece.getLegalMoves(true));
             }
         }
+
         return kMvs;
     }
 
