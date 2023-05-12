@@ -4,6 +4,7 @@ import com.tomaslevesconte.javachess.enums.PieceColour;
 import com.tomaslevesconte.javachess.enums.PieceType;
 import com.tomaslevesconte.javachess.enums.Square;
 import com.tomaslevesconte.javachess.pieces.Piece;
+import javafx.scene.media.AudioClip;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -11,25 +12,26 @@ import java.util.Objects;
 public class GameState {
 
     private final Board board;
+    private final UIComponents uiComponents;
 
     private Piece king;
     private Piece attacker;
     private boolean isWhitesTurn;
     private PieceColour currentColour;
     private PieceColour nextColour;
-    private final UIComponents uiComponents;
 
     public GameState(Board board) {
         this.board = board;
+        this.uiComponents = new UIComponents(board);
         this.king = getKing(PieceColour.WHITE);
         this.attacker = getAttacker(king);
         this.isWhitesTurn = true;
         this.currentColour = PieceColour.WHITE;
         this.nextColour = PieceColour.BLACK;
-        this.uiComponents = new UIComponents(board);
     }
 
     public void update() {
+
         if (isWhitesTurn) {
             System.out.println("Whites moved.");
             king = getKing(PieceColour.BLACK);

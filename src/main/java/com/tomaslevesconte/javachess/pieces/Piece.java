@@ -6,6 +6,7 @@ import com.tomaslevesconte.javachess.enums.PieceType;
 
 import com.tomaslevesconte.javachess.enums.Square;
 import javafx.scene.image.Image;
+import javafx.scene.media.AudioClip;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
@@ -16,6 +17,10 @@ public abstract class Piece extends Rectangle {
 
     private static final String IMAGE_PATH = "com/tomaslevesconte/javachess/pieces/";
     private static final String IMAGE_TYPE = ".png";
+    private static final String CASTLE_SOUND_PATH = "/com/tomaslevesconte/javachess/sounds/castle.mp3";
+    private static final String MOVE_SOUND_PATH = "/com/tomaslevesconte/javachess/sounds/move-self.mp3";
+    private static final String CAPTURE_SOUND_PATH = "/com/tomaslevesconte/javachess/sounds/capture.mp3";
+    private static final String CHECK_SOUND_PATH = "/com/tomaslevesconte/javachess/sounds/move-check.mp3";
 
     private final PieceType pieceType;
     private final PieceColour pieceColour;
@@ -53,20 +58,25 @@ public abstract class Piece extends Rectangle {
         lastPos = Square.find(getPosX(), getPosY(), getBoard().getSquareSize());
         for (Square legalSquare : getLegalMoves()) {
             if (newSquare.equals(legalSquare)) {
-                // If new is occupied by !colour, capture piece
+                boolean didCapture = false;
                 if (getBoard().isSquareOccupied(newSquare)
                         && getBoard().getPiece(newSquare).getPieceColour() != pieceColour) {
                     Piece target = getBoard().getPiece(newSquare);
                     getBoard().getAnchorPane().getChildren().remove(target);
                     target.capture();
+                    didCapture = true;
                 }
                 updatePositionOnBoardAndList(newSquare);
                 setHasMoved(true);
-                // If piece == king, attempt to castle
-                if (getPieceType().equals(PieceType.KING)) {
-                    attemptCastle();
-                }
+                attemptCastle();
                 getBoard().getGameState().update(); // Update game state
+                if (getBoard().getGameState().isKingInCheck() && didCapture) {
+                    checkSound().play();
+                } else if (didCapture) {
+                    captureSound().play();
+                } else {
+                    moveSound().play();
+                }
                 return true;
             }
 
@@ -185,17 +195,19 @@ public abstract class Piece extends Rectangle {
 
             if (Objects.equals(lastPos, kSquare)
                     && getSquare().equals(kPos[0])) {
-                System.out.println("called!");
+                castleSound().play();
                 Piece qSR = board.getQueenSideRook(getPieceColour());
                 updatePositionOnBoardAndList(qSR, rPos[0]);
 
             } else if (Objects.equals(lastPos, kSquare)
                     && getSquare().equals(kPos[1])) {
-                System.out.println("called!");
+                castleSound().play();
                 Piece kSR = board.getKingSideRook(getPieceColour());
                 updatePositionOnBoardAndList(kSR, rPos[1]);
-            }
 
+            } else {
+                moveSound().play();
+            }
         }
     }
 
@@ -241,6 +253,22 @@ public abstract class Piece extends Rectangle {
             }
         }
         return sList;
+    }
+
+    private AudioClip moveSound() {
+        return new AudioClip(Objects.requireNonNull(getClass().getResource(MOVE_SOUND_PATH)).toString());
+    }
+
+    private AudioClip captureSound() {
+        return new AudioClip(Objects.requireNonNull(getClass().getResource(CAPTURE_SOUND_PATH)).toString());
+    }
+
+    private AudioClip checkSound() {
+        return new AudioClip(Objects.requireNonNull(getClass().getResource(CHECK_SOUND_PATH)).toString());
+    }
+
+    private AudioClip castleSound() {
+        return new AudioClip(Objects.requireNonNull(getClass().getResource(CASTLE_SOUND_PATH)).toString());
     }
 
     public Square getSquare() {
