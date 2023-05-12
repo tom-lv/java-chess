@@ -30,10 +30,6 @@ public class UIComponents {
         board.getPieceList().forEach(Node::toFront); // All pieces to front in terms of z-index
     }
 
-    public void removeSelectedPiece() {
-        board.getAnchorPane().getChildren().remove(board.getAnchorPane().lookup("#selectedPiece"));
-    }
-
     public void displayLegalMoves(Piece piece) {
         ArrayList<Square> legalMoves = piece.getLegalMoves();
 
@@ -60,10 +56,6 @@ public class UIComponents {
         board.getPieceList().forEach(Node::toFront); // All pieces to front in terms of z-index
     }
 
-    public void removeLegalMoves() {
-        board.getAnchorPane().getChildren().remove(board.getAnchorPane().lookup("#legalMoves"));
-    }
-
     public void displayLastMovePath(Square newPos, Square lastPos) {
         double sqrSize = board.getSquareSize();
 
@@ -81,10 +73,6 @@ public class UIComponents {
         board.getPieceList().forEach(Node::toFront); // All pieces to front in terms of z-index
     }
 
-    public void removeLastMovePath() {
-        board.getAnchorPane().getChildren().remove(board.getAnchorPane().lookup("#newRec"));
-        board.getAnchorPane().getChildren().remove(board.getAnchorPane().lookup("#lastRec"));
-    }
 
     public void displayKingInCheck(Piece king) {
         Rectangle checkRec = createHighlightRectangle("#9A3048", 1.0f);
@@ -104,6 +92,19 @@ public class UIComponents {
 
         board.getAnchorPane().getChildren().add(checkRec);
         board.getPieceList().forEach(Node::toFront); // All pieces to front in terms of z-index
+    }
+
+    public void removeSelectedPiece() {
+        board.getAnchorPane().getChildren().remove(board.getAnchorPane().lookup("#selectedPiece"));
+    }
+
+    public void removeLegalMoves() {
+        board.getAnchorPane().getChildren().remove(board.getAnchorPane().lookup("#legalMoves"));
+    }
+
+    public void removeLastMovePath() {
+        board.getAnchorPane().getChildren().remove(board.getAnchorPane().lookup("#newRec"));
+        board.getAnchorPane().getChildren().remove(board.getAnchorPane().lookup("#lastRec"));
     }
 
     public void removeKingInCheck() {
