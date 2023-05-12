@@ -1,6 +1,7 @@
 package com.tomaslevesconte.javachess;
 
 import com.tomaslevesconte.javachess.enums.PieceColour;
+import com.tomaslevesconte.javachess.enums.PieceType;
 import com.tomaslevesconte.javachess.enums.Square;
 import com.tomaslevesconte.javachess.pieces.*;
 
@@ -43,7 +44,12 @@ public class PieceBuilder {
                 System.out.println("Is piece blocking check: " + board.getGameState().isPieceBlockingCheck(piece));
 
                 uiComponents.removeSelectedPiece();
-                uiComponents.displaySelectedPiece(piece);
+                if (board.getGameState().isKingInCheck()
+                        && piece.getPieceType().equals(PieceType.KING)) {
+                    // Do nothing
+                } else {
+                    uiComponents.displaySelectedPiece(piece);
+                }
                 uiComponents.removeLegalMoves();
                 uiComponents.displayLegalMoves(piece);
 

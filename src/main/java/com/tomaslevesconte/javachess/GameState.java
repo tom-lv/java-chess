@@ -17,6 +17,7 @@ public class GameState {
     private boolean isWhitesTurn;
     private PieceColour currentColour;
     private PieceColour nextColour;
+    private final UIComponents uiComponents;
 
     public GameState(Board board) {
         this.board = board;
@@ -25,6 +26,7 @@ public class GameState {
         this.isWhitesTurn = true;
         this.currentColour = PieceColour.WHITE;
         this.nextColour = PieceColour.BLACK;
+        this.uiComponents = new UIComponents(board);
     }
 
     public void update() {
@@ -48,10 +50,12 @@ public class GameState {
     public boolean isKingInCheck() {
         ArrayList<Square> opponentsMoves = getMoves(nextColour);
 
+        uiComponents.removeKingInCheck();
+
         for (Square move : opponentsMoves) {
             if (king != null && move.equals(king.getSquare())) {
                 System.out.println("King is in check!");
-                // Remove moves that don't take king out of check
+                uiComponents.displayKingInCheck(king);
                 return true;
             }
         }
@@ -60,7 +64,7 @@ public class GameState {
         return false;
     }
 
-    // Gameover
+
     public boolean isKingInCheckmate() {
         return isKingInCheck() && !canEvade() && !canBlock() && !canCapture();
     }
@@ -84,12 +88,21 @@ public class GameState {
                     }
 
                 }
-                // Remove moves that puts king in check
                 return true;
             }
         }
         return false;
     }
+
+//    public ArrayList<Square> curateMoves(Piece piece) {
+//        if (isPieceBlockingCheck(piece)) {
+//            // remove moves that stop it from blocking check
+//        }
+//        if (isKingInCheck()) {
+//            // only include moves that get king out of check
+//        }
+//        // return curated list
+//    }
 
     private boolean canEvade() {
         ArrayList<Square> kingsMoves = king.getLegalMoves();
