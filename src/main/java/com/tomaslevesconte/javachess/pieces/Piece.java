@@ -1,10 +1,10 @@
 package com.tomaslevesconte.javachess.pieces;
 
 import com.tomaslevesconte.javachess.Board;
-import com.tomaslevesconte.javachess.PieceColour;
-import com.tomaslevesconte.javachess.PieceType;
+import com.tomaslevesconte.javachess.enums.PieceColour;
+import com.tomaslevesconte.javachess.enums.PieceType;
 
-import com.tomaslevesconte.javachess.Square;
+import com.tomaslevesconte.javachess.enums.Square;
 import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
@@ -21,6 +21,7 @@ public abstract class Piece extends Rectangle {
     private final PieceColour pieceColour;
     private double posX;
     private double posY;
+    private Square lastPos;
     private final int SQUARES_IT_CAN_MOVE;
     private final Board board;
     private boolean hasMoved;
@@ -49,30 +50,43 @@ public abstract class Piece extends Rectangle {
     }
 
     public boolean move(Square newSquare) {
-        double sqrSize = getBoard().getSquareSize();
-        for (Square legalSquare : getLegalMoves(true)) {
+        lastPos = Square.find(getPosX(), getPosY(), getBoard().getSquareSize());
+        for (Square legalSquare : getLegalMoves()) {
             if (newSquare.equals(legalSquare)) {
-                setPosX(newSquare.getX(sqrSize));
-                setPosY(newSquare.getY(sqrSize));
+                // If new is occupied by !colour, capture piece
+                if (getBoard().isSquareOccupied(newSquare)
+                        && getBoard().getPiece(newSquare).getPieceColour() != pieceColour) {
+                    Piece target = getBoard().getPiece(newSquare);
+                    getBoard().getAnchorPane().getChildren().remove(target);
+                    target.capture();
+                }
+                updatePositionOnBoardAndList(newSquare);
                 setHasMoved(true);
-                board.getGameState().update();
+                // If piece == king, attempt to castle
+                if (getPieceType().equals(PieceType.KING)) {
+                    attemptCastle();
+                }
+                getBoard().getGameState().update(); // Update game state
                 return true;
             }
+
         }
         return false;
     }
 
-    public void setCaptured() {
+    public void capture() {
         // King cannot be captured
         if (!getPieceType().equals(PieceType.KING)) {
             getBoard().getPieceList().remove(this);
         }
     }
 
-    public abstract ArrayList<Square> getLegalMoves(boolean filterCoveredSquares);
+    public abstract ArrayList<Square> getLegalMoves();
+    public abstract ArrayList<Square> getLegalMoves(boolean ignoreCoveredSquares);
 
-    public ArrayList<Square> getVerticalAttackPattern(boolean filterCoveredSquares) {
+    public ArrayList<Square> getVerticalAttackPattern(boolean ignoreCoveredSquares) {
         ArrayList<Square> attackPattern = new ArrayList<>();
+
         ArrayList<Square> upPattern = new ArrayList<>(); // Up y
         ArrayList<Square> downPattern = new ArrayList<>(); // Down y
 
@@ -84,19 +98,20 @@ public abstract class Piece extends Rectangle {
         upPattern.removeIf(Objects::isNull);
         downPattern.removeIf(Objects::isNull);
 
-        if (filterCoveredSquares) {
-            attackPattern.addAll(filterAll(upPattern));
-            attackPattern.addAll(filterAll(downPattern));
+        if (ignoreCoveredSquares) {
+            attackPattern.addAll(removeBlockedSquares(upPattern));
+            attackPattern.addAll(removeBlockedSquares(downPattern));
         } else {
-            attackPattern.addAll(filterBlockedSquares(upPattern));
-            attackPattern.addAll(filterBlockedSquares(downPattern));
+            attackPattern.addAll(addCoveredSquares(upPattern));
+            attackPattern.addAll(addCoveredSquares(downPattern));
         }
 
         return attackPattern;
     }
 
-    public ArrayList<Square> getHorizontalAttackPattern(boolean filterCoveredSquares) {
+    public ArrayList<Square> getHorizontalAttackPattern(boolean ignoreCoveredSquares) {
         ArrayList<Square> attackPattern = new ArrayList<>();
+
         ArrayList<Square> upPattern = new ArrayList<>(); // Up x
         ArrayList<Square> downPattern = new ArrayList<>(); // Down x
 
@@ -109,19 +124,20 @@ public abstract class Piece extends Rectangle {
         upPattern.removeIf(Objects::isNull);
         downPattern.removeIf(Objects::isNull);
 
-        if (filterCoveredSquares) {
-            attackPattern.addAll(filterAll(upPattern));
-            attackPattern.addAll(filterAll(downPattern));
+        if (ignoreCoveredSquares) {
+            attackPattern.addAll(removeBlockedSquares(upPattern));
+            attackPattern.addAll(removeBlockedSquares(downPattern));
         } else {
-            attackPattern.addAll(filterBlockedSquares(upPattern));
-            attackPattern.addAll(filterBlockedSquares(downPattern));
+            attackPattern.addAll(addCoveredSquares(upPattern));
+            attackPattern.addAll(addCoveredSquares(downPattern));
         }
 
         return attackPattern;
     }
 
-    public ArrayList<Square> getDiagonalAttackPattern(boolean filterCoveredSquares) {
+    public ArrayList<Square> getDiagonalAttackPattern(boolean ignoreCoveredSquares) {
         ArrayList<Square> attackPattern = new ArrayList<>();
+
         ArrayList<Square> patternOne = new ArrayList<>(); // Down x, down y
         ArrayList<Square> patternTwo = new ArrayList<>(); // Up x, down y
         ArrayList<Square> patternThree = new ArrayList<>(); // Down x, up y
@@ -140,22 +156,72 @@ public abstract class Piece extends Rectangle {
         patternThree.removeIf(Objects::isNull);
         patternFour.removeIf(Objects::isNull);
 
-        if (filterCoveredSquares) {
-            attackPattern.addAll(filterAll(patternOne));
-            attackPattern.addAll(filterAll(patternTwo));
-            attackPattern.addAll(filterAll(patternThree));
-            attackPattern.addAll(filterAll(patternFour));
+        if (ignoreCoveredSquares) {
+            attackPattern.addAll(removeBlockedSquares(patternOne));
+            attackPattern.addAll(removeBlockedSquares(patternTwo));
+            attackPattern.addAll(removeBlockedSquares(patternThree));
+            attackPattern.addAll(removeBlockedSquares(patternFour));
         } else {
-            attackPattern.addAll(filterBlockedSquares(patternOne));
-            attackPattern.addAll(filterBlockedSquares(patternTwo));
-            attackPattern.addAll(filterBlockedSquares(patternThree));
-            attackPattern.addAll(filterBlockedSquares(patternFour));
+            attackPattern.addAll(addCoveredSquares(patternOne));
+            attackPattern.addAll(addCoveredSquares(patternTwo));
+            attackPattern.addAll(addCoveredSquares(patternThree));
+            attackPattern.addAll(addCoveredSquares(patternFour));
         }
 
         return attackPattern;
     }
 
-    private ArrayList<Square> filterAll(ArrayList<Square> sList) {
+    private void updatePositionOnBoardAndList(Square newSquare) {
+        if (newSquare != null) {
+            // Update visual pos on board
+            setLayoutX(newSquare.getX(getBoard().getSquareSize()));
+            setLayoutY(newSquare.getY(getBoard().getSquareSize()));
+            // Update pos in list
+            setPosX(newSquare.getX(getBoard().getSquareSize()));
+            setPosY(newSquare.getY(getBoard().getSquareSize()));
+        }
+    }
+
+    private void updatePositionOnBoardAndList(Piece rook, Square newSquare) {
+        if (newSquare != null) {
+            // Update visual pos on board
+            rook.setLayoutX(newSquare.getX(getBoard().getSquareSize()));
+            rook.setLayoutY(newSquare.getY(getBoard().getSquareSize()));
+            // Update pos in list
+            rook.setPosX(newSquare.getX(getBoard().getSquareSize()));
+            rook.setPosY(newSquare.getY(getBoard().getSquareSize()));
+        }
+    }
+
+    private void attemptCastle() {
+        if (getPieceType().equals(PieceType.KING)) {
+            Square kSquare = getPieceColour().equals(PieceColour.WHITE)
+                    ? Square.E1
+                    : Square.E8;
+            Square[] kPos = getPieceColour().equals(PieceColour.WHITE)
+                    ? new Square[]{Square.C1, Square.G1}
+                    : new Square[]{Square.C8, Square.G8};
+            Square[] rPos = getPieceColour().equals(PieceColour.WHITE)
+                    ? new Square[]{Square.D1, Square.F1}
+                    : new Square[]{Square.D8, Square.F8};
+
+            if (Objects.equals(lastPos, kSquare)
+                    && getSquare().equals(kPos[0])) {
+                System.out.println("called!");
+                Piece qSR = board.getQueenSideRook(getPieceColour());
+                updatePositionOnBoardAndList(qSR, rPos[0]);
+
+            } else if (Objects.equals(lastPos, kSquare)
+                    && getSquare().equals(kPos[1])) {
+                System.out.println("called!");
+                Piece kSR = board.getKingSideRook(getPieceColour());
+                updatePositionOnBoardAndList(kSR, rPos[1]);
+            }
+
+        }
+    }
+
+    private ArrayList<Square> removeBlockedSquares(ArrayList<Square> sList) {
         for (int i = 0; i < sList.size(); i++) {
             if (getBoard().isSquareOccupied(sList.get(i))
                     && getBoard().getPiece(sList.get(i)).getPieceColour() != getPieceColour()) {
@@ -168,7 +234,7 @@ public abstract class Piece extends Rectangle {
         return sList;
     }
 
-    private ArrayList<Square> filterBlockedSquares(ArrayList<Square> sList) {
+    private ArrayList<Square> addCoveredSquares(ArrayList<Square> sList) {
         for (int i = 0; i < sList.size(); i++) {
             if (getBoard().isSquareOccupied(sList.get(i))) {
                 sList.removeAll(sList.subList(i + 1, sList.size()));

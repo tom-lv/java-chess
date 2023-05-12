@@ -1,9 +1,9 @@
 package com.tomaslevesconte.javachess.pieces;
 
 import com.tomaslevesconte.javachess.Board;
-import com.tomaslevesconte.javachess.PieceColour;
-import com.tomaslevesconte.javachess.PieceType;
-import com.tomaslevesconte.javachess.Square;
+import com.tomaslevesconte.javachess.enums.PieceColour;
+import com.tomaslevesconte.javachess.enums.PieceType;
+import com.tomaslevesconte.javachess.enums.Square;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -18,12 +18,18 @@ public class Pawn extends Piece {
     }
 
     @Override
-    public ArrayList<Square> getLegalMoves(boolean filterCoveredSquares) {
+    public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
-
         legalMoves.addAll(getMovePattern()); // Add move patterns
-        legalMoves.addAll(getAttackPattern(filterCoveredSquares)); // Add attack patterns
+        legalMoves.addAll(getAttackPattern(true)); // Add attack patterns
+        return legalMoves;
+    }
 
+    @Override
+    public ArrayList<Square> getLegalMoves(boolean ignoreCoveredSquares) {
+        ArrayList<Square> legalMoves = new ArrayList<>();
+        legalMoves.addAll(getMovePattern()); // Add move patterns
+        legalMoves.addAll(getAttackPattern(ignoreCoveredSquares)); // Add attack patterns
         return legalMoves;
     }
 
@@ -46,7 +52,7 @@ public class Pawn extends Piece {
         return movePattern;
     }
 
-    private ArrayList<Square> getAttackPattern(boolean filterCoveredSquares) {
+    private ArrayList<Square> getAttackPattern(boolean ignoreCoveredSquares) {
         ArrayList<Square> attackPattern = new ArrayList<>();
         double sqrSize = getBoard().getSquareSize();
         // Pawns move in different directions depending on colour
@@ -56,7 +62,7 @@ public class Pawn extends Piece {
         attackPattern.add(Square.find(getPosX() - sqrSize, getPosY() + multiplier, sqrSize));
         attackPattern.add(Square.find(getPosX() + sqrSize, getPosY() + multiplier, sqrSize));
 
-        if (filterCoveredSquares) {
+        if (ignoreCoveredSquares) {
             // Remove if square !exist, or if square is !occupied, or if square is occupied by the same colour
             attackPattern.removeIf(attackSquare -> (attackSquare == null // If null (out of bounds)
                     || !getBoard().isSquareOccupied(attackSquare)

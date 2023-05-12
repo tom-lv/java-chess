@@ -8,12 +8,12 @@ import javafx.stage.Stage;
 
 public class ChessApplication extends Application {
 
-    public final static double WINDOW_SIZE = 850;
+    public final static double WINDOW_SIZE = 850.0f;
 
     @Override
     public void start(Stage stage) {
         AnchorPane anchorPane = new AnchorPane();
-        new Board(WINDOW_SIZE, anchorPane);
+        new Board(anchorPane, WINDOW_SIZE);
         Scene scene = new Scene(anchorPane, WINDOW_SIZE, WINDOW_SIZE);
         stage.setTitle("Chess");
         stage.setResizable(false);

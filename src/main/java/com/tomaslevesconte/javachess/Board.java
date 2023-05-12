@@ -1,5 +1,8 @@
 package com.tomaslevesconte.javachess;
 
+import com.tomaslevesconte.javachess.enums.PieceColour;
+import com.tomaslevesconte.javachess.enums.PieceType;
+import com.tomaslevesconte.javachess.enums.Square;
 import com.tomaslevesconte.javachess.pieces.Piece;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
@@ -18,17 +21,17 @@ public class Board {
     private final ArrayList<Piece> pieceList = new ArrayList<>();
     private final GameState gameState;
 
-    public Board(double boardSize, AnchorPane anchorPane) {
-        this.squareSize = boardSize / 8;
+    public Board(AnchorPane anchorPane, double boardSize) {
         this.anchorPane = anchorPane;
+        this.squareSize = boardSize / 8;
         this.gameState = new GameState(this);
-        createBoard();
-        new PieceBuilder(this);
+        createBoard(); // Create the board ui
+        new PieceBuilder(this); // Initialise pieces and place them on the board
     }
 
     private void createBoard() {
-        double x = 0;
-        double y = 0;
+        double x = 0.0f;
+        double y = 0.0f;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 Rectangle rec = new Rectangle(x, y, squareSize, squareSize);
@@ -41,20 +44,13 @@ public class Board {
                 getAnchorPane().getChildren().add(rec);
                 x += rec.getWidth();
             }
-            x = 0;
+            x = 0.0f;
             y += squareSize;
         }
     }
 
-    public double[] getPossibleXAndYCoordinates() {
-        double[] pXAYC = new double[8];
-        for (int i = 0; i < pXAYC.length; i++) {
-            pXAYC[i] = squareSize * i;
-        }
-        return pXAYC;
-    }
-
-    public double findClosestSquare(double input, double[] pC) {
+    public double findClosestSquare(double input) {
+        double[] pC = getPossibleXAndYCoordinates();
         for (int i = 0; i < pC.length; i++) {
             if (input >= pC[i]
                     && input <= pC[i + 1]
@@ -64,7 +60,7 @@ public class Board {
                 return pC[pC.length - 1];
             }
         }
-        return 0.0;
+        return 0.0f;
     }
 
     public boolean isSquareOccupied(Square square) {
@@ -134,6 +130,14 @@ public class Board {
         } else {
             return null;
         }
+    }
+
+    private double[] getPossibleXAndYCoordinates() {
+        double[] pXAYC = new double[8];
+        for (int i = 0; i < pXAYC.length; i++) {
+            pXAYC[i] = squareSize * i;
+        }
+        return pXAYC;
     }
 
     public GameState getGameState() {

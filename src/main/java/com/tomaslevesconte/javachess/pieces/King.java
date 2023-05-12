@@ -1,9 +1,9 @@
 package com.tomaslevesconte.javachess.pieces;
 
 import com.tomaslevesconte.javachess.Board;
-import com.tomaslevesconte.javachess.PieceColour;
-import com.tomaslevesconte.javachess.PieceType;
-import com.tomaslevesconte.javachess.Square;
+import com.tomaslevesconte.javachess.enums.PieceColour;
+import com.tomaslevesconte.javachess.enums.PieceType;
+import com.tomaslevesconte.javachess.enums.Square;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -18,13 +18,28 @@ public class King extends Piece {
     }
 
     @Override
-    public ArrayList<Square> getLegalMoves(boolean filterCoveredSquares) {
+    public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
 
         // Evaluate all the King's possible moves
-        legalMoves.addAll(getVerticalAttackPattern(filterCoveredSquares));
-        legalMoves.addAll(getHorizontalAttackPattern(filterCoveredSquares));
-        legalMoves.addAll(getDiagonalAttackPattern(filterCoveredSquares));
+        legalMoves.addAll(getVerticalAttackPattern(true));
+        legalMoves.addAll(getHorizontalAttackPattern(true));
+        legalMoves.addAll(getDiagonalAttackPattern(true));
+        legalMoves.addAll(getCastlePattern()); // If castling is possible (need to fix)
+        // Stop the King from putting itself in check by removing the opponent's moves from the possible pool
+        legalMoves.removeAll(getOpponentsMoves());
+
+        return legalMoves;
+    }
+
+    @Override
+    public ArrayList<Square> getLegalMoves(boolean ignoreCoveredSquares) {
+        ArrayList<Square> legalMoves = new ArrayList<>();
+
+        // Evaluate all the King's possible moves
+        legalMoves.addAll(getVerticalAttackPattern(ignoreCoveredSquares));
+        legalMoves.addAll(getHorizontalAttackPattern(ignoreCoveredSquares));
+        legalMoves.addAll(getDiagonalAttackPattern(ignoreCoveredSquares));
         legalMoves.addAll(getCastlePattern()); // If castling is possible (need to fix)
         // Stop the King from putting itself in check by removing the opponent's moves from the possible pool
         legalMoves.removeAll(getOpponentsMoves());
@@ -47,7 +62,7 @@ public class King extends Piece {
                 opponentsMoves.addAll(getEnemyPawnAttackPattern(piece));
                 // If the piece colour is different & != 'King' or 'Pawn'
             } else if (piece.getPieceColour() != getPieceColour()) {
-                opponentsMoves.addAll(piece.getLegalMoves(true));
+                opponentsMoves.addAll(piece.getLegalMoves());
             }
         });
 

@@ -3,4 +3,5 @@ module com.tomaslevesconte.javachess {
 
     exports com.tomaslevesconte.javachess;
     exports com.tomaslevesconte.javachess.pieces;
+    exports com.tomaslevesconte.javachess.enums;
 }

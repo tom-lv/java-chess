@@ -1,4 +1,4 @@
-package com.tomaslevesconte.javachess;
+package com.tomaslevesconte.javachess.enums;
 
 public enum PieceColour {
     WHITE, BLACK

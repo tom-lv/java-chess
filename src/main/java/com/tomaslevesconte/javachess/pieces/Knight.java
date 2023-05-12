@@ -1,9 +1,9 @@
 package com.tomaslevesconte.javachess.pieces;
 
 import com.tomaslevesconte.javachess.Board;
-import com.tomaslevesconte.javachess.PieceColour;
-import com.tomaslevesconte.javachess.PieceType;
-import com.tomaslevesconte.javachess.Square;
+import com.tomaslevesconte.javachess.enums.PieceColour;
+import com.tomaslevesconte.javachess.enums.PieceType;
+import com.tomaslevesconte.javachess.enums.Square;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -18,11 +18,16 @@ public class Knight extends Piece {
     }
 
     @Override
-    public ArrayList<Square> getLegalMoves(boolean filterCoveredSquares) {
-        return new ArrayList<>(getAttackPattern(filterCoveredSquares));
+    public ArrayList<Square> getLegalMoves() {
+        return new ArrayList<>(getAttackPattern(true));
     }
 
-    private ArrayList<Square> getAttackPattern(boolean filterCoveredSquares) {
+    @Override
+    public ArrayList<Square> getLegalMoves(boolean ignoreCoveredSquares) {
+        return new ArrayList<>(getAttackPattern(ignoreCoveredSquares));
+    }
+
+    private ArrayList<Square> getAttackPattern(boolean ignoreCoveredSquares) {
         ArrayList<Square> attackPattern = new ArrayList<>();
         double sqrSize = getBoard().getSquareSize();
 
@@ -36,7 +41,7 @@ public class Knight extends Piece {
         attackPattern.add(Square.find(getPosX() - (sqrSize * 2), getPosY() + sqrSize, sqrSize));
         attackPattern.add(Square.find(getPosX() + (sqrSize * 2), getPosY() + sqrSize, sqrSize));
 
-        if (filterCoveredSquares) {
+        if (ignoreCoveredSquares) {
             // Remove if square !exist, or if square is occupied by the same colour
             attackPattern.removeIf(attackSquare -> (attackSquare == null // If null (out of bounds)
                     || getBoard().isSquareOccupied(attackSquare)

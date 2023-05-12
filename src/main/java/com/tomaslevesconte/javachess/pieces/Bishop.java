@@ -1,9 +1,9 @@
 package com.tomaslevesconte.javachess.pieces;
 
 import com.tomaslevesconte.javachess.Board;
-import com.tomaslevesconte.javachess.PieceColour;
-import com.tomaslevesconte.javachess.PieceType;
-import com.tomaslevesconte.javachess.Square;
+import com.tomaslevesconte.javachess.enums.PieceColour;
+import com.tomaslevesconte.javachess.enums.PieceType;
+import com.tomaslevesconte.javachess.enums.Square;
 
 import java.util.ArrayList;
 
@@ -17,7 +17,12 @@ public class Bishop extends Piece {
     }
 
     @Override
-    public ArrayList<Square> getLegalMoves(boolean filterCoveredSquares) {
-        return new ArrayList<>(getDiagonalAttackPattern(filterCoveredSquares));
+    public ArrayList<Square> getLegalMoves() {
+        return new ArrayList<>(getDiagonalAttackPattern(true));
+    }
+
+    @Override
+    public ArrayList<Square> getLegalMoves(boolean ignoreCoveredSquares) {
+        return new ArrayList<>(getDiagonalAttackPattern(ignoreCoveredSquares));
     }
 }
