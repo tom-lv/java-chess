@@ -74,13 +74,6 @@ public abstract class Piece extends Rectangle {
         return false;
     }
 
-    public void capture() {
-        // King cannot be captured
-        if (!getPieceType().equals(PieceType.KING)) {
-            getBoard().getPieceList().remove(this);
-        }
-    }
-
     public abstract ArrayList<Square> getLegalMoves();
     public abstract ArrayList<Square> getLegalMoves(boolean ignoreCoveredSquares);
 
@@ -171,25 +164,10 @@ public abstract class Piece extends Rectangle {
         return attackPattern;
     }
 
-    private void updatePositionOnBoardAndList(Square newSquare) {
-        if (newSquare != null) {
-            // Update visual pos on board
-            setLayoutX(newSquare.getX(getBoard().getSquareSize()));
-            setLayoutY(newSquare.getY(getBoard().getSquareSize()));
-            // Update pos in list
-            setPosX(newSquare.getX(getBoard().getSquareSize()));
-            setPosY(newSquare.getY(getBoard().getSquareSize()));
-        }
-    }
-
-    private void updatePositionOnBoardAndList(Piece rook, Square newSquare) {
-        if (newSquare != null) {
-            // Update visual pos on board
-            rook.setLayoutX(newSquare.getX(getBoard().getSquareSize()));
-            rook.setLayoutY(newSquare.getY(getBoard().getSquareSize()));
-            // Update pos in list
-            rook.setPosX(newSquare.getX(getBoard().getSquareSize()));
-            rook.setPosY(newSquare.getY(getBoard().getSquareSize()));
+    private void capture() {
+        // King cannot be captured
+        if (!getPieceType().equals(PieceType.KING)) {
+            getBoard().getPieceList().remove(this);
         }
     }
 
@@ -218,6 +196,28 @@ public abstract class Piece extends Rectangle {
                 updatePositionOnBoardAndList(kSR, rPos[1]);
             }
 
+        }
+    }
+
+    private void updatePositionOnBoardAndList(Square newSquare) {
+        if (newSquare != null) {
+            // Update visual pos on board
+            setLayoutX(newSquare.getX(getBoard().getSquareSize()));
+            setLayoutY(newSquare.getY(getBoard().getSquareSize()));
+            // Update pos in list
+            setPosX(newSquare.getX(getBoard().getSquareSize()));
+            setPosY(newSquare.getY(getBoard().getSquareSize()));
+        }
+    }
+
+    private void updatePositionOnBoardAndList(Piece rook, Square newSquare) {
+        if (newSquare != null) {
+            // Update visual pos on board
+            rook.setLayoutX(newSquare.getX(getBoard().getSquareSize()));
+            rook.setLayoutY(newSquare.getY(getBoard().getSquareSize()));
+            // Update pos in list
+            rook.setPosX(newSquare.getX(getBoard().getSquareSize()));
+            rook.setPosY(newSquare.getY(getBoard().getSquareSize()));
         }
     }
 
