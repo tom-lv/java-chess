@@ -1,12 +1,12 @@
 package com.tomaslevesconte.javachess.pieces;
 
 import com.tomaslevesconte.javachess.Board;
+import com.tomaslevesconte.javachess.enums.Event;
 import com.tomaslevesconte.javachess.enums.PieceColour;
 import com.tomaslevesconte.javachess.enums.PieceType;
-
 import com.tomaslevesconte.javachess.enums.Square;
+
 import javafx.scene.image.Image;
-import javafx.scene.media.AudioClip;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
@@ -17,10 +17,6 @@ public abstract class Piece extends Rectangle {
 
     private static final String IMAGE_PATH = "com/tomaslevesconte/javachess/pieces/";
     private static final String IMAGE_TYPE = ".png";
-    private static final String CASTLE_SOUND_PATH = "/com/tomaslevesconte/javachess/sounds/castle.mp3";
-    private static final String MOVE_SOUND_PATH = "/com/tomaslevesconte/javachess/sounds/move-self.mp3";
-    private static final String CAPTURE_SOUND_PATH = "/com/tomaslevesconte/javachess/sounds/capture.mp3";
-    private static final String CHECK_SOUND_PATH = "/com/tomaslevesconte/javachess/sounds/move-check.mp3";
 
     private final PieceType pieceType;
     private final PieceColour pieceColour;
@@ -57,26 +53,22 @@ public abstract class Piece extends Rectangle {
     public boolean move(Square newSquare) {
         lastPos = Square.find(getPosX(), getPosY(), getBoard().getSquareSize());
         for (Square legalSquare : getLegalMoves()) {
-            if (newSquare.equals(legalSquare)) {
-                boolean didCapture = false;
-                if (getBoard().isSquareOccupied(newSquare)
-                        && getBoard().getPiece(newSquare).getPieceColour() != pieceColour) {
-                    Piece target = getBoard().getPiece(newSquare);
-                    getBoard().getAnchorPane().getChildren().remove(target);
-                    target.capture();
-                    didCapture = true;
-                }
+            if (newSquare.equals(legalSquare)
+                    && getBoard().isSquareOccupied(newSquare)
+                    && getBoard().getPiece(newSquare).getPieceColour()
+                    != pieceColour) {
+                Piece target = getBoard().getPiece(newSquare);
+                getBoard().getAnchorPane().getChildren().remove(target);
+                target.capture();
                 updatePositionOnBoardAndList(newSquare);
                 setHasMoved(true);
-                attemptCastle();
-                getBoard().getGameState().update(); // Update game state
-                if (getBoard().getGameState().isKingInCheck() && didCapture) {
-                    checkSound().play();
-                } else if (didCapture) {
-                    captureSound().play();
-                } else {
-                    moveSound().play();
-                }
+                getBoard().getGameState().update(Event.CAPTURE); // Update game state
+                return true;
+            } else if (newSquare.equals(legalSquare)) {
+                updatePositionOnBoardAndList(newSquare);
+                setHasMoved(true);
+                Event e = attemptCastle() ? Event.CASTLE : Event.MOVE;
+                getBoard().getGameState().update(e); // Update game state
                 return true;
             }
 
@@ -181,7 +173,7 @@ public abstract class Piece extends Rectangle {
         }
     }
 
-    private void attemptCastle() {
+    private boolean attemptCastle() {
         if (getPieceType().equals(PieceType.KING)) {
             Square kSquare = getPieceColour().equals(PieceColour.WHITE)
                     ? Square.E1
@@ -195,20 +187,18 @@ public abstract class Piece extends Rectangle {
 
             if (Objects.equals(lastPos, kSquare)
                     && getSquare().equals(kPos[0])) {
-                castleSound().play();
                 Piece qSR = board.getQueenSideRook(getPieceColour());
                 updatePositionOnBoardAndList(qSR, rPos[0]);
+                return true;
 
             } else if (Objects.equals(lastPos, kSquare)
                     && getSquare().equals(kPos[1])) {
-                castleSound().play();
                 Piece kSR = board.getKingSideRook(getPieceColour());
                 updatePositionOnBoardAndList(kSR, rPos[1]);
-
-            } else {
-                moveSound().play();
+                return true;
             }
         }
+        return false;
     }
 
     private void updatePositionOnBoardAndList(Square newSquare) {
@@ -253,22 +243,6 @@ public abstract class Piece extends Rectangle {
             }
         }
         return sList;
-    }
-
-    private AudioClip moveSound() {
-        return new AudioClip(Objects.requireNonNull(getClass().getResource(MOVE_SOUND_PATH)).toString());
-    }
-
-    private AudioClip captureSound() {
-        return new AudioClip(Objects.requireNonNull(getClass().getResource(CAPTURE_SOUND_PATH)).toString());
-    }
-
-    private AudioClip checkSound() {
-        return new AudioClip(Objects.requireNonNull(getClass().getResource(CHECK_SOUND_PATH)).toString());
-    }
-
-    private AudioClip castleSound() {
-        return new AudioClip(Objects.requireNonNull(getClass().getResource(CASTLE_SOUND_PATH)).toString());
     }
 
     public Square getSquare() {

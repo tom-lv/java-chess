@@ -1,5 +1,6 @@
 package com.tomaslevesconte.javachess;
 
+import com.tomaslevesconte.javachess.enums.Event;
 import com.tomaslevesconte.javachess.enums.PieceColour;
 import com.tomaslevesconte.javachess.enums.PieceType;
 import com.tomaslevesconte.javachess.enums.Square;
@@ -10,6 +11,11 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class GameState {
+
+    private static final String CASTLE_SOUND_PATH = "/com/tomaslevesconte/javachess/sounds/castle.mp3";
+    private static final String MOVE_SOUND_PATH = "/com/tomaslevesconte/javachess/sounds/move-self.mp3";
+    private static final String CAPTURE_SOUND_PATH = "/com/tomaslevesconte/javachess/sounds/capture.mp3";
+    private static final String CHECK_SOUND_PATH = "/com/tomaslevesconte/javachess/sounds/move-check.mp3";
 
     private final Board board;
     private final UIComponents uiComponents;
@@ -30,7 +36,7 @@ public class GameState {
         this.nextColour = PieceColour.BLACK;
     }
 
-    public void update() {
+    public void update(Event event) {
 
         if (isWhitesTurn) {
             System.out.println("Whites moved.");
@@ -45,6 +51,7 @@ public class GameState {
         }
 
         attacker = getAttacker(king);
+        playAudio(event);
         isWhitesTurn = !isWhitesTurn;
         System.out.println("Is King in checkmate: " + board.getGameState().isKingInCheckmate());
     }
@@ -105,6 +112,18 @@ public class GameState {
 //        }
 //        // return curated list
 //    }
+
+    private void playAudio(Event event) {
+        if (isKingInCheck()) {
+            checkSound().play();
+        } else if (event.equals(Event.CAPTURE)) {
+            captureSound().play();
+        } else if (event.equals(Event.MOVE)){
+            moveSound().play();
+        } else if (event.equals(Event.CASTLE)) {
+            castleSound().play();
+        }
+    }
 
     private boolean canEvade() {
         ArrayList<Square> kingsMoves = king.getLegalMoves();
@@ -260,7 +279,6 @@ public class GameState {
             double tY = target.getPosY();
             double aX = attacker.getPosX();
             double aY = attacker.getPosY();
-
             double diffX = (aX - tX);
             double diffY = (aY - tY);
 
@@ -377,6 +395,22 @@ public class GameState {
         }
 
         return aP;
+    }
+
+    private AudioClip moveSound() {
+        return new AudioClip(Objects.requireNonNull(getClass().getResource(MOVE_SOUND_PATH)).toString());
+    }
+
+    private AudioClip captureSound() {
+        return new AudioClip(Objects.requireNonNull(getClass().getResource(CAPTURE_SOUND_PATH)).toString());
+    }
+
+    private AudioClip checkSound() {
+        return new AudioClip(Objects.requireNonNull(getClass().getResource(CHECK_SOUND_PATH)).toString());
+    }
+
+    private AudioClip castleSound() {
+        return new AudioClip(Objects.requireNonNull(getClass().getResource(CASTLE_SOUND_PATH)).toString());
     }
 
     public boolean isWhitesTurn() {
