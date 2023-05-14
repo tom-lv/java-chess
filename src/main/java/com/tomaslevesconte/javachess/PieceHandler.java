@@ -5,25 +5,25 @@ import com.tomaslevesconte.javachess.enums.PieceType;
 import com.tomaslevesconte.javachess.enums.Square;
 import com.tomaslevesconte.javachess.pieces.*;
 
+import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 
-public class PieceBuilder {
+public class PieceHandler {
 
     private final Board board;
-
     private final UIComponents uiComponents;
 
-    public PieceBuilder(Board board) {
+    public PieceHandler(Board board) {
         this.board = board;
         this.uiComponents = new UIComponents(board);
         initialiseWhitePieces();
         initialiseBlackPieces();
     }
 
-    private void initialisePiece(Piece piece) {
-
-        piece.setOnMouseEntered(mouseEvent -> {
+    private EventHandler<MouseEvent> hover(Piece piece) {
+        return mEvent -> {
             piece.setCursor(Cursor.DEFAULT);
             if (piece.getPieceColour().equals(PieceColour.WHITE)
                     && board.getGameState().isWhitesTurn()) {
@@ -32,13 +32,15 @@ public class PieceBuilder {
                     && !board.getGameState().isWhitesTurn()) {
                 piece.setCursor(Cursor.OPEN_HAND);
             }
-        });
+        };
+    }
 
-        piece.setOnMousePressed(mouseEvent -> {
-            if (mouseEvent.getButton().equals(MouseButton.PRIMARY)
+    private EventHandler<MouseEvent> select(Piece piece) {
+        return mEvent -> {
+            if (mEvent.getButton().equals(MouseButton.PRIMARY)
                     && piece.getPieceColour().equals(PieceColour.WHITE)
                     && board.getGameState().isWhitesTurn()
-                    || mouseEvent.getButton().equals(MouseButton.PRIMARY)
+                    || mEvent.getButton().equals(MouseButton.PRIMARY)
                     && piece.getPieceColour().equals(PieceColour.BLACK)
                     && !board.getGameState().isWhitesTurn()) {
                 System.out.println("Is piece blocking check: " + board.getGameState().isPieceBlockingCheck(piece));
@@ -55,27 +57,31 @@ public class PieceBuilder {
 
                 piece.setCursor(Cursor.CLOSED_HAND);
                 piece.toFront(); // Move piece in front of its siblings in terms of z-order
-                piece.setLayoutX(mouseEvent.getSceneX() - (piece.getWidth() / 2)); // - half the size of the image to find the center
-                piece.setLayoutY(mouseEvent.getSceneY() - (piece.getHeight() / 2));
+                piece.setLayoutX(mEvent.getSceneX() - (piece.getWidth() / 2)); // - half the size of the image to find the center
+                piece.setLayoutY(mEvent.getSceneY() - (piece.getHeight() / 2));
 
             }
-        });
+        };
+    }
 
-        piece.setOnMouseDragged(mouseEvent -> {
-            if (mouseEvent.getButton().equals(MouseButton.PRIMARY)
+    private EventHandler<MouseEvent> drag(Piece piece) {
+        return mEvent -> {
+            if (mEvent.getButton().equals(MouseButton.PRIMARY)
                     && piece.getPieceColour().equals(PieceColour.WHITE)
                     && board.getGameState().isWhitesTurn()
-                    || mouseEvent.getButton().equals(MouseButton.PRIMARY)
+                    || mEvent.getButton().equals(MouseButton.PRIMARY)
                     && piece.getPieceColour().equals(PieceColour.BLACK)
                     && !board.getGameState().isWhitesTurn()) {
 
-                piece.setLayoutX(mouseEvent.getSceneX() - (piece.getWidth() / 2)); // - half the size of the image to find the center
-                piece.setLayoutY(mouseEvent.getSceneY() - (piece.getHeight() / 2));
+                piece.setLayoutX(mEvent.getSceneX() - (piece.getWidth() / 2)); // - half the size of the image to find the center
+                piece.setLayoutY(mEvent.getSceneY() - (piece.getHeight() / 2));
 
             }
-        });
+        };
+    }
 
-        piece.setOnMouseReleased(mouseEvent -> {
+    private EventHandler<MouseEvent> release(Piece piece) {
+        return mEvent -> {
             if (piece.getPieceColour().equals(PieceColour.WHITE)
                     && board.getGameState().isWhitesTurn()) {
                 piece.setCursor(Cursor.OPEN_HAND);
@@ -85,18 +91,18 @@ public class PieceBuilder {
             }
 
             Square newSquare = Square.find(
-                    board.findClosestSquare(mouseEvent.getSceneX()),
-                    board.findClosestSquare(mouseEvent.getSceneY()),
+                    board.findClosestSquare(mEvent.getSceneX()),
+                    board.findClosestSquare(mEvent.getSceneY()),
                     board.getSquareSize());
             Square lastSquare = Square.find(piece.getPosX(), piece.getPosY(), board.getSquareSize());
             int pieceIndex = board.getPieceIndex(lastSquare);
 
-            if (mouseEvent.getButton().equals(MouseButton.PRIMARY)
+            if (mEvent.getButton().equals(MouseButton.PRIMARY)
                     && newSquare != null && lastSquare != null
                     && piece.getPieceColour().equals(PieceColour.WHITE)
                     && board.getGameState().isWhitesTurn()
                     && board.getPieceList().get(pieceIndex).move(newSquare)
-                    || mouseEvent.getButton().equals(MouseButton.PRIMARY)
+                    || mEvent.getButton().equals(MouseButton.PRIMARY)
                     && newSquare != null && lastSquare != null
                     && piece.getPieceColour().equals(PieceColour.BLACK)
                     && !board.getGameState().isWhitesTurn()
@@ -111,9 +117,17 @@ public class PieceBuilder {
                 piece.setLayoutX(piece.getPosX());
                 piece.setLayoutY(piece.getPosY());
             }
-        });
+        };
+    }
 
+    private void initialisePiece(Piece piece) {
         board.getPieceList().add(piece);
+
+        piece.setOnMouseEntered(hover(piece));
+        piece.setOnMousePressed(select(piece));
+        piece.setOnMouseDragged(drag(piece));
+        piece.setOnMouseReleased(release(piece));
+
         board.getAnchorPane().getChildren().add(piece);
     }
 

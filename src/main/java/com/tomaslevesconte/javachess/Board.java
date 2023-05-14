@@ -16,17 +16,18 @@ public class Board {
     private static final Color DARK_SQUARE_COLOUR = Color.web("#8877B3"); // purple #8877B3, orange #B78B64
 
     private final AnchorPane anchorPane;
-
     private final double squareSize;
     private final ArrayList<Piece> pieceList = new ArrayList<>();
     private final GameState gameState;
+    private final PieceHandler pieceHandler;
 
     public Board(AnchorPane anchorPane, double boardSize) {
         this.anchorPane = anchorPane;
         this.squareSize = boardSize / 8;
         this.gameState = new GameState(this);
         createBoard(); // Create the board ui
-        new PieceBuilder(this); // Initialise pieces and place them on the board
+        this.pieceHandler = new PieceHandler(this); // Initialise pieces and place them on the board
+        gameState.start();
     }
 
     private void createBoard() {
@@ -154,5 +155,9 @@ public class Board {
 
     public AnchorPane getAnchorPane() {
         return anchorPane;
+    }
+
+    public PieceHandler getPieceHandler() {
+        return pieceHandler;
     }
 }

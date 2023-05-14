@@ -31,19 +31,19 @@ public class UIComponents {
     }
 
     public void displayLegalMoves(Piece piece) {
-        ArrayList<Square> legalMoves = piece.getLegalMoves();
+        ArrayList<Square> legalMoves = board.getGameState().curateMoves(piece);
 
         Group possibleMoves = new Group();
         possibleMoves.setId("legalMoves");
 
-        legalMoves.forEach(lm -> {
+        legalMoves.forEach(lMove -> {
             Rectangle moveRec = createMoveRectangle();
             double sqrSize = board.getSquareSize();
-            moveRec.setLayoutX(lm.getX(sqrSize));
-            moveRec.setLayoutY(lm.getY(sqrSize));
+            moveRec.setLayoutX(lMove.getX(sqrSize));
+            moveRec.setLayoutY(lMove.getY(sqrSize));
             if (board.isSquareOccupied(Square.find(
-                    lm.getX(sqrSize),
-                    lm.getY(sqrSize),
+                    lMove.getX(sqrSize),
+                    lMove.getY(sqrSize),
                     sqrSize))) {
                 moveRec.setFill(Color.web("#9A3048", 1.0f));
             } else {
@@ -56,18 +56,18 @@ public class UIComponents {
         board.getPieceList().forEach(Node::toFront); // All pieces to front in terms of z-index
     }
 
-    public void displayLastMovePath(Square newPos, Square lastPos) {
+    public void displayLastMovePath(Square nPos, Square lPos) {
         double sqrSize = board.getSquareSize();
 
         Rectangle newRec = createHighlightRectangle("#FEF250", 0.5f);
         newRec.setId("newRec");
-        newRec.setLayoutX(newPos.getX(sqrSize));
-        newRec.setLayoutY(newPos.getY(sqrSize));
+        newRec.setLayoutX(nPos.getX(sqrSize));
+        newRec.setLayoutY(nPos.getY(sqrSize));
 
         Rectangle lastRec = createHighlightRectangle("#FEF250", 0.5f);
         lastRec.setId("lastRec");
-        lastRec.setLayoutX(lastPos.getX(sqrSize));
-        lastRec.setLayoutY(lastPos.getY(sqrSize));
+        lastRec.setLayoutX(lPos.getX(sqrSize));
+        lastRec.setLayoutY(lPos.getY(sqrSize));
 
         board.getAnchorPane().getChildren().addAll(newRec, lastRec);
         board.getPieceList().forEach(Node::toFront); // All pieces to front in terms of z-index
@@ -79,7 +79,6 @@ public class UIComponents {
         checkRec.setId("checkRec");
         checkRec.setLayoutX(king.getLayoutX());
         checkRec.setLayoutY(king.getLayoutY());
-        checkRec.setSmooth(false);
 
         KeyFrame kf = new KeyFrame(
                 Duration.seconds(0.8f),
@@ -91,6 +90,15 @@ public class UIComponents {
         blink.play();
 
         board.getAnchorPane().getChildren().add(checkRec);
+        board.getPieceList().forEach(Node::toFront); // All pieces to front in terms of z-index
+    }
+
+    public void displayKingInCheckmate(Piece king) {
+        Rectangle checkMateRec = createHighlightRectangle("#9A3048", 1.0f);
+        checkMateRec.setId("checkMateRec");
+        checkMateRec.setLayoutX(king.getLayoutX());
+        checkMateRec.setLayoutY(king.getLayoutY());
+        board.getAnchorPane().getChildren().add(checkMateRec);
         board.getPieceList().forEach(Node::toFront); // All pieces to front in terms of z-index
     }
 
@@ -111,10 +119,10 @@ public class UIComponents {
         board.getAnchorPane().getChildren().remove(board.getAnchorPane().lookup("#checkRec"));
     }
 
-    private Rectangle createHighlightRectangle(String hexCode, double opacity) {
+    private Rectangle createHighlightRectangle(String hCode, double opacity) {
         Rectangle rec = new Rectangle(board.getSquareSize(), board.getSquareSize());
         rec.setSmooth(false);
-        rec.setFill(Color.web(hexCode, opacity));
+        rec.setFill(Color.web(hCode, opacity));
         return rec;
     }
 

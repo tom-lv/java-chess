@@ -50,9 +50,11 @@ public class Pawn extends Piece {
 
         // Remove if square !exist, or if square is occupied, or if square == 2nd square and pawn has moved
         movePattern.removeIf(moveSquare -> (moveSquare == null
-                || getBoard().isSquareOccupied(moveSquare))
+                || getBoard().isSquareOccupied(moveSquare)
                 || moveSquare.equals(movePattern.get(1))
-                && hasMoved());
+                && getBoard().isSquareOccupied(movePattern.get(0))
+                || moveSquare.equals(movePattern.get(1))
+                && hasMoved()));
 
         return movePattern;
     }

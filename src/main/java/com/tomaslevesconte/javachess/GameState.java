@@ -5,6 +5,7 @@ import com.tomaslevesconte.javachess.enums.PieceColour;
 import com.tomaslevesconte.javachess.enums.PieceType;
 import com.tomaslevesconte.javachess.enums.Square;
 import com.tomaslevesconte.javachess.pieces.Piece;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.media.AudioClip;
 
 import java.util.ArrayList;
@@ -16,12 +17,13 @@ public class GameState {
     private static final String MOVE_SOUND_PATH = "/com/tomaslevesconte/javachess/sounds/move-self.mp3";
     private static final String CAPTURE_SOUND_PATH = "/com/tomaslevesconte/javachess/sounds/capture.mp3";
     private static final String CHECK_SOUND_PATH = "/com/tomaslevesconte/javachess/sounds/move-check.mp3";
+    private static final String START_SOUND_PATH = "/com/tomaslevesconte/javachess/sounds/game-start.mp3";
+    private static final String END_SOUND_PATH = "/com/tomaslevesconte/javachess/sounds/game-end.mp3";
 
     private final Board board;
     private final UIComponents uiComponents;
 
     private Piece king;
-    private Piece attacker;
     private boolean isWhitesTurn;
     private PieceColour currentColour;
     private PieceColour nextColour;
@@ -30,10 +32,13 @@ public class GameState {
         this.board = board;
         this.uiComponents = new UIComponents(board);
         this.king = getKing(PieceColour.WHITE);
-        this.attacker = getAttacker(king);
         this.isWhitesTurn = true;
         this.currentColour = PieceColour.WHITE;
         this.nextColour = PieceColour.BLACK;
+    }
+
+    public void start() {
+        startSound().play();
     }
 
     public void update(Event event) {
@@ -50,18 +55,17 @@ public class GameState {
             nextColour = PieceColour.BLACK;
         }
 
-        attacker = getAttacker(king);
         playAudio(event);
         isWhitesTurn = !isWhitesTurn;
         System.out.println("Is King in checkmate: " + board.getGameState().isKingInCheckmate());
     }
 
     public boolean isKingInCheck() {
-        ArrayList<Square> opponentsMoves = getMoves(nextColour);
+        ArrayList<Square> oMoves = getMoves(nextColour);
 
         uiComponents.removeKingInCheck();
 
-        for (Square move : opponentsMoves) {
+        for (Square move : oMoves) {
             if (king != null && move.equals(king.getSquare())) {
                 System.out.println("King is in check!");
                 uiComponents.displayKingInCheck(king);
@@ -75,7 +79,15 @@ public class GameState {
 
 
     public boolean isKingInCheckmate() {
-        return isKingInCheck() && !canEvade() && !canBlock() && !canCapture();
+        if (isKingInCheck() && !canEvade() && !canBlock() && !canCapture()) {
+            endSound().play();
+            uiComponents.removeKingInCheck();
+            uiComponents.displayKingInCheckmate(king);
+
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public boolean isKingInStalemate() {
@@ -86,49 +98,67 @@ public class GameState {
     public boolean isPieceBlockingCheck(Piece piece) {
         ArrayList<Piece> attackers = getAttackers(piece);
         for (Piece attacker : attackers) {
-            ArrayList<Square> attackPaths = getAttackPath(king, attacker);
-            if (attacker.getPieceType().equals(PieceType.KNIGHT)) {
-                // Do nothing
-            } else if (!attackPaths.isEmpty()) {
-                for (Square attackPath : attackPaths) {
-                    if (board.isSquareOccupied(attackPath)
-                            && attackPath != piece.getSquare()) {
-                        return false;
+            ArrayList<Square> aPath = Objects.requireNonNull(getAttackPath(king, attacker));
+            if (!attacker.getPieceType().equals(PieceType.KNIGHT)) {
+                for (Square aSquare : aPath) {
+                    if (board.isSquareOccupied(aSquare)
+                            && aSquare.equals(piece.getSquare())) {
+                        return true;
                     }
-
                 }
-                return true;
             }
         }
         return false;
     }
 
-//    public ArrayList<Square> curateMoves(Piece piece) {
-//        if (isPieceBlockingCheck(piece)) {
-//            // remove moves that stop it from blocking check
-//        }
-//        if (isKingInCheck()) {
-//            // only include moves that get king out of check
-//        }
-//        // return curated list
-//    }
+    public ArrayList<Square> curateMoves(Piece piece) {
+        ArrayList<Square> lMoves = new ArrayList<>(piece.getLegalMoves());
+        ArrayList<Square> cMoves = new ArrayList<>();
 
-    private void playAudio(Event event) {
-        if (isKingInCheck()) {
-            checkSound().play();
-        } else if (event.equals(Event.CAPTURE)) {
-            captureSound().play();
-        } else if (event.equals(Event.MOVE)){
-            moveSound().play();
-        } else if (event.equals(Event.CASTLE)) {
-            castleSound().play();
+        if (piece.getPieceType().equals(PieceType.KING)) {
+            return lMoves;
+        } else if (isPieceBlockingCheck(piece)) {
+            ArrayList<Piece> attackers = getAttackers(piece);
+            for (Piece attacker : attackers) {
+                ArrayList<Square> aPath = Objects.requireNonNull(getAttackPath(king, attacker));
+                for (Square lMove : lMoves) {
+                    for (Square aSquare : aPath) {
+                        if (lMove.equals(aSquare)) {
+                            cMoves.add(lMove);
+                        }
+                    }
+                }
+            }
+            return cMoves;
+        } else if (isKingInCheck()) {
+            Piece attacker = getAttacker(king);
+            if (canBlock()) {
+                ArrayList<Square> aPath = Objects.requireNonNull(getAttackPath(king, attacker));
+                for (Square lMove : lMoves) {
+                    for (Square aSquare : aPath) {
+                        if (lMove.equals(aSquare)) {
+                            cMoves.add(lMove);
+                        }
+                    }
+                }
+            }
+            if (canCapture()) {
+                for (Square lMove : lMoves) {
+                    if (lMove.equals(Objects.requireNonNull(attacker).getSquare())) {
+                        cMoves.add(lMove);
+                    }
+                }
+            }
+            return cMoves;
         }
+
+        return lMoves;
     }
 
     private boolean canEvade() {
-        ArrayList<Square> kingsMoves = king.getLegalMoves();
-
-        if (kingsMoves.isEmpty() || kingsMoves.get(0).equals(attacker.getSquare())) {
+        Piece attacker = getAttacker(king);
+        ArrayList<Square> kMoves = king.getLegalMoves();
+        if (kMoves.isEmpty() || kMoves.get(0).equals(Objects.requireNonNull(attacker).getSquare())) {
             System.out.println("King cannot evade.");
             return false;
         } else {
@@ -139,12 +169,14 @@ public class GameState {
     }
 
     private boolean canBlock() {
+        Piece attacker = getAttacker(king);
+
         ArrayList<Square> moves = getMoves(PieceType.KING, currentColour);
-        ArrayList<Square> attackPaths = Objects.requireNonNull(getAttackPath(king, attacker));
+        ArrayList<Square> aPath = Objects.requireNonNull(getAttackPath(king, attacker));
 
         for (Square move : moves) {
-            for (Square attackPath : attackPaths) {
-                if (move.equals(attackPath)) {
+            for (Square aSquare : aPath) {
+                if (move.equals(aSquare)) {
                     System.out.println("Can block attacker.");
                     return true;
                 }
@@ -156,21 +188,23 @@ public class GameState {
     }
 
     private boolean canCapture() {
+        Piece attacker = getAttacker(king);
+
         ArrayList<Square> moves = getMoves(PieceType.KING, currentColour);
-        ArrayList<Square> kingsMoves = getKingsMoves(currentColour);
-        ArrayList<Square> unfilteredMoves = getMovesUnfiltered(nextColour);
+        ArrayList<Square> kMoves = getKingsMoves(currentColour);
+        ArrayList<Square> uMoves = getMovesUnfiltered(nextColour);
 
         for (Square move : moves) {
-            if (move.equals(attacker.getSquare())) {
+            if (move.equals(Objects.requireNonNull(attacker).getSquare())) {
                 System.out.println("Can capture attacker.");
                 return true;
             }
         }
 
-        for (Square move : kingsMoves) {
-            if (move.equals(attacker.getSquare())) {
-                for (Square unfilteredMove : unfilteredMoves) {
-                    if (unfilteredMove.equals(attacker.getSquare())) {
+        for (Square kMove : kMoves) {
+            if (kMove.equals(Objects.requireNonNull(attacker).getSquare())) {
+                for (Square uMove : uMoves) {
+                    if (uMove.equals(attacker.getSquare())) {
                         System.out.println("Attacker is covered. King cannot capture.");
                         return false;
                     }
@@ -181,6 +215,18 @@ public class GameState {
         }
 
         return false;
+    }
+
+    private void playAudio(Event event) {
+        if (isKingInCheck()) {
+            checkSound().play();
+        } else if (event.equals(Event.CAPTURE)) {
+            captureSound().play();
+        } else if (event.equals(Event.MOVE)){
+            moveSound().play();
+        } else if (event.equals(Event.CASTLE)) {
+            castleSound().play();
+        }
     }
 
     private Piece getKing(PieceColour pieceColour) {
@@ -246,33 +292,33 @@ public class GameState {
     }
 
     private ArrayList<Square> getMovesUnfiltered(PieceColour pieceColour) {
-        ArrayList<Square> unfilteredMoves = new ArrayList<>();
+        ArrayList<Square> uMoves = new ArrayList<>();
 
         for (Piece piece : board.getPieceList()) {
             if (piece.getPieceColour().equals(pieceColour)) {
-                unfilteredMoves.addAll(piece.getLegalMoves(false));
+                uMoves.addAll(piece.getLegalMoves(false));
             }
         }
 
-        return unfilteredMoves;
+        return uMoves;
     }
 
     private ArrayList<Square> getKingsMoves(PieceColour pieceColour) {
-        ArrayList<Square> kingsMoves = new ArrayList<>();
+        ArrayList<Square> kMoves = new ArrayList<>();
 
         for (Piece piece : board.getPieceList()) {
             if (piece.getPieceColour().equals(pieceColour)
                     && piece.getPieceType().equals(PieceType.KING)) {
-                kingsMoves.addAll(piece.getLegalMoves());
+                kMoves.addAll(piece.getLegalMoves());
             }
         }
 
-        return kingsMoves;
+        return kMoves;
     }
 
     private ArrayList<Square> getAttackPath(Piece target, Piece attacker) {
         // You cannot block a knight, only capture or move
-        if (attacker.getPieceType() != PieceType.KNIGHT) {
+        if (attacker != null && attacker.getPieceType() != PieceType.KNIGHT) {
             ArrayList<Square> aP = new ArrayList<>();
 
             double tX = target.getPosX();
@@ -297,14 +343,14 @@ public class GameState {
     }
 
     private ArrayList<Square> getVerticalAttackPath(double tX, double tY, double diffY) {
-        ArrayList<Square> aP = new ArrayList<>();
+        ArrayList<Square> aPath = new ArrayList<>();
         double sqrSize = board.getSquareSize();
 
         while (diffY < 0) {
             tY -= sqrSize;
             Square pS = Square.find(tX, tY, sqrSize);
             if (diffY != -sqrSize) {
-                aP.add(pS);
+                aPath.add(pS);
             }
             diffY = (diffY + sqrSize);
         }
@@ -313,23 +359,23 @@ public class GameState {
             tY += sqrSize;
             Square pS = Square.find(tX, tY, sqrSize);
             if (diffY != sqrSize) {
-                aP.add(pS);
+                aPath.add(pS);
             }
             diffY = (diffY - sqrSize);
         }
 
-        return aP;
+        return aPath;
     }
 
     private ArrayList<Square> getHorizontalAttackPath(double tX, double tY, double diffX) {
-        ArrayList<Square> aP = new ArrayList<>();
+        ArrayList<Square> aPath = new ArrayList<>();
         double sqrSize = board.getSquareSize();
 
         while (diffX < 0) {
             tX -= sqrSize;
             Square pS = Square.find(tX, tY, sqrSize);
             if (diffX != -sqrSize) {
-                aP.add(pS);
+                aPath.add(pS);
             }
             diffX = (diffX + sqrSize);
         }
@@ -338,16 +384,16 @@ public class GameState {
             tX += sqrSize;
             Square pS = Square.find(tX, tY, sqrSize);
             if (diffX != sqrSize) {
-                aP.add(pS);
+                aPath.add(pS);
             }
             diffX = (diffX - sqrSize);
         }
 
-        return aP;
+        return aPath;
     }
 
     private ArrayList<Square> getDiagonalAttackPath(double tX, double tY, double diffX, double diffY) {
-        ArrayList<Square> aP = new ArrayList<>();
+        ArrayList<Square> aPath = new ArrayList<>();
         double sqrSize = board.getSquareSize();
 
         while (diffX < 0 && diffY > 0) {
@@ -355,7 +401,7 @@ public class GameState {
             tY += sqrSize;
             Square pS = Square.find(tX, tY, sqrSize);
             if (diffX != -sqrSize) {
-                aP.add(pS);
+                aPath.add(pS);
             }
             diffX = (diffX + sqrSize);
             diffY = (diffY - sqrSize);
@@ -366,7 +412,7 @@ public class GameState {
             tY += sqrSize;
             Square pS = Square.find(tX, tY, sqrSize);
             if (diffX != sqrSize) {
-                aP.add(pS);
+                aPath.add(pS);
             }
             diffX = (diffX - sqrSize);
             diffY = (diffY - sqrSize);
@@ -377,7 +423,7 @@ public class GameState {
             tY -= sqrSize;
             Square pS = Square.find(tX, tY, sqrSize);
             if (diffX != sqrSize) {
-                aP.add(pS);
+                aPath.add(pS);
             }
             diffX = (diffX - sqrSize);
             diffY = (diffY + sqrSize);
@@ -388,13 +434,21 @@ public class GameState {
             tY -= sqrSize;
             Square pS = Square.find(tX, tY, sqrSize);
             if (diffX != sqrSize) {
-                aP.add(pS);
+                aPath.add(pS);
             }
             diffX = (diffX + sqrSize);
             diffY = (diffY + sqrSize);
         }
 
-        return aP;
+        return aPath;
+    }
+
+    private AudioClip startSound() {
+        return new AudioClip(Objects.requireNonNull(getClass().getResource(START_SOUND_PATH)).toString());
+    }
+
+    private AudioClip endSound() {
+        return new AudioClip(Objects.requireNonNull(getClass().getResource(END_SOUND_PATH)).toString());
     }
 
     private AudioClip moveSound() {

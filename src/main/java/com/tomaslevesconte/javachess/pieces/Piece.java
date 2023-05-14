@@ -53,7 +53,7 @@ public abstract class Piece extends Rectangle {
     public boolean move(Square newSquare) {
         lastPos = Square.find(getPosX(), getPosY(), getBoard().getSquareSize());
 
-        for (Square legalSquare : getLegalMoves()) {
+        for (Square legalSquare : getBoard().getGameState().curateMoves(this)) {
             if (newSquare.equals(legalSquare)
                     && getBoard().isSquareOccupied(newSquare)
                     && getBoard().getPiece(newSquare).getPieceColour()
