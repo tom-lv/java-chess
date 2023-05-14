@@ -18,11 +18,11 @@ public class Bishop extends Piece {
 
     @Override
     public ArrayList<Square> getLegalMoves() {
-        return new ArrayList<>(getDiagonalAttackPattern(true));
+        return new ArrayList<>(getDiagonalAttackPattern(false));
     }
 
     @Override
-    public ArrayList<Square> getLegalMoves(boolean ignoreCoveredSquares) {
-        return new ArrayList<>(getDiagonalAttackPattern(ignoreCoveredSquares));
+    public ArrayList<Square> getLegalMoves(boolean applyKingFilter) {
+        return new ArrayList<>(getDiagonalAttackPattern(applyKingFilter));
     }
 }

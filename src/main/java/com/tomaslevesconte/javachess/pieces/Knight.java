@@ -19,16 +19,17 @@ public class Knight extends Piece {
 
     @Override
     public ArrayList<Square> getLegalMoves() {
-        return new ArrayList<>(getAttackPattern(true));
+        return new ArrayList<>(getAttackPattern(false));
     }
 
     @Override
-    public ArrayList<Square> getLegalMoves(boolean ignoreCoveredSquares) {
-        return new ArrayList<>(getAttackPattern(ignoreCoveredSquares));
+    public ArrayList<Square> getLegalMoves(boolean applyKingFilter) {
+        return new ArrayList<>(getAttackPattern(applyKingFilter));
     }
 
-    private ArrayList<Square> getAttackPattern(boolean ignoreCoveredSquares) {
+    private ArrayList<Square> getAttackPattern(boolean applyKingFilter) {
         ArrayList<Square> attackPattern = new ArrayList<>();
+
         double sqrSize = getBoard().getSquareSize();
 
         // Every Knight attack pattern
@@ -41,7 +42,7 @@ public class Knight extends Piece {
         attackPattern.add(Square.find(getPosX() - (sqrSize * 2), getPosY() + sqrSize, sqrSize));
         attackPattern.add(Square.find(getPosX() + (sqrSize * 2), getPosY() + sqrSize, sqrSize));
 
-        if (ignoreCoveredSquares) {
+        if (!applyKingFilter) {
             // Remove if square !exist, or if square is occupied by the same colour
             attackPattern.removeIf(attackSquare -> (attackSquare == null // If null (out of bounds)
                     || getBoard().isSquareOccupied(attackSquare)

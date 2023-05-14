@@ -20,21 +20,26 @@ public class Pawn extends Piece {
     @Override
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
+
         legalMoves.addAll(getMovePattern()); // Add move patterns
-        legalMoves.addAll(getAttackPattern(true)); // Add attack patterns
+        legalMoves.addAll(getAttackPattern(false)); // Add attack patterns
+
         return legalMoves;
     }
 
     @Override
-    public ArrayList<Square> getLegalMoves(boolean ignoreCoveredSquares) {
+    public ArrayList<Square> getLegalMoves(boolean applyKingFilter) {
         ArrayList<Square> legalMoves = new ArrayList<>();
+
         legalMoves.addAll(getMovePattern()); // Add move patterns
-        legalMoves.addAll(getAttackPattern(ignoreCoveredSquares)); // Add attack patterns
+        legalMoves.addAll(getAttackPattern(applyKingFilter)); // Add attack patterns
+
         return legalMoves;
     }
 
     private ArrayList<Square> getMovePattern() {
         ArrayList<Square> movePattern = new ArrayList<>();
+
         double sqrSize = getBoard().getSquareSize();
         // Pawns move in different directions depending on colour
         double multiplier = getPieceColour().equals(PieceColour.WHITE) ? -sqrSize : sqrSize;
@@ -52,8 +57,9 @@ public class Pawn extends Piece {
         return movePattern;
     }
 
-    private ArrayList<Square> getAttackPattern(boolean ignoreCoveredSquares) {
+    private ArrayList<Square> getAttackPattern(boolean applyKingFilter) {
         ArrayList<Square> attackPattern = new ArrayList<>();
+
         double sqrSize = getBoard().getSquareSize();
         // Pawns move in different directions depending on colour
         double multiplier = getPieceColour().equals(PieceColour.WHITE) ? -sqrSize : sqrSize;
@@ -62,7 +68,7 @@ public class Pawn extends Piece {
         attackPattern.add(Square.find(getPosX() - sqrSize, getPosY() + multiplier, sqrSize));
         attackPattern.add(Square.find(getPosX() + sqrSize, getPosY() + multiplier, sqrSize));
 
-        if (ignoreCoveredSquares) {
+        if (!applyKingFilter) {
             // Remove if square !exist, or if square is !occupied, or if square is occupied by the same colour
             attackPattern.removeIf(attackSquare -> (attackSquare == null // If null (out of bounds)
                     || !getBoard().isSquareOccupied(attackSquare)

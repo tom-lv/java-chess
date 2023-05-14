@@ -22,10 +22,11 @@ public class King extends Piece {
         ArrayList<Square> legalMoves = new ArrayList<>();
 
         // Evaluate all the King's possible moves
-        legalMoves.addAll(getVerticalAttackPattern(true));
-        legalMoves.addAll(getHorizontalAttackPattern(true));
-        legalMoves.addAll(getDiagonalAttackPattern(true));
+        legalMoves.addAll(getVerticalAttackPattern(false));
+        legalMoves.addAll(getHorizontalAttackPattern(false));
+        legalMoves.addAll(getDiagonalAttackPattern(false));
         legalMoves.addAll(getCastlePattern()); // If castling is possible (need to fix)
+
         // Stop the King from putting itself in check by removing the opponent's moves from the possible pool
         legalMoves.removeAll(getOpponentsMoves());
 
@@ -33,14 +34,15 @@ public class King extends Piece {
     }
 
     @Override
-    public ArrayList<Square> getLegalMoves(boolean ignoreCoveredSquares) {
+    public ArrayList<Square> getLegalMoves(boolean applyKingFilter) {
         ArrayList<Square> legalMoves = new ArrayList<>();
 
         // Evaluate all the King's possible moves
-        legalMoves.addAll(getVerticalAttackPattern(ignoreCoveredSquares));
-        legalMoves.addAll(getHorizontalAttackPattern(ignoreCoveredSquares));
-        legalMoves.addAll(getDiagonalAttackPattern(ignoreCoveredSquares));
+        legalMoves.addAll(getVerticalAttackPattern(applyKingFilter));
+        legalMoves.addAll(getHorizontalAttackPattern(applyKingFilter));
+        legalMoves.addAll(getDiagonalAttackPattern(applyKingFilter));
         legalMoves.addAll(getCastlePattern()); // If castling is possible (need to fix)
+
         // Stop the King from putting itself in check by removing the opponent's moves from the possible pool
         legalMoves.removeAll(getOpponentsMoves());
 
@@ -53,16 +55,24 @@ public class King extends Piece {
         // For each piece on the board
         getBoard().getPieceList().forEach(piece -> {
             // If the piece's colour is different & =='King'
-            if (piece.getPieceColour() != getPieceColour() && piece.getPieceType().equals(PieceType.KING)) {
-                opponentsMoves.addAll(piece.getVerticalAttackPattern(true));
-                opponentsMoves.addAll(piece.getHorizontalAttackPattern(true));
-                opponentsMoves.addAll(piece.getDiagonalAttackPattern(true));
+            if (piece.getPieceColour() != getPieceColour()
+                    && piece.getPieceType().equals(PieceType.KING)) {
+
+                opponentsMoves.addAll(piece.getVerticalAttackPattern(false));
+                opponentsMoves.addAll(piece.getHorizontalAttackPattern(false));
+                opponentsMoves.addAll(piece.getDiagonalAttackPattern(false));
+
                 // If the piece's colour is different & == 'Pawn'
-            } else if (piece.getPieceColour() != getPieceColour() && piece.getPieceType().equals(PieceType.PAWN)) {
+            } else if (piece.getPieceColour() != getPieceColour()
+                    && piece.getPieceType().equals(PieceType.PAWN)) {
+
                 opponentsMoves.addAll(getEnemyPawnAttackPattern(piece));
+
                 // If the piece colour is different & != 'King' or 'Pawn'
             } else if (piece.getPieceColour() != getPieceColour()) {
-                opponentsMoves.addAll(piece.getLegalMoves());
+
+                opponentsMoves.addAll(piece.getLegalMoves(true));
+
             }
         });
 
@@ -71,6 +81,7 @@ public class King extends Piece {
 
     private ArrayList<Square> getEnemyPawnAttackPattern(Piece piece) {
         ArrayList<Square> attackPattern = new ArrayList<>();
+
         double sqrSize = getBoard().getSquareSize();
         // Pawns move in different directions depending on colour
         double multiplier = piece.getPieceColour().equals(PieceColour.WHITE) ? -sqrSize : sqrSize;

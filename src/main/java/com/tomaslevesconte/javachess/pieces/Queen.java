@@ -19,18 +19,22 @@ public class Queen extends Piece {
     @Override
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
-        legalMoves.addAll(getVerticalAttackPattern(true));
-        legalMoves.addAll(getHorizontalAttackPattern(true));
-        legalMoves.addAll(getDiagonalAttackPattern(true));
+
+        legalMoves.addAll(getVerticalAttackPattern(false));
+        legalMoves.addAll(getHorizontalAttackPattern(false));
+        legalMoves.addAll(getDiagonalAttackPattern(false));
+
         return legalMoves;
     }
 
     @Override
     public ArrayList<Square> getLegalMoves(boolean ignoreCoveredSquares) {
         ArrayList<Square> legalMoves = new ArrayList<>();
+
         legalMoves.addAll(getVerticalAttackPattern(ignoreCoveredSquares));
         legalMoves.addAll(getHorizontalAttackPattern(ignoreCoveredSquares));
         legalMoves.addAll(getDiagonalAttackPattern(ignoreCoveredSquares));
+
         return legalMoves;
     }
 }

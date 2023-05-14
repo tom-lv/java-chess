@@ -19,16 +19,20 @@ public class Rook extends Piece {
     @Override
     public ArrayList<Square> getLegalMoves() {
         ArrayList<Square> legalMoves = new ArrayList<>();
-        legalMoves.addAll(getVerticalAttackPattern(true));
-        legalMoves.addAll(getHorizontalAttackPattern(true));
+
+        legalMoves.addAll(getVerticalAttackPattern(false));
+        legalMoves.addAll(getHorizontalAttackPattern(false));
+
         return legalMoves;
     }
 
     @Override
-    public ArrayList<Square> getLegalMoves(boolean ignoreCoveredSquares) {
+    public ArrayList<Square> getLegalMoves(boolean applyKingFilter) {
         ArrayList<Square> legalMoves = new ArrayList<>();
-        legalMoves.addAll(getVerticalAttackPattern(ignoreCoveredSquares));
-        legalMoves.addAll(getHorizontalAttackPattern(ignoreCoveredSquares));
+
+        legalMoves.addAll(getVerticalAttackPattern(applyKingFilter));
+        legalMoves.addAll(getHorizontalAttackPattern(applyKingFilter));
+
         return legalMoves;
     }
 }
