@@ -5,7 +5,6 @@ import com.tomaslevesconte.javachess.enums.PieceColour;
 import com.tomaslevesconte.javachess.enums.PieceType;
 import com.tomaslevesconte.javachess.enums.Square;
 import com.tomaslevesconte.javachess.pieces.Piece;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.media.AudioClip;
 
 import java.util.ArrayList;
