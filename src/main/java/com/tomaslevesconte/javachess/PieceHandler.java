@@ -7,6 +7,7 @@ import com.tomaslevesconte.javachess.pieces.*;
 
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 
@@ -22,27 +23,42 @@ public class PieceHandler {
         initialiseBlackPieces();
     }
 
-    private EventHandler<MouseEvent> hover(Piece piece) {
-        return mEvent -> {
-            piece.setCursor(Cursor.DEFAULT);
-            if (piece.getPieceColour().equals(PieceColour.WHITE)
-                    && board.getGameState().isWhitesTurn()) {
-                piece.setCursor(Cursor.OPEN_HAND);
-            } else if (piece.getPieceColour().equals(PieceColour.BLACK)
-                    && !board.getGameState().isWhitesTurn()) {
-                piece.setCursor(Cursor.OPEN_HAND);
+    public void disablePieceEventHandler(PieceColour pieceColour) {
+        for (Node node : board.getAnchorPane().getChildren()) {
+            for (Piece piece : board.getPieceList()) {
+                if (node.equals(piece)
+                        && piece.getPieceColour().equals(pieceColour)) {
+                    node.setCursor(Cursor.DEFAULT);
+                    node.setOnMousePressed(null);
+                    node.setOnMouseDragged(null);
+                    node.setOnMouseReleased(null);
+                }
             }
-        };
+        }
+    }
+
+    public void enablePieceEventHandler(PieceColour pieceColour) {
+        for (Node node : board.getAnchorPane().getChildren()) {
+            for (Piece piece : board.getPieceList()) {
+                if (node.equals(piece)
+                        && piece.getPieceColour().equals(pieceColour)) {
+                    node.setCursor(Cursor.OPEN_HAND);
+                    node.setOnMousePressed(select(piece));
+                    node.setOnMouseDragged(drag(piece));
+                    node.setOnMouseReleased(release(piece));
+                }
+            }
+        }
+    }
+
+    private void initialisePiece(Piece piece) {
+        board.getPieceList().add(piece);
+        board.getAnchorPane().getChildren().add(piece);
     }
 
     private EventHandler<MouseEvent> select(Piece piece) {
         return mEvent -> {
-            if (mEvent.getButton().equals(MouseButton.PRIMARY)
-                    && piece.getPieceColour().equals(PieceColour.WHITE)
-                    && board.getGameState().isWhitesTurn()
-                    || mEvent.getButton().equals(MouseButton.PRIMARY)
-                    && piece.getPieceColour().equals(PieceColour.BLACK)
-                    && !board.getGameState().isWhitesTurn()) {
+            if (mEvent.getButton().equals(MouseButton.PRIMARY)) {
                 System.out.println("Is piece blocking check: " + board.getGameState().isPieceBlockingCheck(piece));
 
                 uiComponents.removeSelectedPiece();
@@ -59,76 +75,44 @@ public class PieceHandler {
                 piece.toFront(); // Move piece in front of its siblings in terms of z-order
                 piece.setLayoutX(mEvent.getSceneX() - (piece.getWidth() / 2)); // - half the size of the image to find the center
                 piece.setLayoutY(mEvent.getSceneY() - (piece.getHeight() / 2));
-
             }
         };
     }
 
     private EventHandler<MouseEvent> drag(Piece piece) {
         return mEvent -> {
-            if (mEvent.getButton().equals(MouseButton.PRIMARY)
-                    && piece.getPieceColour().equals(PieceColour.WHITE)
-                    && board.getGameState().isWhitesTurn()
-                    || mEvent.getButton().equals(MouseButton.PRIMARY)
-                    && piece.getPieceColour().equals(PieceColour.BLACK)
-                    && !board.getGameState().isWhitesTurn()) {
-
+            if (mEvent.getButton().equals(MouseButton.PRIMARY)) {
                 piece.setLayoutX(mEvent.getSceneX() - (piece.getWidth() / 2)); // - half the size of the image to find the center
                 piece.setLayoutY(mEvent.getSceneY() - (piece.getHeight() / 2));
-
             }
         };
     }
 
     private EventHandler<MouseEvent> release(Piece piece) {
         return mEvent -> {
-            if (piece.getPieceColour().equals(PieceColour.WHITE)
-                    && board.getGameState().isWhitesTurn()) {
-                piece.setCursor(Cursor.OPEN_HAND);
-            } else if (piece.getPieceColour().equals(PieceColour.BLACK)
-                    && !board.getGameState().isWhitesTurn()) {
-                piece.setCursor(Cursor.OPEN_HAND);
-            }
-
-            Square newSquare = Square.find(
+            piece.setCursor(Cursor.OPEN_HAND);
+            Square nSquare = Square.find(
                     board.findClosestSquare(mEvent.getSceneX()),
                     board.findClosestSquare(mEvent.getSceneY()),
                     board.getSquareSize());
-            Square lastSquare = Square.find(piece.getPosX(), piece.getPosY(), board.getSquareSize());
-            int pieceIndex = board.getPieceIndex(lastSquare);
+            Square lSquare = Square.find(
+                    piece.getPosX(),
+                    piece.getPosY(),
+                    board.getSquareSize());
+            int pIndex = board.getPieceIndex(lSquare);
 
             if (mEvent.getButton().equals(MouseButton.PRIMARY)
-                    && newSquare != null && lastSquare != null
-                    && piece.getPieceColour().equals(PieceColour.WHITE)
-                    && board.getGameState().isWhitesTurn()
-                    && board.getPieceList().get(pieceIndex).move(newSquare)
-                    || mEvent.getButton().equals(MouseButton.PRIMARY)
-                    && newSquare != null && lastSquare != null
-                    && piece.getPieceColour().equals(PieceColour.BLACK)
-                    && !board.getGameState().isWhitesTurn()
-                    && board.getPieceList().get(pieceIndex).move(newSquare)) {
-
+                    && nSquare != null && lSquare != null
+                    && board.getPieceList().get(pIndex).move(nSquare)) {
                 uiComponents.removeSelectedPiece();
                 uiComponents.removeLegalMoves();
                 uiComponents.removeLastMovePath();
-                uiComponents.displayLastMovePath(newSquare, lastSquare);
-
+                uiComponents.displayLastMovePath(nSquare, lSquare);
             } else {
                 piece.setLayoutX(piece.getPosX());
                 piece.setLayoutY(piece.getPosY());
             }
         };
-    }
-
-    private void initialisePiece(Piece piece) {
-        board.getPieceList().add(piece);
-
-        piece.setOnMouseEntered(hover(piece));
-        piece.setOnMousePressed(select(piece));
-        piece.setOnMouseDragged(drag(piece));
-        piece.setOnMouseReleased(release(piece));
-
-        board.getAnchorPane().getChildren().add(piece);
     }
 
     private void initialiseWhitePieces() {

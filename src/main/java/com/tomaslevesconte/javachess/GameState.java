@@ -38,6 +38,7 @@ public class GameState {
     }
 
     public void start() {
+        board.getPieceHandler().enablePieceEventHandler(currentColour);
         startSound().play();
     }
 
@@ -54,6 +55,9 @@ public class GameState {
             currentColour = PieceColour.WHITE;
             nextColour = PieceColour.BLACK;
         }
+
+        board.getPieceHandler().disablePieceEventHandler(nextColour);
+        board.getPieceHandler().enablePieceEventHandler(currentColour);
 
         playAudio(event);
         isWhitesTurn = !isWhitesTurn;
@@ -81,6 +85,7 @@ public class GameState {
     public boolean isKingInCheckmate() {
         if (isKingInCheck() && !canEvade() && !canBlock() && !canCapture()) {
             endSound().play();
+            board.getPieceHandler().disablePieceEventHandler(currentColour);
             uiComponents.removeKingInCheck();
             uiComponents.displayKingInCheckmate(king);
 
