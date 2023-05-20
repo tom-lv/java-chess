@@ -9,10 +9,10 @@ import java.util.ArrayList;
 
 public class Queen extends Piece {
 
-    private static final int SQUARES_IT_CAN_MOVE = 8;
+    private static final int MAX_SQUARE_ADVANCE = 8;
 
     public Queen(PieceColour pieceColour, Square square, Board board) {
-        super(PieceType.QUEEN, pieceColour, square, SQUARES_IT_CAN_MOVE, board);
+        super(PieceType.QUEEN, pieceColour, square, MAX_SQUARE_ADVANCE, board);
         createPiece();
     }
 

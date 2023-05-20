@@ -3,6 +3,7 @@ package com.tomaslevesconte.javachess;
 import com.tomaslevesconte.javachess.enums.PieceColour;
 import com.tomaslevesconte.javachess.enums.PieceType;
 import com.tomaslevesconte.javachess.enums.Square;
+import com.tomaslevesconte.javachess.pieces.Pawn;
 import com.tomaslevesconte.javachess.pieces.Piece;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
@@ -103,6 +104,17 @@ public class Board {
             index++;
         }
         return index;
+    }
+
+    public ArrayList<Pawn> getPawnList() {
+        ArrayList<Pawn> pawnList = new ArrayList<>();
+        for (Piece piece : getPieceList()) {
+            if (piece.getPieceType().equals(PieceType.PAWN)) {
+                Pawn currentPawn = (Pawn) piece;
+                pawnList.add(currentPawn);
+            }
+        }
+        return pawnList;
     }
 
     public Piece getQueenSideRook(PieceColour pieceColour) {

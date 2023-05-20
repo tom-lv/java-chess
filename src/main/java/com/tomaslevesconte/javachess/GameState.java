@@ -4,6 +4,7 @@ import com.tomaslevesconte.javachess.enums.Event;
 import com.tomaslevesconte.javachess.enums.PieceColour;
 import com.tomaslevesconte.javachess.enums.PieceType;
 import com.tomaslevesconte.javachess.enums.Square;
+import com.tomaslevesconte.javachess.pieces.Pawn;
 import com.tomaslevesconte.javachess.pieces.Piece;
 import javafx.scene.media.AudioClip;
 
@@ -55,6 +56,7 @@ public class GameState {
             nextColour = PieceColour.BLACK;
         }
 
+        toggleEnPassantStatus(currentColour);
         board.getPieceHandler().disablePieceEventHandler(nextColour);
         board.getPieceHandler().enablePieceEventHandler(currentColour);
 
@@ -69,7 +71,7 @@ public class GameState {
         uiComponents.removeKingInCheck();
 
         for (Square move : oMoves) {
-            if (king != null && move.equals(king.getSquare())) {
+            if (king != null && move.equals(king.getCurrentSquare())) {
                 System.out.println("King is in check!");
                 uiComponents.displayKingInCheck(king);
                 return true;
@@ -106,7 +108,7 @@ public class GameState {
             if (!attacker.getPieceType().equals(PieceType.KNIGHT)) {
                 for (Square aSquare : aPath) {
                     if (board.isSquareOccupied(aSquare)
-                            && aSquare.equals(piece.getSquare())) {
+                            && aSquare.equals(piece.getCurrentSquare())) {
                         return true;
                     }
                 }
@@ -148,7 +150,7 @@ public class GameState {
             }
             if (canCapture()) {
                 for (Square lMove : lMoves) {
-                    if (lMove.equals(Objects.requireNonNull(attacker).getSquare())) {
+                    if (lMove.equals(Objects.requireNonNull(attacker).getCurrentSquare())) {
                         cMoves.add(lMove);
                     }
                 }
@@ -162,7 +164,7 @@ public class GameState {
     private boolean canEvade() {
         Piece attacker = getAttacker(king);
         ArrayList<Square> kMoves = king.getLegalMoves();
-        if (kMoves.isEmpty() || kMoves.get(0).equals(Objects.requireNonNull(attacker).getSquare())) {
+        if (kMoves.isEmpty() || kMoves.get(0).equals(Objects.requireNonNull(attacker).getCurrentSquare())) {
             System.out.println("King cannot evade.");
             return false;
         } else {
@@ -199,16 +201,16 @@ public class GameState {
         ArrayList<Square> uMoves = getMovesUnfiltered(nextColour);
 
         for (Square move : moves) {
-            if (move.equals(Objects.requireNonNull(attacker).getSquare())) {
+            if (move.equals(Objects.requireNonNull(attacker).getCurrentSquare())) {
                 System.out.println("Can capture attacker.");
                 return true;
             }
         }
 
         for (Square kMove : kMoves) {
-            if (kMove.equals(Objects.requireNonNull(attacker).getSquare())) {
+            if (kMove.equals(Objects.requireNonNull(attacker).getCurrentSquare())) {
                 for (Square uMove : uMoves) {
-                    if (uMove.equals(attacker.getSquare())) {
+                    if (uMove.equals(attacker.getCurrentSquare())) {
                         System.out.println("Attacker is covered. King cannot capture.");
                         return false;
                     }
@@ -219,6 +221,14 @@ public class GameState {
         }
 
         return false;
+    }
+
+    private void toggleEnPassantStatus(PieceColour pieceColour) {
+        for (Pawn pawn : board.getPawnList()) {
+            if (pawn.getPieceColour().equals(pieceColour)) {
+                pawn.setInEnPassantState(false);
+            }
+        }
     }
 
     private void playAudio(Event event) {
@@ -247,7 +257,7 @@ public class GameState {
     private Piece getAttacker(Piece target) {
         for (Piece piece : board.getPieceList()) {
             for (Square move : piece.getLegalMoves()) {
-                if (move.equals(target.getSquare())) {
+                if (move.equals(target.getCurrentSquare())) {
                     return piece;
                 }
             }
@@ -261,7 +271,7 @@ public class GameState {
 
         for (Piece piece : board.getPieceList()) {
             for (Square move : piece.getLegalMoves()) {
-                if (move.equals(target.getSquare())) {
+                if (move.equals(target.getCurrentSquare())) {
                     attackers.add(piece);
                 }
             }

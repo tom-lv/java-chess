@@ -10,10 +10,10 @@ import java.util.Objects;
 
 public class Knight extends Piece {
 
-    private static final int SQUARES_IT_CAN_MOVE = 1;
+    private static final int MAX_SQUARE_ADVANCE = 1;
 
     public Knight(PieceColour pieceColour, Square square, Board board) {
-        super(PieceType.KNIGHT, pieceColour, square, SQUARES_IT_CAN_MOVE, board);
+        super(PieceType.KNIGHT, pieceColour, square, MAX_SQUARE_ADVANCE, board);
         createPiece();
     }
 

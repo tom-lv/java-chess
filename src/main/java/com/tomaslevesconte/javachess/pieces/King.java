@@ -1,6 +1,7 @@
 package com.tomaslevesconte.javachess.pieces;
 
 import com.tomaslevesconte.javachess.Board;
+import com.tomaslevesconte.javachess.enums.Event;
 import com.tomaslevesconte.javachess.enums.PieceColour;
 import com.tomaslevesconte.javachess.enums.PieceType;
 import com.tomaslevesconte.javachess.enums.Square;
@@ -10,11 +11,36 @@ import java.util.Objects;
 
 public class King extends Piece {
 
-    private static final int SQUARES_IT_CAN_MOVE = 1;
+    private static final int MAX_SQUARE_ADVANCE = 1;
 
     public King(PieceColour pieceColour, Square square, Board board) {
-        super(PieceType.KING, pieceColour, square, SQUARES_IT_CAN_MOVE, board);
+        super(PieceType.KING, pieceColour, square, MAX_SQUARE_ADVANCE, board);
         createPiece();
+    }
+
+    @Override
+    public boolean move(Square newSquare) {
+        setLastSquare(Square.find(getPosX(), getPosY(), getBoard().getSquareSize()));
+
+        for (Square legalSquare : getBoard().getGameState().curateMoves(this)) {
+            if (newSquare.equals(legalSquare)) {
+                Event event = Event.MOVE;
+                if (getBoard().isSquareOccupied(newSquare)
+                        && getBoard().getPiece(newSquare).getPieceColour() != getPieceColour()) {
+                    Piece target = getBoard().getPiece(newSquare);
+                    getBoard().getAnchorPane().getChildren().remove(target);
+                    target.capture();
+                    event = Event.CAPTURE;
+                }
+
+                updatePositionOnBoardAndList(newSquare);
+                setHasMoved(true);
+                event = attemptCastle() ? Event.CASTLE : event;
+                getBoard().getGameState().update(event); // Update game state
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -128,5 +154,46 @@ public class King extends Piece {
         }
 
         return castlePattern;
+    }
+
+    private boolean attemptCastle() {
+        if (getPieceType().equals(PieceType.KING)) {
+            Square kSquare = getPieceColour().equals(PieceColour.WHITE)
+                    ? Square.E1
+                    : Square.E8;
+            Square[] kPos = getPieceColour().equals(PieceColour.WHITE)
+                    ? new Square[]{Square.C1, Square.G1}
+                    : new Square[]{Square.C8, Square.G8};
+            Square[] rPos = getPieceColour().equals(PieceColour.WHITE)
+                    ? new Square[]{Square.D1, Square.F1}
+                    : new Square[]{Square.D8, Square.F8};
+
+            if (Objects.equals(getLastSquare(), kSquare)
+                    && getCurrentSquare().equals(kPos[0])) {
+                // Queen Side Rook
+                Piece qSR = getBoard().getQueenSideRook(getPieceColour());
+                updateRookPositionOnBoardAndList(qSR, rPos[0]);
+                return true;
+
+            } else if (Objects.equals(getLastSquare(), kSquare)
+                    && getCurrentSquare().equals(kPos[1])) {
+                // King Side Rook
+                Piece kSR = getBoard().getKingSideRook(getPieceColour());
+                updateRookPositionOnBoardAndList(kSR, rPos[1]);
+                return true;
+
+            }
+        }
+        return false;
+    }
+
+    private void updateRookPositionOnBoardAndList(Piece rook, Square newSquare) {
+        if (newSquare != null) {
+            // Update visual pos on board
+            rook.setLayoutX(newSquare.getX(getBoard().getSquareSize()));
+            rook.setLayoutY(newSquare.getY(getBoard().getSquareSize()));
+            // Update pos in list
+            rook.setCurrentSquare(newSquare);
+        }
     }
 }
