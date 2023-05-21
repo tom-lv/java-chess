@@ -91,14 +91,9 @@ public class PieceHandler {
     private EventHandler<MouseEvent> release(Piece piece) {
         return mEvent -> {
             piece.setCursor(Cursor.OPEN_HAND);
-            Square nSquare = Square.find(
-                    board.findClosestSquare(mEvent.getSceneX()),
-                    board.findClosestSquare(mEvent.getSceneY()),
-                    board.getSquareSize());
-            Square lSquare = Square.find(
-                    piece.getPosX(),
-                    piece.getPosY(),
-                    board.getSquareSize());
+            Square nSquare = Square.find(board.findClosestSquare(mEvent.getSceneX()), board.findClosestSquare(mEvent.getSceneY()), board.getSquareSize());
+            Square lSquare = Square.find(piece.getPosX(), piece.getPosY(), board.getSquareSize());
+
             int pIndex = board.getPieceIndex(lSquare);
 
             if (mEvent.getButton().equals(MouseButton.PRIMARY)
