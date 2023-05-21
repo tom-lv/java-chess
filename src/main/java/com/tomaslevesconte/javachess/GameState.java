@@ -81,8 +81,7 @@ public class GameState {
         System.out.println("King is not in check!");
         return false;
     }
-
-
+    
     public boolean isKingInCheckmate() {
         if (isKingInCheck() && !canEvade() && !canBlock() && !canCapture()) {
             endSound().play();
@@ -100,18 +99,18 @@ public class GameState {
         return false;
     }
 
-
     public boolean isPieceBlockingCheck(Piece piece) {
         ArrayList<Piece> attackers = getAttackers(piece);
         for (Piece attacker : attackers) {
             ArrayList<Square> aPath = Objects.requireNonNull(getAttackPath(king, attacker));
             if (!attacker.getPieceType().equals(PieceType.KNIGHT)) {
+                int pieceCounter = 0;
                 for (Square aSquare : aPath) {
-                    if (board.isSquareOccupied(aSquare)
-                            && aSquare.equals(piece.getCurrentSquare())) {
-                        return true;
+                    if (board.isSquareOccupied(aSquare)) {
+                        pieceCounter++;
                     }
                 }
+                return pieceCounter == 1;
             }
         }
         return false;
@@ -164,7 +163,7 @@ public class GameState {
     private boolean canEvade() {
         Piece attacker = getAttacker(king);
         ArrayList<Square> kMoves = king.getLegalMoves();
-        if (kMoves.isEmpty() || kMoves.get(0).equals(Objects.requireNonNull(attacker).getCurrentSquare())) {
+        if (kMoves.isEmpty()    || kMoves.get(0).equals(Objects.requireNonNull(attacker).getCurrentSquare())) {
             System.out.println("King cannot evade.");
             return false;
         } else {
