@@ -158,6 +158,7 @@ public class Pawn extends Piece {
                 && behindPawn.inEnPassantState) {
             getBoard().getAnchorPane().getChildren().remove(behindPawn);
             behindPawn.capture();
+            return true;
         }
 
         return false;
