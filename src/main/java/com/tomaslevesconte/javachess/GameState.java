@@ -43,7 +43,6 @@ public class GameState {
     }
 
     public void update(Event event) {
-        playAudio(event);
 
         if (isWhitesTurn) {
             System.out.println("Whites moved.");
@@ -62,6 +61,7 @@ public class GameState {
         board.getPieceHandler().enablePieceEventHandler(currentColour);
 
         isWhitesTurn = !isWhitesTurn;
+        playAudio(event);
         System.out.println("Is King in checkmate: " + board.getGameState().isKingInCheckmate());
     }
 
@@ -102,7 +102,9 @@ public class GameState {
     public boolean isPieceBlockingCheck(Piece piece) {
         ArrayList<Piece> attackers = getAttackers(piece);
         for (Piece attacker : attackers) {
+            System.out.println(king.getPieceType() + " " + king.getPieceColour() + " " + attacker.getPieceType() + " " + attacker.getPieceColour());
             ArrayList<Square> aPath = Objects.requireNonNull(getAttackPath(king, attacker));
+            System.out.println(aPath);
             if (!attacker.getPieceType().equals(PieceType.KNIGHT)) {
                 int pieceCounter = 0;
                 for (Square aSquare : aPath) {
@@ -232,6 +234,7 @@ public class GameState {
 
     private void playAudio(Event event) {
         if (isKingInCheck()) {
+            System.out.println("CHECK SOUND");
             checkSound().play();
         } else if (event.equals(Event.CAPTURE)) {
             captureSound().play();
@@ -331,7 +334,7 @@ public class GameState {
 
     private ArrayList<Square> getAttackPath(Piece target, Piece attacker) {
         // You cannot block a knight, only capture or move
-        if (attacker != null && attacker.getPieceType() != PieceType.KNIGHT) {
+        if (attacker != null) {
             ArrayList<Square> aP = new ArrayList<>();
 
             double tX = target.getPosX();
