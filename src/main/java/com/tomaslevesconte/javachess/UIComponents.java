@@ -102,6 +102,15 @@ public class UIComponents {
         board.getPieceList().forEach(Node::toFront); // All pieces to front in terms of z-index
     }
 
+    public void displayKingInStaleMate(Piece king) {
+        Rectangle staleMateRec = createHighlightRectangle("#ffc14e", 1.0f);
+        staleMateRec.setId("staleMateRec");
+        staleMateRec.setLayoutX(king.getLayoutX());
+        staleMateRec.setLayoutY(king.getLayoutY());
+        board.getAnchorPane().getChildren().add(staleMateRec);
+        board.getPieceList().forEach(Node::toFront); // All pieces to front in terms of z-index
+    }
+
     public void removeSelectedPiece() {
         board.getAnchorPane().getChildren().remove(board.getAnchorPane().lookup("#selectedPiece"));
     }

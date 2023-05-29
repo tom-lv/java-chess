@@ -63,6 +63,7 @@ public class GameState {
         isWhitesTurn = !isWhitesTurn;
         playAudio(event);
         System.out.println("Is King in checkmate: " + board.getGameState().isKingInCheckmate());
+        System.out.println("Is King in stalemate: " + board.getGameState().isKingInStalemate());
     }
 
     public boolean isKingInCheck() {
@@ -88,7 +89,6 @@ public class GameState {
             board.getPieceHandler().disablePieceEventHandler(currentColour);
             uiComponents.removeKingInCheck();
             uiComponents.displayKingInCheckmate(king);
-
             return true;
         } else {
             return false;
@@ -96,7 +96,70 @@ public class GameState {
     }
 
     public boolean isKingInStalemate() {
+        double sqrSize = board.getSquareSize();
+
+        ArrayList<Square> sSK = new ArrayList<>(); // Squares surrounding King
+
+        sSK.add(Square.find(king.getPosX(), king.getPosY() + sqrSize, sqrSize));
+        sSK.add(Square.find(king.getPosX() - sqrSize, king.getPosY() + sqrSize, sqrSize));
+        sSK.add(Square.find(king.getPosX() - sqrSize, king.getPosY(), sqrSize));
+        sSK.add(Square.find(king.getPosX() - sqrSize, king.getPosY() - sqrSize, sqrSize));
+        sSK.add(Square.find(king.getPosX(), king.getPosY() - sqrSize, sqrSize));
+        sSK.add(Square.find(king.getPosX() + sqrSize, king.getPosY() - sqrSize, sqrSize));
+        sSK.add(Square.find(king.getPosX() + sqrSize, king.getPosY(), sqrSize));
+        sSK.add(Square.find(king.getPosX() + sqrSize, king.getPosY() + sqrSize, sqrSize));
+
+        sSK.removeIf(Objects::isNull);
+
+        ArrayList<Square> opponentsMoves = new ArrayList<>();
+
+        // For each piece on the board
+        board.getPieceList().forEach(piece -> {
+            // If the piece's colour is different & =='King'
+            if (piece.getPieceColour() != king.getPieceColour()
+                    && piece.getPieceType().equals(PieceType.KING)) {
+
+                opponentsMoves.addAll(piece.getVerticalAttackPattern(false));
+                opponentsMoves.addAll(piece.getHorizontalAttackPattern(false));
+                opponentsMoves.addAll(piece.getDiagonalAttackPattern(false));
+
+                // If the piece's colour is different & == 'Pawn'
+            } else if (piece.getPieceColour() != king.getPieceColour()
+                    && piece.getPieceType().equals(PieceType.PAWN)) {
+
+                opponentsMoves.addAll(getEnemyPawnAttackPattern(piece));
+
+                // If the piece colour is different & != 'King' or 'Pawn'
+            } else if (piece.getPieceColour() != king.getPieceColour()) {
+
+                opponentsMoves.addAll(piece.getLegalMoves(true));
+
+            }
+        });
+
+        if (opponentsMoves.containsAll(sSK) && !isKingInCheck()) {
+            endSound().play();
+            board.getPieceHandler().disablePieceEventHandler(currentColour);
+            uiComponents.displayKingInStaleMate(king);
+            return true;
+        }
         return false;
+    }
+
+    private ArrayList<Square> getEnemyPawnAttackPattern(Piece piece) {
+        ArrayList<Square> attackPattern = new ArrayList<>();
+
+        double sqrSize = board.getSquareSize();
+        // Pawns move in different directions depending on colour
+        double multiplier = piece.getPieceColour().equals(PieceColour.WHITE) ? -sqrSize : sqrSize;
+
+        // Every pawn attack pattern
+        attackPattern.add(Square.find((piece.getPosX() - sqrSize), (piece.getPosY() + multiplier), sqrSize));
+        attackPattern.add(Square.find((piece.getPosX() + sqrSize), (piece.getPosY() + multiplier), sqrSize));
+
+        attackPattern.removeIf(Objects::isNull); // Remove square if null (out of bounds)
+
+        return attackPattern;
     }
 
     public boolean isPieceBlockingCheck(Piece piece) {
