@@ -154,21 +154,24 @@ public class Game {
     }
 
     public boolean isPieceBlockingCheck(Piece piece) {
-        Piece king = board.getKing(activeColour);
-        ArrayList<Piece> attackers = board.getAttackers(piece);
+        for (Piece attacker : board.getAttackers(piece)) {
+            ArrayList<Square> attackersPath = Objects.requireNonNull(getAttackPath(board.getKing(activeColour), attacker));
+            Piece blockingPiece = null;
 
-        for (Piece attacker : attackers) {
-            System.out.println(king.getPieceType() + " " + king.getPieceColour() + " " + attacker.getPieceType() + " " + attacker.getPieceColour());
-            ArrayList<Square> aPath = Objects.requireNonNull(getAttackPath(king, attacker));
-            System.out.println(aPath);
+            // If the attacker != Knight (Knights can jump squares, so they don't have a set attack path)
             if (!attacker.getPieceType().equals(PieceType.KNIGHT)) {
-                int pieceCounter = 0;
-                for (Square aSquare : aPath) {
-                    if (board.isSquareOccupied(aSquare)) {
+                int pieceCounter = 0; // Number of pieces in between the attacker and the king
+                for (Square attackSquare : attackersPath) {
+                    // If a piece is on the attack path (regardless of colour)
+                    if (board.isSquareOccupied(attackSquare)) {
+                        blockingPiece = board.getPieceOnSquare(attackSquare);
                         pieceCounter++;
                     }
                 }
-                return pieceCounter == 1;
+                // If there is only 1 piece blocking the attacker's path & if that piece is the selected piece,
+                // then return true,
+                // else false (because if there are multiple pieces and one of them moves, then there is still a blocking piece)
+                return pieceCounter == 1 && blockingPiece.getCurrentSquare().equals(piece.getCurrentSquare());
             }
         }
         return false;
@@ -187,7 +190,8 @@ public class Game {
                 ArrayList<Square> aPath = Objects.requireNonNull(getAttackPath(king, attacker));
                 for (Square lMove : legalMoves) {
                     for (Square aSquare : aPath) {
-                        if (lMove.equals(aSquare)) {
+                        // If the move is on the attacker's path, or if it can capture the attacker
+                        if (lMove.equals(aSquare) || lMove.equals(attacker.getCurrentSquare())) {
                             curatedMoves.add(lMove);
                         }
                     }
@@ -316,6 +320,7 @@ public class Game {
             double tY = target.getPosY();
             double aX = attacker.getPosX();
             double aY = attacker.getPosY();
+
             double diffX = (aX - tX);
             double diffY = (aY - tY);
 
