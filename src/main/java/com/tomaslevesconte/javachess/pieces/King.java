@@ -22,12 +22,12 @@ public class King extends Piece {
     public boolean move(Square newSquare) {
         setLastSquare(Square.find(getPosX(), getPosY(), getBoard().getSquareSize()));
 
-        for (Square legalSquare : getBoard().getGameState().curateMoves(this)) {
+        for (Square legalSquare : getBoard().getGameHandler().curateMoves(this)) {
             if (newSquare.equals(legalSquare)) {
                 Event event = Event.MOVE;
                 if (getBoard().isSquareOccupied(newSquare)
-                        && getBoard().getPiece(newSquare).getPieceColour() != getPieceColour()) {
-                    Piece target = getBoard().getPiece(newSquare);
+                        && getBoard().getPieceOnSquare(newSquare).getPieceColour() != getPieceColour()) {
+                    Piece target = getBoard().getPieceOnSquare(newSquare);
                     getBoard().getAnchorPane().getChildren().remove(target);
                     target.capture();
                     event = Event.CAPTURE;
@@ -36,7 +36,7 @@ public class King extends Piece {
                 updatePositionOnBoardAndList(newSquare);
                 setHasMoved(true);
                 event = attemptCastle() ? Event.CASTLE : event;
-                getBoard().getGameState().update(event); // Update game state
+                getBoard().getGameHandler().update(event); // Update game state
                 return true;
             }
         }
@@ -126,6 +126,7 @@ public class King extends Piece {
 
         // Evaluate Queen's side
         Piece queenSideRook = getBoard().getQueenSideRook(getPieceColour());
+
         Square[] queenSideSquares = getPieceColour().equals(PieceColour.WHITE)
                 ? new Square[]{Square.B1, Square.C1, Square.D1}
                 : new Square[]{Square.B8, Square.C8, Square.D8};

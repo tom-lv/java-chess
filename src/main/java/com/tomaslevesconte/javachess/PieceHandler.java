@@ -59,10 +59,10 @@ public class PieceHandler {
     private EventHandler<MouseEvent> select(Piece piece) {
         return mEvent -> {
             if (mEvent.getButton().equals(MouseButton.PRIMARY)) {
-                System.out.println("Is piece blocking check: " + board.getGameState().isPieceBlockingCheck(piece));
+                System.out.println("Is piece blocking check: " + board.getGameHandler().isPieceBlockingCheck(piece));
 
                 uiComponents.removeSelectedPiece();
-                if (board.getGameState().isKingInCheck()
+                if (board.getGameHandler().isKingInCheck()
                         && piece.getPieceType().equals(PieceType.KING)) {
                     // Do nothing
                 } else {

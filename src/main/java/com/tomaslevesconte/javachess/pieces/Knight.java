@@ -46,7 +46,7 @@ public class Knight extends Piece {
             // Remove if square !exist, or if square is occupied by the same colour
             attackPattern.removeIf(attackSquare -> (attackSquare == null // If null (out of bounds)
                     || getBoard().isSquareOccupied(attackSquare)
-                    && getBoard().getPiece(attackSquare).getPieceColour().equals(getPieceColour())));
+                    && getBoard().getPieceOnSquare(attackSquare).getPieceColour().equals(getPieceColour())));
         } else {
             attackPattern.removeIf(Objects::isNull);
         }

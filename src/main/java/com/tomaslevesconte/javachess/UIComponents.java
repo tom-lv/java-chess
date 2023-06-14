@@ -21,7 +21,7 @@ public class UIComponents {
     }
 
     public void displaySelectedPiece(Piece piece) {
-        Rectangle selectedRec = createHighlightRectangle("#FEF250", 0.5f);
+        Rectangle selectedRec = createHighlightRectangle("#FEF250", 0.5d);
         selectedRec.setId("selectedPiece");
         selectedRec.setLayoutX(piece.getLayoutX());
         selectedRec.setLayoutY(piece.getLayoutY());
@@ -31,7 +31,7 @@ public class UIComponents {
     }
 
     public void displayLegalMoves(Piece piece) {
-        ArrayList<Square> legalMoves = board.getGameState().curateMoves(piece);
+        ArrayList<Square> legalMoves = board.getGameHandler().curateMoves(piece);
 
         Group possibleMoves = new Group();
         possibleMoves.setId("legalMoves");
@@ -45,7 +45,7 @@ public class UIComponents {
                     lMove.getX(sqrSize),
                     lMove.getY(sqrSize),
                     sqrSize))) {
-                moveRec.setFill(Color.web("#9A3048", 1.0f));
+                moveRec.setFill(Color.web("#9A3048", 1.0d));
             } else {
                 moveRec.setFill(new ImagePattern(new Image("com/tomaslevesconte/javachess/hc.png")));
             }
@@ -59,12 +59,12 @@ public class UIComponents {
     public void displayLastMovePath(Square nPos, Square lPos) {
         double sqrSize = board.getSquareSize();
 
-        Rectangle newRec = createHighlightRectangle("#FEF250", 0.5f);
+        Rectangle newRec = createHighlightRectangle("#FEF250", 0.5d);
         newRec.setId("newRec");
         newRec.setLayoutX(nPos.getX(sqrSize));
         newRec.setLayoutY(nPos.getY(sqrSize));
 
-        Rectangle lastRec = createHighlightRectangle("#FEF250", 0.5f);
+        Rectangle lastRec = createHighlightRectangle("#FEF250", 0.5d);
         lastRec.setId("lastRec");
         lastRec.setLayoutX(lPos.getX(sqrSize));
         lastRec.setLayoutY(lPos.getY(sqrSize));
@@ -75,14 +75,14 @@ public class UIComponents {
 
 
     public void displayKingInCheck(Piece king) {
-        Rectangle checkRec = createHighlightRectangle("#9A3048", 1.0f);
+        Rectangle checkRec = createHighlightRectangle("#9A3048", 1.0d);
         checkRec.setId("checkRec");
         checkRec.setLayoutX(king.getLayoutX());
         checkRec.setLayoutY(king.getLayoutY());
 
         KeyFrame kf = new KeyFrame(
                 Duration.seconds(0.8f),
-                new KeyValue(checkRec.fillProperty(), Color.web("#9A3048", 0.0f)));
+                new KeyValue(checkRec.fillProperty(), Color.web("#9A3048", 0.0d)));
         Timeline blink = new Timeline();
         blink.getKeyFrames().add(kf);
         blink.setCycleCount(Animation.INDEFINITE);
@@ -94,7 +94,7 @@ public class UIComponents {
     }
 
     public void displayKingInCheckmate(Piece king) {
-        Rectangle checkMateRec = createHighlightRectangle("#9A3048", 1.0f);
+        Rectangle checkMateRec = createHighlightRectangle("#9A3048", 1.0d);
         checkMateRec.setId("checkMateRec");
         checkMateRec.setLayoutX(king.getLayoutX());
         checkMateRec.setLayoutY(king.getLayoutY());
@@ -103,7 +103,7 @@ public class UIComponents {
     }
 
     public void displayKingInStaleMate(Piece king) {
-        Rectangle staleMateRec = createHighlightRectangle("#ffc14e", 1.0f);
+        Rectangle staleMateRec = createHighlightRectangle("#ffc14e", 1.0d);
         staleMateRec.setId("staleMateRec");
         staleMateRec.setLayoutX(king.getLayoutX());
         staleMateRec.setLayoutY(king.getLayoutY());

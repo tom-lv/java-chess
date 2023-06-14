@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 
 public class ChessApplication extends Application {
 
-    public final static double WINDOW_SIZE = 800.0f;
+    public final static double WINDOW_SIZE = 850.0d;
 
     @Override
     public void start(Stage stage) {

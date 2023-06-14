@@ -51,12 +51,12 @@ public abstract class Piece extends Rectangle {
     public boolean move(Square newSquare) {
         setLastSquare(Square.find(getPosX(), getPosY(), getBoard().getSquareSize()));
 
-        for (Square legalSquare : getBoard().getGameState().curateMoves(this)) {
+        for (Square legalSquare : getBoard().getGameHandler().curateMoves(this)) {
             if (newSquare.equals(legalSquare)) {
                 Event event = Event.MOVE;
                 if (getBoard().isSquareOccupied(newSquare)
-                        && getBoard().getPiece(newSquare).getPieceColour() != getPieceColour()) {
-                    Piece target = getBoard().getPiece(newSquare);
+                        && getBoard().getPieceOnSquare(newSquare).getPieceColour() != getPieceColour()) {
+                    Piece target = getBoard().getPieceOnSquare(newSquare);
                     getBoard().getAnchorPane().getChildren().remove(target);
                     target.capture();
                     event = Event.CAPTURE;
@@ -64,7 +64,7 @@ public abstract class Piece extends Rectangle {
                 }
                 updatePositionOnBoardAndList(newSquare);
                 setHasMoved(true);
-                getBoard().getGameState().update(event); // Update game state
+                getBoard().getGameHandler().update(event); // Update game state
                 return true;
             }
         }
@@ -178,7 +178,7 @@ public abstract class Piece extends Rectangle {
 
     private ArrayList<Square> regularFilter(ArrayList<Square> sList) {
         for (int i = 0; i < sList.size(); i++) {
-            Piece cPiece = getBoard().getPiece(sList.get(i));
+            Piece cPiece = getBoard().getPieceOnSquare(sList.get(i));
             if (getBoard().isSquareOccupied(sList.get(i))
                     && cPiece.getPieceColour() != getPieceColour()) {
                 sList.removeAll(sList.subList(i + 1, sList.size()));
@@ -191,7 +191,7 @@ public abstract class Piece extends Rectangle {
 
     private ArrayList<Square> kingFilter(ArrayList<Square> sList) {
         for (int i = 0; i < sList.size(); i++) {
-            Piece cPiece = getBoard().getPiece(sList.get(i));
+            Piece cPiece = getBoard().getPieceOnSquare(sList.get(i));
             if (getBoard().isSquareOccupied(sList.get(i))
                     && cPiece.getPieceColour() != getPieceColour()
                     && cPiece.getPieceType().equals(PieceType.KING)) {

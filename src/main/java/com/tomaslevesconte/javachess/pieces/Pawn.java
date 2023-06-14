@@ -24,12 +24,12 @@ public class Pawn extends Piece {
     public boolean move(Square newSquare) {
         setLastSquare(Square.find(getPosX(), getPosY(), getBoard().getSquareSize()));
 
-        for (Square legalSquare : getBoard().getGameState().curateMoves(this)) {
+        for (Square legalSquare : getBoard().getGameHandler().curateMoves(this)) {
             if (newSquare.equals(legalSquare)) {
                 Event event = Event.MOVE;
                 if (getBoard().isSquareOccupied(newSquare)
-                        && getBoard().getPiece(newSquare).getPieceColour() != getPieceColour()) {
-                    Piece target = getBoard().getPiece(newSquare);
+                        && getBoard().getPieceOnSquare(newSquare).getPieceColour() != getPieceColour()) {
+                    Piece target = getBoard().getPieceOnSquare(newSquare);
                     getBoard().getAnchorPane().getChildren().remove(target);
                     target.capture();
                     event = Event.CAPTURE;
@@ -39,7 +39,7 @@ public class Pawn extends Piece {
                 updatePositionOnBoardAndList(newSquare);
                 setHasMoved(true);
                 event = attemptEnPassantCapture() ? Event.CAPTURE : event;
-                getBoard().getGameState().update(event); // Update game state
+                getBoard().getGameHandler().update(event); // Update game state
                 return true;
             }
         }
@@ -106,7 +106,7 @@ public class Pawn extends Piece {
             attackPattern.removeIf(attackSquare -> (attackSquare == null // If null (out of bounds)
                     || !getBoard().isSquareOccupied(attackSquare)
                     || getBoard().isSquareOccupied(attackSquare)
-                    && getBoard().getPiece(attackSquare).getPieceColour().equals(getPieceColour())));
+                    && getBoard().getPieceOnSquare(attackSquare).getPieceColour().equals(getPieceColour())));
         } else {
             attackPattern.removeIf(Objects::isNull);
         }
@@ -129,7 +129,8 @@ public class Pawn extends Piece {
         Square upSquare = Square.find(upX, getCurrentSquare().getY(sqrSize), sqrSize);
         Square downSquare = Square.find(downX, getCurrentSquare().getY(sqrSize), sqrSize);
 
-        for (Pawn pawn : getBoard().getPawnList()) {
+        for (Piece piece : getBoard().getSpecificPieces(PieceType.PAWN)) {
+            Pawn pawn = (Pawn) piece;
             if (pawn.isInEnPassantState()
                     && pawn.getCurrentSquare().equals(upSquare)) {
                 Square moveSquare = Square.find(upX, (getPosY() + multiplier), sqrSize);
@@ -152,7 +153,7 @@ public class Pawn extends Piece {
 
         Square behindSquare = Square.find(getPosX(), (getPosY() + multiplier), sqrSize);
 
-        Pawn behindPawn = (Pawn) getBoard().getPiece(behindSquare);
+        Pawn behindPawn = (Pawn) getBoard().getPieceOnSquare(behindSquare);
         if (getBoard().isSquareOccupied(behindSquare)
                 && behindPawn.getPieceType().equals(PieceType.PAWN)
                 && behindPawn.inEnPassantState) {
