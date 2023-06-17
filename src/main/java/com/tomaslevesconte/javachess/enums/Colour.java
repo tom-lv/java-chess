@@ -1,5 +1,5 @@
 package com.tomaslevesconte.javachess.enums;
 
-public enum PieceColour {
+public enum Colour {
     WHITE, BLACK
 }

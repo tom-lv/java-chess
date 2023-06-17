@@ -1,8 +1,8 @@
 package com.tomaslevesconte.javachess.pieces;
 
 import com.tomaslevesconte.javachess.Board;
-import com.tomaslevesconte.javachess.enums.PieceColour;
-import com.tomaslevesconte.javachess.enums.PieceType;
+import com.tomaslevesconte.javachess.enums.Colour;
+import com.tomaslevesconte.javachess.enums.Type;
 import com.tomaslevesconte.javachess.enums.Square;
 
 import java.util.ArrayList;
@@ -12,8 +12,8 @@ public class Knight extends Piece {
 
     private static final int MAX_SQUARE_ADVANCE = 1;
 
-    public Knight(PieceColour pieceColour, Square square, Board board) {
-        super(PieceType.KNIGHT, pieceColour, square, MAX_SQUARE_ADVANCE, board);
+    public Knight(Colour colour, Square square, Board board) {
+        super(Type.KNIGHT, colour, square, MAX_SQUARE_ADVANCE, board);
         createPiece();
     }
 
@@ -28,9 +28,10 @@ public class Knight extends Piece {
     }
 
     private ArrayList<Square> getAttackPattern(boolean applyKingFilter) {
-        ArrayList<Square> attackPattern = new ArrayList<>();
 
         double sqrSize = getBoard().getSquareSize();
+
+        ArrayList<Square> attackPattern = new ArrayList<>();
 
         // Every Knight attack pattern
         attackPattern.add(Square.find(getPosX() - sqrSize, getPosY() - (sqrSize * 2), sqrSize));
@@ -46,7 +47,7 @@ public class Knight extends Piece {
             // Remove if square !exist, or if square is occupied by the same colour
             attackPattern.removeIf(attackSquare -> (attackSquare == null // If null (out of bounds)
                     || getBoard().isSquareOccupied(attackSquare)
-                    && getBoard().getPieceOnSquare(attackSquare).getPieceColour().equals(getPieceColour())));
+                    && getBoard().getPiece(attackSquare).getColour().equals(getColour())));
         } else {
             attackPattern.removeIf(Objects::isNull);
         }

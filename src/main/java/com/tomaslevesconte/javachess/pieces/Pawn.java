@@ -2,8 +2,8 @@ package com.tomaslevesconte.javachess.pieces;
 
 import com.tomaslevesconte.javachess.Board;
 import com.tomaslevesconte.javachess.enums.Event;
-import com.tomaslevesconte.javachess.enums.PieceColour;
-import com.tomaslevesconte.javachess.enums.PieceType;
+import com.tomaslevesconte.javachess.enums.Colour;
+import com.tomaslevesconte.javachess.enums.Type;
 import com.tomaslevesconte.javachess.enums.Square;
 
 import java.util.ArrayList;
@@ -15,31 +15,30 @@ public class Pawn extends Piece {
 
     private boolean inEnPassantState = false;
 
-    public Pawn(PieceColour pieceColour, Square square, Board board) {
-        super(PieceType.PAWN, pieceColour, square, MAX_SQUARE_ADVANCE, board);
+    public Pawn(Colour colour, Square square, Board board) {
+        super(Type.PAWN, colour, square, MAX_SQUARE_ADVANCE, board);
         createPiece();
     }
 
     @Override
     public boolean move(Square newSquare) {
-        setLastSquare(Square.find(getPosX(), getPosY(), getBoard().getSquareSize()));
+        setPreviousPosition(Square.find(getPosX(), getPosY(), getBoard().getSquareSize()));
 
-        for (Square legalSquare : getBoard().getGameHandler().curateMoves(this)) {
+        for (Square legalSquare : getBoard().getGame().getPossibleMoves(this)) {
             if (newSquare.equals(legalSquare)) {
                 Event event = Event.MOVE;
                 if (getBoard().isSquareOccupied(newSquare)
-                        && getBoard().getPieceOnSquare(newSquare).getPieceColour() != getPieceColour()) {
-                    Piece target = getBoard().getPieceOnSquare(newSquare);
-                    getBoard().getAnchorPane().getChildren().remove(target);
-                    target.capture();
+                        && getBoard().getPiece(newSquare).getColour() != getColour()) {
+                    Piece target = getBoard().getPiece(newSquare);
+                    target.capture(target);
                     event = Event.CAPTURE;
                 }
 
                 setInEnPassantState(newSquare);
-                updatePositionOnBoardAndList(newSquare);
+                setPosition(newSquare);
                 setHasMoved(true);
                 event = attemptEnPassantCapture() ? Event.CAPTURE : event;
-                getBoard().getGameHandler().update(event); // Update game state
+                getBoard().getGame().update(event); // Update game state
                 return true;
             }
         }
@@ -73,7 +72,7 @@ public class Pawn extends Piece {
 
         double sqrSize = getBoard().getSquareSize();
         // Pawns move in different directions depending on colour
-        double multiplier = getPieceColour().equals(PieceColour.WHITE) ? -sqrSize : sqrSize;
+        double multiplier = getColour().equals(Colour.WHITE) ? -sqrSize : sqrSize;
 
         // Every pawn move pattern
         movePattern.add(Square.find(getPosX(), getPosY() + multiplier, sqrSize));
@@ -95,7 +94,7 @@ public class Pawn extends Piece {
 
         double sqrSize = getBoard().getSquareSize();
         // Pawns move in different directions depending on colour
-        double multiplier = getPieceColour().equals(PieceColour.WHITE) ? -sqrSize : sqrSize;
+        double multiplier = getColour().equals(Colour.WHITE) ? -sqrSize : sqrSize;
 
         // Every pawn attack pattern
         attackPattern.add(Square.find(getPosX() - sqrSize, getPosY() + multiplier, sqrSize));
@@ -106,7 +105,7 @@ public class Pawn extends Piece {
             attackPattern.removeIf(attackSquare -> (attackSquare == null // If null (out of bounds)
                     || !getBoard().isSquareOccupied(attackSquare)
                     || getBoard().isSquareOccupied(attackSquare)
-                    && getBoard().getPieceOnSquare(attackSquare).getPieceColour().equals(getPieceColour())));
+                    && getBoard().getPiece(attackSquare).getColour().equals(getColour())));
         } else {
             attackPattern.removeIf(Objects::isNull);
         }
@@ -119,24 +118,24 @@ public class Pawn extends Piece {
 
         double sqrSize = getBoard().getSquareSize();
         // Pawns move in different directions depending on colour
-        double multiplier = getPieceColour().equals(PieceColour.WHITE) ? -sqrSize : sqrSize;
+        double multiplier = getColour().equals(Colour.WHITE) ? -sqrSize : sqrSize;
 
         // In terms of x <-->
-        double upX = getCurrentSquare().getX(sqrSize) + sqrSize;
-        double downX = getCurrentSquare().getX(sqrSize) - sqrSize;
+        double upX = getPosition().getX(sqrSize) + sqrSize;
+        double downX = getPosition().getX(sqrSize) - sqrSize;
 
         // In terms of x <-->
-        Square upSquare = Square.find(upX, getCurrentSquare().getY(sqrSize), sqrSize);
-        Square downSquare = Square.find(downX, getCurrentSquare().getY(sqrSize), sqrSize);
+        Square upSquare = Square.find(upX, getPosition().getY(sqrSize), sqrSize);
+        Square downSquare = Square.find(downX, getPosition().getY(sqrSize), sqrSize);
 
-        for (Piece piece : getBoard().getSpecificPieces(PieceType.PAWN)) {
+        for (Piece piece : getBoard().getSpecificPieces(Type.PAWN)) {
             Pawn pawn = (Pawn) piece;
             if (pawn.isInEnPassantState()
-                    && pawn.getCurrentSquare().equals(upSquare)) {
+                    && pawn.getPosition().equals(upSquare)) {
                 Square moveSquare = Square.find(upX, (getPosY() + multiplier), sqrSize);
                 enPassantPattern.add(moveSquare);
             } else if (pawn.isInEnPassantState()
-                    && pawn.getCurrentSquare().equals(downSquare)) {
+                    && pawn.getPosition().equals(downSquare)) {
                 Square moveSquare = Square.find(downX, (getPosY() + multiplier), sqrSize);
                 enPassantPattern.add(moveSquare);
             }
@@ -149,16 +148,15 @@ public class Pawn extends Piece {
 
     private boolean attemptEnPassantCapture() {
         double sqrSize = getBoard().getSquareSize();
-        double multiplier = getPieceColour().equals(PieceColour.WHITE) ? sqrSize : -sqrSize;
+        double multiplier = getColour().equals(Colour.WHITE) ? sqrSize : -sqrSize;
 
         Square behindSquare = Square.find(getPosX(), (getPosY() + multiplier), sqrSize);
 
-        Pawn behindPawn = (Pawn) getBoard().getPieceOnSquare(behindSquare);
+        Pawn behindPawn = (Pawn) getBoard().getPiece(behindSquare);
         if (getBoard().isSquareOccupied(behindSquare)
-                && behindPawn.getPieceType().equals(PieceType.PAWN)
+                && behindPawn.getType().equals(Type.PAWN)
                 && behindPawn.inEnPassantState) {
-            getBoard().getAnchorPane().getChildren().remove(behindPawn);
-            behindPawn.capture();
+            behindPawn.capture(behindPawn);
             return true;
         }
 
@@ -168,8 +166,8 @@ public class Pawn extends Piece {
     private void setInEnPassantState(Square newSquare) {
         double sqrSize = getBoard().getSquareSize();
         // Pawns move in different directions depending on colour
-        double multiplier = getPieceColour().equals(PieceColour.WHITE) ? -sqrSize : sqrSize;
-        double secondSquareY = getCurrentSquare().getY(sqrSize) + (multiplier * 2);
+        double multiplier = getColour().equals(Colour.WHITE) ? -sqrSize : sqrSize;
+        double secondSquareY = getPosition().getY(sqrSize) + (multiplier * 2);
 
         Square secondSquare = Square.find(getPosX(), secondSquareY, sqrSize);
 

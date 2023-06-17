@@ -2,8 +2,8 @@ package com.tomaslevesconte.javachess.pieces;
 
 import com.tomaslevesconte.javachess.Board;
 import com.tomaslevesconte.javachess.enums.Event;
-import com.tomaslevesconte.javachess.enums.PieceColour;
-import com.tomaslevesconte.javachess.enums.PieceType;
+import com.tomaslevesconte.javachess.enums.Colour;
+import com.tomaslevesconte.javachess.enums.Type;
 import com.tomaslevesconte.javachess.enums.Square;
 
 import java.util.ArrayList;
@@ -13,30 +13,29 @@ public class King extends Piece {
 
     private static final int MAX_SQUARE_ADVANCE = 1;
 
-    public King(PieceColour pieceColour, Square square, Board board) {
-        super(PieceType.KING, pieceColour, square, MAX_SQUARE_ADVANCE, board);
+    public King(Colour colour, Square square, Board board) {
+        super(Type.KING, colour, square, MAX_SQUARE_ADVANCE, board);
         createPiece();
     }
 
     @Override
     public boolean move(Square newSquare) {
-        setLastSquare(Square.find(getPosX(), getPosY(), getBoard().getSquareSize()));
+        setPreviousPosition(Square.find(getPosX(), getPosY(), getBoard().getSquareSize()));
 
-        for (Square legalSquare : getBoard().getGameHandler().curateMoves(this)) {
+        for (Square legalSquare : getBoard().getGame().getPossibleMoves(this)) {
             if (newSquare.equals(legalSquare)) {
                 Event event = Event.MOVE;
                 if (getBoard().isSquareOccupied(newSquare)
-                        && getBoard().getPieceOnSquare(newSquare).getPieceColour() != getPieceColour()) {
-                    Piece target = getBoard().getPieceOnSquare(newSquare);
-                    getBoard().getAnchorPane().getChildren().remove(target);
-                    target.capture();
+                        && getBoard().getPiece(newSquare).getColour() != getColour()) {
+                    Piece target = getBoard().getPiece(newSquare);
+                    target.capture(target);
                     event = Event.CAPTURE;
                 }
 
-                updatePositionOnBoardAndList(newSquare);
+                setPosition(newSquare);
                 setHasMoved(true);
                 event = attemptCastle() ? Event.CASTLE : event;
-                getBoard().getGameHandler().update(event); // Update game state
+                getBoard().getGame().update(event); // Update game state
                 return true;
             }
         }
@@ -45,6 +44,7 @@ public class King extends Piece {
 
     @Override
     public ArrayList<Square> getLegalMoves() {
+
         ArrayList<Square> legalMoves = new ArrayList<>();
 
         // Evaluate all the King's possible moves
@@ -61,6 +61,7 @@ public class King extends Piece {
 
     @Override
     public ArrayList<Square> getLegalMoves(boolean applyKingFilter) {
+
         ArrayList<Square> legalMoves = new ArrayList<>();
 
         // Evaluate all the King's possible moves
@@ -81,21 +82,21 @@ public class King extends Piece {
         // For each piece on the board
         getBoard().getPieceList().forEach(piece -> {
             // If the piece's colour is different & =='King'
-            if (piece.getPieceColour() != getPieceColour()
-                    && piece.getPieceType().equals(PieceType.KING)) {
+            if (piece.getColour() != getColour()
+                    && piece.getType().equals(Type.KING)) {
 
                 opponentsMoves.addAll(piece.getVerticalAttackPattern(false));
                 opponentsMoves.addAll(piece.getHorizontalAttackPattern(false));
                 opponentsMoves.addAll(piece.getDiagonalAttackPattern(false));
 
                 // If the piece's colour is different & == 'Pawn'
-            } else if (piece.getPieceColour() != getPieceColour()
-                    && piece.getPieceType().equals(PieceType.PAWN)) {
+            } else if (piece.getColour() != getColour()
+                    && piece.getType().equals(Type.PAWN)) {
 
                 opponentsMoves.addAll(getEnemyPawnAttackPattern(piece));
 
                 // If the piece colour is different & != 'King' or 'Pawn'
-            } else if (piece.getPieceColour() != getPieceColour()) {
+            } else if (piece.getColour() != getColour()) {
 
                 opponentsMoves.addAll(piece.getLegalMoves(true));
 
@@ -110,7 +111,7 @@ public class King extends Piece {
 
         double sqrSize = getBoard().getSquareSize();
         // Pawns move in different directions depending on colour
-        double multiplier = piece.getPieceColour().equals(PieceColour.WHITE) ? -sqrSize : sqrSize;
+        double multiplier = piece.getColour().equals(Colour.WHITE) ? -sqrSize : sqrSize;
 
         // Every pawn attack pattern
         attackPattern.add(Square.find((piece.getPosX() - sqrSize), (piece.getPosY() + multiplier), sqrSize));
@@ -125,9 +126,9 @@ public class King extends Piece {
         ArrayList<Square> castlePattern = new ArrayList<>();
 
         // Evaluate Queen's side
-        Piece queenSideRook = getBoard().getQueenSideRook(getPieceColour());
+        Piece queenSideRook = getBoard().getQueenSideRook(getColour());
 
-        Square[] queenSideSquares = getPieceColour().equals(PieceColour.WHITE)
+        Square[] queenSideSquares = getColour().equals(Colour.WHITE)
                 ? new Square[]{Square.B1, Square.C1, Square.D1}
                 : new Square[]{Square.B8, Square.C8, Square.D8};
         if (hasMoved() || queenSideRook != null && queenSideRook.hasMoved()
@@ -136,13 +137,13 @@ public class King extends Piece {
                 || getBoard().isSquareOccupied(queenSideSquares[2])) {
             // Do nothing
         } else if (queenSideRook != null) {
-            Square castleSquare = getPieceColour().equals(PieceColour.WHITE) ? Square.C1 : Square.C8;
+            Square castleSquare = getColour().equals(Colour.WHITE) ? Square.C1 : Square.C8;
             castlePattern.add(castleSquare);
         }
 
         // Evaluate King's side
-        Piece kingSideRook = getBoard().getKingSideRook(getPieceColour());
-        Square[] kingSideSquares = getPieceColour().equals(PieceColour.WHITE)
+        Piece kingSideRook = getBoard().getKingSideRook(getColour());
+        Square[] kingSideSquares = getColour().equals(Colour.WHITE)
                 ? new Square[]{Square.F1, Square.G1}
                 : new Square[]{Square.F8, Square.G8};
         if (hasMoved() || kingSideRook != null && kingSideRook.hasMoved()
@@ -150,7 +151,7 @@ public class King extends Piece {
                 || getBoard().isSquareOccupied(kingSideSquares[1])) {
             // Do nothing
         } else if (kingSideRook != null) {
-            Square castleSquare = getPieceColour().equals(PieceColour.WHITE) ? Square.G1 : Square.G8;
+            Square castleSquare = getColour().equals(Colour.WHITE) ? Square.G1 : Square.G8;
             castlePattern.add(castleSquare);
         }
 
@@ -158,28 +159,28 @@ public class King extends Piece {
     }
 
     private boolean attemptCastle() {
-        if (getPieceType().equals(PieceType.KING)) {
-            Square kSquare = getPieceColour().equals(PieceColour.WHITE)
+        if (getType().equals(Type.KING)) {
+            Square kSquare = getColour().equals(Colour.WHITE)
                     ? Square.E1
                     : Square.E8;
-            Square[] kPos = getPieceColour().equals(PieceColour.WHITE)
+            Square[] kPos = getColour().equals(Colour.WHITE)
                     ? new Square[]{Square.C1, Square.G1}
                     : new Square[]{Square.C8, Square.G8};
-            Square[] rPos = getPieceColour().equals(PieceColour.WHITE)
+            Square[] rPos = getColour().equals(Colour.WHITE)
                     ? new Square[]{Square.D1, Square.F1}
                     : new Square[]{Square.D8, Square.F8};
 
-            if (Objects.equals(getLastSquare(), kSquare)
-                    && getCurrentSquare().equals(kPos[0])) {
+            if (Objects.equals(getPreviousPosition(), kSquare)
+                    && getPosition().equals(kPos[0])) {
                 // Queen Side Rook
-                Piece qSR = getBoard().getQueenSideRook(getPieceColour());
+                Piece qSR = getBoard().getQueenSideRook(getColour());
                 updateRookPositionOnBoardAndList(qSR, rPos[0]);
                 return true;
 
-            } else if (Objects.equals(getLastSquare(), kSquare)
-                    && getCurrentSquare().equals(kPos[1])) {
+            } else if (Objects.equals(getPreviousPosition(), kSquare)
+                    && getPosition().equals(kPos[1])) {
                 // King Side Rook
-                Piece kSR = getBoard().getKingSideRook(getPieceColour());
+                Piece kSR = getBoard().getKingSideRook(getColour());
                 updateRookPositionOnBoardAndList(kSR, rPos[1]);
                 return true;
 
@@ -194,7 +195,7 @@ public class King extends Piece {
             rook.setLayoutX(newSquare.getX(getBoard().getSquareSize()));
             rook.setLayoutY(newSquare.getY(getBoard().getSquareSize()));
             // Update pos in list
-            rook.setCurrentSquare(newSquare);
+            rook.setPosition(newSquare);
         }
     }
 }

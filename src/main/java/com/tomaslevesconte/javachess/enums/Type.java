@@ -1,5 +1,5 @@
 package com.tomaslevesconte.javachess.enums;
 
-public enum PieceType {
+public enum Type {
     BISHOP, KING, KNIGHT, PAWN, QUEEN, ROOK
 }

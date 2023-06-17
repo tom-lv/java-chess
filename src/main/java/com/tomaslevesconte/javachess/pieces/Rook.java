@@ -1,8 +1,8 @@
 package com.tomaslevesconte.javachess.pieces;
 
 import com.tomaslevesconte.javachess.Board;
-import com.tomaslevesconte.javachess.enums.PieceColour;
-import com.tomaslevesconte.javachess.enums.PieceType;
+import com.tomaslevesconte.javachess.enums.Colour;
+import com.tomaslevesconte.javachess.enums.Type;
 import com.tomaslevesconte.javachess.enums.Square;
 
 import java.util.ArrayList;
@@ -11,8 +11,8 @@ public class Rook extends Piece {
 
     private static final int MAX_SQUARE_ADVANCE = 8;
 
-    public Rook(PieceColour pieceColour, Square square, Board board) {
-        super(PieceType.ROOK, pieceColour, square, MAX_SQUARE_ADVANCE, board);
+    public Rook(Colour colour, Square square, Board board) {
+        super(Type.ROOK, colour, square, MAX_SQUARE_ADVANCE, board);
         createPiece();
     }
 

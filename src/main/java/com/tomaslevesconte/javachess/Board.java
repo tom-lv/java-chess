@@ -1,7 +1,7 @@
 package com.tomaslevesconte.javachess;
 
-import com.tomaslevesconte.javachess.enums.PieceColour;
-import com.tomaslevesconte.javachess.enums.PieceType;
+import com.tomaslevesconte.javachess.enums.Colour;
+import com.tomaslevesconte.javachess.enums.Type;
 import com.tomaslevesconte.javachess.enums.Square;
 import com.tomaslevesconte.javachess.pieces.Piece;
 import javafx.scene.layout.AnchorPane;
@@ -72,7 +72,7 @@ public class Board {
         return false;
     }
 
-    public Piece getPieceOnSquare(Square square) {
+    public Piece getPiece(Square square) {
         for (Piece piece : getPieceList()) {
             Square pieceSquare = Square.find(piece.getPosX(), piece.getPosY(), getSquareSize());
             if (square.equals(pieceSquare)) {
@@ -93,29 +93,29 @@ public class Board {
         return 0;
     }
 
-    public Piece getSpecificPiece(PieceType pieceType) {
+    public Piece getSpecificPiece(Type type) {
         for (Piece piece : getPieceList()) {
-            if (piece.getPieceType().equals(pieceType)) {
+            if (piece.getType().equals(type)) {
                 return piece;
             }
         }
         return null;
     }
 
-    public ArrayList<Piece> getSpecificPieces(PieceType pieceType) {
+    public ArrayList<Piece> getSpecificPieces(Type type) {
         ArrayList<Piece> pieces = new ArrayList<>();
         for (Piece piece : getPieceList()) {
-            if (piece.getPieceType().equals(pieceType)) {
+            if (piece.getType().equals(type)) {
                 pieces.add(piece);
             }
         }
         return pieces;
     }
 
-    public Piece getKing(PieceColour pieceColour) {
+    public Piece getKing(Colour colour) {
         for (Piece piece : getPieceList()) {
-            if (piece.getPieceType().equals(PieceType.KING)
-                    && piece.getPieceColour().equals(pieceColour)) {
+            if (piece.getType().equals(Type.KING)
+                    && piece.getColour().equals(colour)) {
                 return piece;
             }
         }
@@ -125,7 +125,7 @@ public class Board {
     public Piece getAttacker(Piece target) {
         for (Piece piece : getPieceList()) {
             for (Square move : piece.getLegalMoves()) {
-                if (move.equals(target.getCurrentSquare())) {
+                if (move.equals(target.getPosition())) {
                     return piece;
                 }
             }
@@ -137,7 +137,7 @@ public class Board {
         ArrayList<Piece> attackers = new ArrayList<>();
         for (Piece piece : getPieceList()) {
             for (Square move : piece.getLegalMoves()) {
-                if (move.equals(target.getCurrentSquare())) {
+                if (move.equals(target.getPosition())) {
                     attackers.add(piece);
                 }
             }
@@ -145,71 +145,71 @@ public class Board {
         return attackers;
     }
 
-    public ArrayList<Square> getMoves(PieceColour pieceColour) {
+    public ArrayList<Square> getMoves(Colour colour) {
         ArrayList<Square> moves = new ArrayList<>();
         for (Piece piece : getPieceList()) {
-            if (piece.getPieceColour().equals(pieceColour)) {
+            if (piece.getColour().equals(colour)) {
                 moves.addAll(piece.getLegalMoves());
             }
         }
         return moves;
     }
 
-    public ArrayList<Square> getMovesExceptKing(PieceColour pieceColour) {
+    public ArrayList<Square> getMovesExceptKing(Colour colour) {
         ArrayList<Square> moves = new ArrayList<>();
         for (Piece piece : getPieceList()) {
-            if (piece.getPieceColour().equals(pieceColour)
-                    && piece.getPieceType() != PieceType.KING) {
+            if (piece.getColour().equals(colour)
+                    && piece.getType() != Type.KING) {
                 moves.addAll(piece.getLegalMoves());
             }
         }
         return moves;
     }
 
-    public ArrayList<Square> getMovesUnfiltered(PieceColour pieceColour) {
+    public ArrayList<Square> getMovesUnfiltered(Colour colour) {
         ArrayList<Square> unfilteredMoves = new ArrayList<>();
         for (Piece piece : getPieceList()) {
-            if (piece.getPieceColour().equals(pieceColour)) {
+            if (piece.getColour().equals(colour)) {
                 unfilteredMoves.addAll(piece.getLegalMoves(false));
             }
         }
         return unfilteredMoves;
     }
 
-    public ArrayList<Square> getKingsMoves(PieceColour pieceColour) {
+    public ArrayList<Square> getKingsMoves(Colour colour) {
         ArrayList<Square> kingsMoves = new ArrayList<>();
         for (Piece piece : getPieceList()) {
-            if (piece.getPieceColour().equals(pieceColour)
-                    && piece.getPieceType().equals(PieceType.KING)) {
+            if (piece.getColour().equals(colour)
+                    && piece.getType().equals(Type.KING)) {
                 kingsMoves.addAll(piece.getLegalMoves());
             }
         }
         return kingsMoves;
     }
 
-    public Piece getQueenSideRook(PieceColour pieceColour) {
-        if (pieceColour.equals(PieceColour.WHITE)
-                && getPieceOnSquare(Square.A1) != null
-                && getPieceOnSquare(Square.A1).getPieceType().equals(PieceType.ROOK)) {
-            return getPieceOnSquare(Square.A1);
-        } else if (pieceColour.equals(PieceColour.BLACK)
-                && getPieceOnSquare(Square.A8) != null
-                && getPieceOnSquare(Square.A8).getPieceType().equals(PieceType.ROOK)) {
-            return getPieceOnSquare(Square.A8);
+    public Piece getQueenSideRook(Colour colour) {
+        if (colour.equals(Colour.WHITE)
+                && getPiece(Square.A1) != null
+                && getPiece(Square.A1).getType().equals(Type.ROOK)) {
+            return getPiece(Square.A1);
+        } else if (colour.equals(Colour.BLACK)
+                && getPiece(Square.A8) != null
+                && getPiece(Square.A8).getType().equals(Type.ROOK)) {
+            return getPiece(Square.A8);
         } else {
             return null;
         }
     }
 
-    public Piece getKingSideRook(PieceColour pieceColour) {
-        if (pieceColour.equals(PieceColour.WHITE)
-                && getPieceOnSquare(Square.H1) != null
-                && getPieceOnSquare(Square.H1).getPieceType().equals(PieceType.ROOK)) {
-            return getPieceOnSquare(Square.H1);
-        } else if (pieceColour.equals(PieceColour.BLACK)
-                && getPieceOnSquare(Square.H8) != null
-                && getPieceOnSquare(Square.H8).getPieceType().equals(PieceType.ROOK)) {
-            return getPieceOnSquare(Square.H8);
+    public Piece getKingSideRook(Colour colour) {
+        if (colour.equals(Colour.WHITE)
+                && getPiece(Square.H1) != null
+                && getPiece(Square.H1).getType().equals(Type.ROOK)) {
+            return getPiece(Square.H1);
+        } else if (colour.equals(Colour.BLACK)
+                && getPiece(Square.H8) != null
+                && getPiece(Square.H8).getType().equals(Type.ROOK)) {
+            return getPiece(Square.H8);
         } else {
             return null;
         }
@@ -223,7 +223,7 @@ public class Board {
         return possibleXYCoordinates;
     }
 
-    public Game getGameHandler() {
+    public Game getGame() {
         return game;
     }
 

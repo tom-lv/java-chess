@@ -31,7 +31,7 @@ public class UIComponents {
     }
 
     public void displayLegalMoves(Piece piece) {
-        ArrayList<Square> legalMoves = board.getGameHandler().curateMoves(piece);
+        ArrayList<Square> legalMoves = board.getGame().getPossibleMoves(piece);
 
         Group possibleMoves = new Group();
         possibleMoves.setId("legalMoves");

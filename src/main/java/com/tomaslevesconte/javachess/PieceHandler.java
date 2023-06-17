@@ -1,7 +1,7 @@
 package com.tomaslevesconte.javachess;
 
-import com.tomaslevesconte.javachess.enums.PieceColour;
-import com.tomaslevesconte.javachess.enums.PieceType;
+import com.tomaslevesconte.javachess.enums.Colour;
+import com.tomaslevesconte.javachess.enums.Type;
 import com.tomaslevesconte.javachess.enums.Square;
 import com.tomaslevesconte.javachess.pieces.*;
 
@@ -23,11 +23,11 @@ public class PieceHandler {
         initialiseBlackPieces();
     }
 
-    public void disablePieceEventHandler(PieceColour pieceColour) {
+    public void disablePieceEventHandler(Colour colour) {
         for (Node node : board.getAnchorPane().getChildren()) {
             for (Piece piece : board.getPieceList()) {
                 if (node.equals(piece)
-                        && piece.getPieceColour().equals(pieceColour)) {
+                        && piece.getColour().equals(colour)) {
                     node.setCursor(Cursor.DEFAULT);
                     node.setOnMousePressed(null);
                     node.setOnMouseDragged(null);
@@ -37,11 +37,11 @@ public class PieceHandler {
         }
     }
 
-    public void enablePieceEventHandler(PieceColour pieceColour) {
+    public void enablePieceEventHandler(Colour colour) {
         for (Node node : board.getAnchorPane().getChildren()) {
             for (Piece piece : board.getPieceList()) {
                 if (node.equals(piece)
-                        && piece.getPieceColour().equals(pieceColour)) {
+                        && piece.getColour().equals(colour)) {
                     node.setCursor(Cursor.OPEN_HAND);
                     node.setOnMousePressed(select(piece));
                     node.setOnMouseDragged(drag(piece));
@@ -59,11 +59,11 @@ public class PieceHandler {
     private EventHandler<MouseEvent> select(Piece piece) {
         return mEvent -> {
             if (mEvent.getButton().equals(MouseButton.PRIMARY)) {
-                System.out.println("Is piece blocking check: " + board.getGameHandler().isPieceBlockingCheck(piece));
+                System.out.println("Is piece blocking check: " + board.getGame().isPieceBlockingCheck(piece));
 
                 uiComponents.removeSelectedPiece();
-                if (board.getGameHandler().isKingInCheck()
-                        && piece.getPieceType().equals(PieceType.KING)) {
+                if (board.getGame().isKingInCheck()
+                        && piece.getType().equals(Type.KING)) {
                     // Do nothing
                 } else {
                     uiComponents.displaySelectedPiece(piece);
@@ -114,40 +114,40 @@ public class PieceHandler {
     }
 
     private void initialiseWhitePieces() {
-        initialisePiece(new Rook(PieceColour.WHITE, Square.A1, board));
-        initialisePiece(new Knight(PieceColour.WHITE, Square.B1, board));
-        initialisePiece(new Bishop(PieceColour.WHITE, Square.C1, board));
-        initialisePiece(new Queen(PieceColour.WHITE, Square.D1, board));
-        initialisePiece(new King(PieceColour.WHITE, Square.E1, board));
-        initialisePiece(new Bishop(PieceColour.WHITE, Square.F1, board));
-        initialisePiece(new Knight(PieceColour.WHITE, Square.G1, board));
-        initialisePiece(new Rook(PieceColour.WHITE, Square.H1, board));
-        initialisePiece(new Pawn(PieceColour.WHITE, Square.A2, board));
-        initialisePiece(new Pawn(PieceColour.WHITE, Square.B2, board));
-        initialisePiece(new Pawn(PieceColour.WHITE, Square.C2, board));
-        initialisePiece(new Pawn(PieceColour.WHITE, Square.D2, board));
-        initialisePiece(new Pawn(PieceColour.WHITE, Square.E2, board));
-        initialisePiece(new Pawn(PieceColour.WHITE, Square.F2, board));
-        initialisePiece(new Pawn(PieceColour.WHITE, Square.G2, board));
-        initialisePiece(new Pawn(PieceColour.WHITE, Square.H2, board));
+        initialisePiece(new Rook(Colour.WHITE, Square.A1, board));
+        initialisePiece(new Knight(Colour.WHITE, Square.B1, board));
+        initialisePiece(new Bishop(Colour.WHITE, Square.C1, board));
+        initialisePiece(new Queen(Colour.WHITE, Square.D1, board));
+        initialisePiece(new King(Colour.WHITE, Square.E1, board));
+        initialisePiece(new Bishop(Colour.WHITE, Square.F1, board));
+        initialisePiece(new Knight(Colour.WHITE, Square.G1, board));
+        initialisePiece(new Rook(Colour.WHITE, Square.H1, board));
+        initialisePiece(new Pawn(Colour.WHITE, Square.A2, board));
+        initialisePiece(new Pawn(Colour.WHITE, Square.B2, board));
+        initialisePiece(new Pawn(Colour.WHITE, Square.C2, board));
+        initialisePiece(new Pawn(Colour.WHITE, Square.D2, board));
+        initialisePiece(new Pawn(Colour.WHITE, Square.E2, board));
+        initialisePiece(new Pawn(Colour.WHITE, Square.F2, board));
+        initialisePiece(new Pawn(Colour.WHITE, Square.G2, board));
+        initialisePiece(new Pawn(Colour.WHITE, Square.H2, board));
     }
 
     private void initialiseBlackPieces() {
-        initialisePiece(new Rook(PieceColour.BLACK, Square.A8, board));
-        initialisePiece(new Knight(PieceColour.BLACK, Square.B8, board));
-        initialisePiece(new Bishop(PieceColour.BLACK, Square.C8, board));
-        initialisePiece(new Queen(PieceColour.BLACK, Square.D8, board));
-        initialisePiece(new King(PieceColour.BLACK, Square.E8, board));
-        initialisePiece(new Bishop(PieceColour.BLACK, Square.F8, board));
-        initialisePiece(new Knight(PieceColour.BLACK, Square.G8, board));
-        initialisePiece(new Rook(PieceColour.BLACK, Square.H8, board));
-        initialisePiece(new Pawn(PieceColour.BLACK, Square.A7, board));
-        initialisePiece(new Pawn(PieceColour.BLACK, Square.B7, board));
-        initialisePiece(new Pawn(PieceColour.BLACK, Square.C7, board));
-        initialisePiece(new Pawn(PieceColour.BLACK, Square.D7, board));
-        initialisePiece(new Pawn(PieceColour.BLACK, Square.E7, board));
-        initialisePiece(new Pawn(PieceColour.BLACK, Square.F7, board));
-        initialisePiece(new Pawn(PieceColour.BLACK, Square.G7, board));
-        initialisePiece(new Pawn(PieceColour.BLACK, Square.H7, board));
+        initialisePiece(new Rook(Colour.BLACK, Square.A8, board));
+        initialisePiece(new Knight(Colour.BLACK, Square.B8, board));
+        initialisePiece(new Bishop(Colour.BLACK, Square.C8, board));
+        initialisePiece(new Queen(Colour.BLACK, Square.D8, board));
+        initialisePiece(new King(Colour.BLACK, Square.E8, board));
+        initialisePiece(new Bishop(Colour.BLACK, Square.F8, board));
+        initialisePiece(new Knight(Colour.BLACK, Square.G8, board));
+        initialisePiece(new Rook(Colour.BLACK, Square.H8, board));
+        initialisePiece(new Pawn(Colour.BLACK, Square.A7, board));
+        initialisePiece(new Pawn(Colour.BLACK, Square.B7, board));
+        initialisePiece(new Pawn(Colour.BLACK, Square.C7, board));
+        initialisePiece(new Pawn(Colour.BLACK, Square.D7, board));
+        initialisePiece(new Pawn(Colour.BLACK, Square.E7, board));
+        initialisePiece(new Pawn(Colour.BLACK, Square.F7, board));
+        initialisePiece(new Pawn(Colour.BLACK, Square.G7, board));
+        initialisePiece(new Pawn(Colour.BLACK, Square.H7, board));
     }
 }
