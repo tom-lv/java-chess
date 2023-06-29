@@ -20,21 +20,20 @@ public abstract class Piece extends Rectangle {
 
     private final Type type;
     private final Colour colour;
+    private final double size;
     private Square position;
     private Square previousPosition;
-    private final int MAX_SQUARE_ADVANCE;
+    private final int squaresItCanMove;
     private final Board board;
-    private boolean hasMoved;
+    private boolean hasMoved = false;
 
-    public Piece(Type type, Colour colour, Square position, int MAX_SQUARE_ADVANCE, Board board) {
+    public Piece(Type type, Colour colour, double size, Square position, int squaresItCanMove, Board board) {
         this.type = type;
         this.colour = colour;
+        this.size = size;
         this.position = position;
-
-        this.MAX_SQUARE_ADVANCE = MAX_SQUARE_ADVANCE;
-
+        this.squaresItCanMove = squaresItCanMove;
         this.board = board;
-        this.hasMoved = false;
     }
 
     public void createPiece() {
@@ -43,10 +42,10 @@ public abstract class Piece extends Rectangle {
                 ? getType().toString().toLowerCase().charAt(1)
                 : getType().toString().toLowerCase().charAt(0);
         setFill(new ImagePattern(new Image(IMAGE_PATH + colourInitial + typeInitial + FILE_EXTENSION)));
-        setSmooth(false);
+        setSmooth(false); // Turn off antialiasing
 
-        setWidth(getBoard().getSquareSize());
-        setHeight(getBoard().getSquareSize());
+        setWidth(getSize());
+        setHeight(getSize());
 
         setLayoutX(getPosX());
         setLayoutY(getPosY());
@@ -82,10 +81,10 @@ public abstract class Piece extends Rectangle {
 
         ArrayList<Square> upPattern = new ArrayList<>(); // Up y
         ArrayList<Square> downPattern = new ArrayList<>(); // Down y
-        for (int i = 1; i <= MAX_SQUARE_ADVANCE; i++) {
-            double sqrSize = getBoard().getSquareSize();
-            upPattern.add(Square.find(getPosX(), getPosY() + (sqrSize * i), sqrSize));
-            downPattern.add(Square.find(getPosX(), getPosY() + (-sqrSize * i), sqrSize));
+
+        for (int i = 1; i <= squaresItCanMove; i++) {
+            upPattern.add(Square.find(getPosX(), getPosY() + (getSize() * i), getSize()));
+            downPattern.add(Square.find(getPosX(), getPosY() + (-getSize() * i), getSize()));
         }
 
         upPattern.removeIf(Objects::isNull);
@@ -107,10 +106,9 @@ public abstract class Piece extends Rectangle {
 
         ArrayList<Square> upPattern = new ArrayList<>(); // Up x
         ArrayList<Square> downPattern = new ArrayList<>(); // Down x
-        for (int i = 1; i <= MAX_SQUARE_ADVANCE; i++) {
-            double sqrSize = getBoard().getSquareSize();
-            upPattern.add(Square.find(getPosX() + (sqrSize * i), getPosY(), sqrSize));
-            downPattern.add(Square.find(getPosX() + (-sqrSize * i), getPosY(), sqrSize));
+        for (int i = 1; i <= squaresItCanMove; i++) {
+            upPattern.add(Square.find(getPosX() + (getSize() * i), getPosY(), getSize()));
+            downPattern.add(Square.find(getPosX() + (-getSize() * i), getPosY(), getSize()));
         }
 
         upPattern.removeIf(Objects::isNull);
@@ -135,12 +133,11 @@ public abstract class Piece extends Rectangle {
         ArrayList<Square> patternThree = new ArrayList<>(); // Down x, up y
         ArrayList<Square> patternFour = new ArrayList<>(); // Up x, up y
 
-        for (int i = 1; i <= MAX_SQUARE_ADVANCE; i++) {
-            double sqrSize = getBoard().getSquareSize();
-            patternOne.add(Square.find(getPosX() + (-sqrSize * i), getPosY() + (-sqrSize * i), sqrSize));
-            patternTwo.add(Square.find(getPosX() + (sqrSize * i), getPosY() + (-sqrSize * i), sqrSize));
-            patternThree.add(Square.find(getPosX() + (-sqrSize * i), getPosY() + (sqrSize * i), sqrSize));
-            patternFour.add(Square.find(getPosX() + (sqrSize * i), getPosY() + (sqrSize * i), sqrSize));
+        for (int i = 1; i <= squaresItCanMove; i++) {
+            patternOne.add(Square.find(getPosX() + (-getSize() * i), getPosY() + (-getSize() * i), getSize()));
+            patternTwo.add(Square.find(getPosX() + (getSize() * i), getPosY() + (-getSize() * i), getSize()));
+            patternThree.add(Square.find(getPosX() + (-getSize() * i), getPosY() + (getSize() * i), getSize()));
+            patternFour.add(Square.find(getPosX() + (getSize() * i), getPosY() + (getSize() * i), getSize()));
         }
 
         patternOne.removeIf(Objects::isNull);
@@ -171,16 +168,6 @@ public abstract class Piece extends Rectangle {
         }
     }
 
-//    public void updatePositionOnBoardAndList(Square newSquare) {
-//        if (newSquare != null) {
-//            // Update visual pos on board
-//            setLayoutX(newSquare.getX(getBoard().getSquareSize()));
-//            setLayoutY(newSquare.getY(getBoard().getSquareSize()));
-//            // Update pos in list
-//            setPosition(newSquare);
-//        }
-//    }
-
     private ArrayList<Square> regularFilter(ArrayList<Square> sList) {
         for (int i = 0; i < sList.size(); i++) {
             Piece cPiece = getBoard().getPiece(sList.get(i));
@@ -191,6 +178,7 @@ public abstract class Piece extends Rectangle {
                 sList.removeAll(sList.subList(i, sList.size()));
             }
         }
+
         return sList;
     }
 
@@ -205,6 +193,7 @@ public abstract class Piece extends Rectangle {
                 sList.removeAll(sList.subList(i + 1, sList.size()));
             }
         }
+
         return sList;
     }
 
@@ -216,13 +205,17 @@ public abstract class Piece extends Rectangle {
         return colour;
     }
 
+    public double getSize() {
+        return size;
+    }
+
     public Square getPosition() {
         return position;
     }
 
     public void setPosition(Square position) {
-        setLayoutX(position.getX(getBoard().getSquareSize()));
-        setLayoutY(position.getY(getBoard().getSquareSize()));
+        setLayoutX(position.getX(getSize()));
+        setLayoutY(position.getY(getSize()));
 
         this.position = position;
     }

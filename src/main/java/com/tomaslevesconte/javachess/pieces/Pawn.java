@@ -11,12 +11,12 @@ import java.util.Objects;
 
 public class Pawn extends Piece {
 
-    private static final int MAX_SQUARE_ADVANCE = 2;
+    private static final int squaresItCanMove = 2;
 
-    private boolean inEnPassantState = false;
+    private boolean enPassant = false;
 
     public Pawn(Colour colour, Square square, Board board) {
-        super(Type.PAWN, colour, square, MAX_SQUARE_ADVANCE, board);
+        super(Type.PAWN, colour, board.getSquareSize(), square, squaresItCanMove, board);
         createPiece();
     }
 
@@ -24,24 +24,24 @@ public class Pawn extends Piece {
     public boolean move(Square newSquare) {
         setPreviousPosition(Square.find(getPosX(), getPosY(), getBoard().getSquareSize()));
 
-        for (Square legalSquare : getBoard().getGame().getPossibleMoves(this)) {
-            if (newSquare.equals(legalSquare)) {
+        for (Square legalMove : getBoard().getGame().getPossibleMoves(this)) {
+            if (newSquare == legalMove) {
                 Event event = Event.MOVE;
                 if (getBoard().isSquareOccupied(newSquare)
                         && getBoard().getPiece(newSquare).getColour() != getColour()) {
+                    event = Event.CAPTURE;
                     Piece target = getBoard().getPiece(newSquare);
                     target.capture(target);
-                    event = Event.CAPTURE;
                 }
-
-                setInEnPassantState(newSquare);
+                setEnPassant(newSquare);
                 setPosition(newSquare);
                 setHasMoved(true);
                 event = attemptEnPassantCapture() ? Event.CAPTURE : event;
-                getBoard().getGame().update(event); // Update game state
+                getBoard().getGame().update(event);
                 return true;
             }
         }
+
         return false;
     }
 
@@ -70,13 +70,11 @@ public class Pawn extends Piece {
     private ArrayList<Square> getMovePattern() {
         ArrayList<Square> movePattern = new ArrayList<>();
 
-        double sqrSize = getBoard().getSquareSize();
         // Pawns move in different directions depending on colour
-        double multiplier = getColour().equals(Colour.WHITE) ? -sqrSize : sqrSize;
-
+        double multiplier = getColour().equals(Colour.WHITE) ? -getSize() : getSize();
         // Every pawn move pattern
-        movePattern.add(Square.find(getPosX(), getPosY() + multiplier, sqrSize));
-        movePattern.add(Square.find(getPosX(), getPosY() + (multiplier * 2), sqrSize));
+        movePattern.add(Square.find(getPosX(), getPosY() + multiplier, getSize()));
+        movePattern.add(Square.find(getPosX(), getPosY() + (multiplier * 2), getSize()));
 
         // Remove if square !exist, or if square is occupied, or if square == 2nd square and pawn has moved
         movePattern.removeIf(moveSquare -> (moveSquare == null
@@ -92,13 +90,11 @@ public class Pawn extends Piece {
     private ArrayList<Square> getAttackPattern(boolean applyKingFilter) {
         ArrayList<Square> attackPattern = new ArrayList<>();
 
-        double sqrSize = getBoard().getSquareSize();
         // Pawns move in different directions depending on colour
-        double multiplier = getColour().equals(Colour.WHITE) ? -sqrSize : sqrSize;
-
+        double multiplier = getColour().equals(Colour.WHITE) ? -getSize() : getSize();
         // Every pawn attack pattern
-        attackPattern.add(Square.find(getPosX() - sqrSize, getPosY() + multiplier, sqrSize));
-        attackPattern.add(Square.find(getPosX() + sqrSize, getPosY() + multiplier, sqrSize));
+        attackPattern.add(Square.find(getPosX() - getSize(), getPosY() + multiplier, getSize()));
+        attackPattern.add(Square.find(getPosX() + getSize(), getPosY() + multiplier, getSize()));
 
         if (!applyKingFilter) {
             // Remove if square !exist, or if square is !occupied, or if square is occupied by the same colour
@@ -116,46 +112,40 @@ public class Pawn extends Piece {
     private ArrayList<Square> getEnPassantPattern() {
         ArrayList<Square> enPassantPattern = new ArrayList<>();
 
-        double sqrSize = getBoard().getSquareSize();
         // Pawns move in different directions depending on colour
-        double multiplier = getColour().equals(Colour.WHITE) ? -sqrSize : sqrSize;
-
+        double multiplier = getColour().equals(Colour.WHITE) ? -getSize() : getSize();
         // In terms of x <-->
-        double upX = getPosition().getX(sqrSize) + sqrSize;
-        double downX = getPosition().getX(sqrSize) - sqrSize;
-
+        double upX = getPosition().getX(getSize()) + getSize();
+        double downX = getPosition().getX(getSize()) - getSize();
         // In terms of x <-->
-        Square upSquare = Square.find(upX, getPosition().getY(sqrSize), sqrSize);
-        Square downSquare = Square.find(downX, getPosition().getY(sqrSize), sqrSize);
+        Square upSquare = Square.find(upX, getPosition().getY(getSize()), getSize());
+        Square downSquare = Square.find(downX, getPosition().getY(getSize()), getSize());
 
         for (Piece piece : getBoard().getSpecificPieces(Type.PAWN)) {
             Pawn pawn = (Pawn) piece;
-            if (pawn.isInEnPassantState()
+            if (pawn.isEnPassant()
                     && pawn.getPosition().equals(upSquare)) {
-                Square moveSquare = Square.find(upX, (getPosY() + multiplier), sqrSize);
+                Square moveSquare = Square.find(upX, (getPosY() + multiplier), getSize());
                 enPassantPattern.add(moveSquare);
-            } else if (pawn.isInEnPassantState()
+            } else if (pawn.isEnPassant()
                     && pawn.getPosition().equals(downSquare)) {
-                Square moveSquare = Square.find(downX, (getPosY() + multiplier), sqrSize);
+                Square moveSquare = Square.find(downX, (getPosY() + multiplier), getSize());
                 enPassantPattern.add(moveSquare);
             }
         }
-
         enPassantPattern.removeIf(Objects::isNull);
 
         return enPassantPattern;
     }
 
     private boolean attemptEnPassantCapture() {
-        double sqrSize = getBoard().getSquareSize();
-        double multiplier = getColour().equals(Colour.WHITE) ? sqrSize : -sqrSize;
-
-        Square behindSquare = Square.find(getPosX(), (getPosY() + multiplier), sqrSize);
+        double multiplier = getColour().equals(Colour.WHITE) ? getSize() : -getSize();
+        Square behindSquare = Square.find(getPosX(), (getPosY() + multiplier), getSize());
 
         Pawn behindPawn = (Pawn) getBoard().getPiece(behindSquare);
         if (getBoard().isSquareOccupied(behindSquare)
                 && behindPawn.getType().equals(Type.PAWN)
-                && behindPawn.inEnPassantState) {
+                && behindPawn.enPassant) {
             behindPawn.capture(behindPawn);
             return true;
         }
@@ -163,22 +153,21 @@ public class Pawn extends Piece {
         return false;
     }
 
-    private void setInEnPassantState(Square newSquare) {
-        double sqrSize = getBoard().getSquareSize();
+    public boolean isEnPassant() {
+        return enPassant;
+    }
+
+    public void setEnPassant(boolean enPassant) {
+        this.enPassant = enPassant;
+    }
+
+    private void setEnPassant(Square newSquare) {
         // Pawns move in different directions depending on colour
-        double multiplier = getColour().equals(Colour.WHITE) ? -sqrSize : sqrSize;
-        double secondSquareY = getPosition().getY(sqrSize) + (multiplier * 2);
+        double multiplier = getColour().equals(Colour.WHITE) ? -getSize() : getSize();
 
-        Square secondSquare = Square.find(getPosX(), secondSquareY, sqrSize);
+        double secondSquareY = getPosition().getY(getSize()) + (multiplier * 2);
+        Square secondSquare = Square.find(getPosX(), secondSquareY, getSize());
 
-        this.inEnPassantState = !hasMoved() && newSquare.equals(secondSquare);
-    }
-
-    public boolean isInEnPassantState() {
-        return inEnPassantState;
-    }
-
-    public void setInEnPassantState(boolean inEnPassantState) {
-        this.inEnPassantState = inEnPassantState;
+        this.enPassant = !hasMoved() && newSquare.equals(secondSquare);
     }
 }

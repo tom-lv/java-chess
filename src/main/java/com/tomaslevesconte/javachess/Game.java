@@ -306,7 +306,7 @@ public class Game {
         for (Piece piece : board.getSpecificPieces(Type.PAWN)) {
             Pawn pawn = (Pawn) piece;
             if (pawn.getColour().equals(colour)) {
-                pawn.setInEnPassantState(false);
+                pawn.setEnPassant(false);
             }
         }
     }

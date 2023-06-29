@@ -9,10 +9,10 @@ import java.util.ArrayList;
 
 public class Rook extends Piece {
 
-    private static final int MAX_SQUARE_ADVANCE = 8;
+    private static final int squaresItCanMove = 8;
 
     public Rook(Colour colour, Square square, Board board) {
-        super(Type.ROOK, colour, square, MAX_SQUARE_ADVANCE, board);
+        super(Type.ROOK, colour, board.getSquareSize(), square, squaresItCanMove, board);
         createPiece();
     }
 

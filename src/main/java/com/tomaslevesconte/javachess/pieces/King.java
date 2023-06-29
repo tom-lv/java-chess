@@ -11,10 +11,10 @@ import java.util.Objects;
 
 public class King extends Piece {
 
-    private static final int MAX_SQUARE_ADVANCE = 1;
+    private static final int squaresItCanMove = 1;
 
     public King(Colour colour, Square square, Board board) {
-        super(Type.KING, colour, square, MAX_SQUARE_ADVANCE, board);
+        super(Type.KING, colour, board.getSquareSize(), square, squaresItCanMove, board);
         createPiece();
     }
 
@@ -22,29 +22,28 @@ public class King extends Piece {
     public boolean move(Square newSquare) {
         setPreviousPosition(Square.find(getPosX(), getPosY(), getBoard().getSquareSize()));
 
-        for (Square legalSquare : getBoard().getGame().getPossibleMoves(this)) {
-            if (newSquare.equals(legalSquare)) {
+        for (Square legalMove : getBoard().getGame().getPossibleMoves(this)) {
+            if (newSquare == legalMove) {
                 Event event = Event.MOVE;
                 if (getBoard().isSquareOccupied(newSquare)
                         && getBoard().getPiece(newSquare).getColour() != getColour()) {
+                    event = Event.CAPTURE;
                     Piece target = getBoard().getPiece(newSquare);
                     target.capture(target);
-                    event = Event.CAPTURE;
                 }
-
                 setPosition(newSquare);
                 setHasMoved(true);
                 event = attemptCastle() ? Event.CASTLE : event;
-                getBoard().getGame().update(event); // Update game state
+                getBoard().getGame().update(event);
                 return true;
             }
         }
+
         return false;
     }
 
     @Override
     public ArrayList<Square> getLegalMoves() {
-
         ArrayList<Square> legalMoves = new ArrayList<>();
 
         // Evaluate all the King's possible moves
@@ -52,7 +51,6 @@ public class King extends Piece {
         legalMoves.addAll(getHorizontalAttackPattern(false));
         legalMoves.addAll(getDiagonalAttackPattern(false));
         legalMoves.addAll(getCastlePattern()); // If castling is possible (need to fix)
-
         // Stop the King from putting itself in check by removing the opponent's moves from the possible pool
         legalMoves.removeAll(getOpponentsMoves());
 
@@ -61,7 +59,6 @@ public class King extends Piece {
 
     @Override
     public ArrayList<Square> getLegalMoves(boolean applyKingFilter) {
-
         ArrayList<Square> legalMoves = new ArrayList<>();
 
         // Evaluate all the King's possible moves
@@ -69,7 +66,6 @@ public class King extends Piece {
         legalMoves.addAll(getHorizontalAttackPattern(applyKingFilter));
         legalMoves.addAll(getDiagonalAttackPattern(applyKingFilter));
         legalMoves.addAll(getCastlePattern()); // If castling is possible (need to fix)
-
         // Stop the King from putting itself in check by removing the opponent's moves from the possible pool
         legalMoves.removeAll(getOpponentsMoves());
 
@@ -84,20 +80,15 @@ public class King extends Piece {
             // If the piece's colour is different & =='King'
             if (piece.getColour() != getColour()
                     && piece.getType().equals(Type.KING)) {
-
                 opponentsMoves.addAll(piece.getVerticalAttackPattern(false));
                 opponentsMoves.addAll(piece.getHorizontalAttackPattern(false));
                 opponentsMoves.addAll(piece.getDiagonalAttackPattern(false));
-
                 // If the piece's colour is different & == 'Pawn'
             } else if (piece.getColour() != getColour()
                     && piece.getType().equals(Type.PAWN)) {
-
                 opponentsMoves.addAll(getEnemyPawnAttackPattern(piece));
-
                 // If the piece colour is different & != 'King' or 'Pawn'
             } else if (piece.getColour() != getColour()) {
-
                 opponentsMoves.addAll(piece.getLegalMoves(true));
 
             }
@@ -109,14 +100,11 @@ public class King extends Piece {
     private ArrayList<Square> getEnemyPawnAttackPattern(Piece piece) {
         ArrayList<Square> attackPattern = new ArrayList<>();
 
-        double sqrSize = getBoard().getSquareSize();
         // Pawns move in different directions depending on colour
-        double multiplier = piece.getColour().equals(Colour.WHITE) ? -sqrSize : sqrSize;
-
+        double multiplier = piece.getColour().equals(Colour.WHITE) ? -getSize() : getSize();
         // Every pawn attack pattern
-        attackPattern.add(Square.find((piece.getPosX() - sqrSize), (piece.getPosY() + multiplier), sqrSize));
-        attackPattern.add(Square.find((piece.getPosX() + sqrSize), (piece.getPosY() + multiplier), sqrSize));
-
+        attackPattern.add(Square.find((piece.getPosX() - getSize()), (piece.getPosY() + multiplier), getSize()));
+        attackPattern.add(Square.find((piece.getPosX() + getSize()), (piece.getPosY() + multiplier), getSize()));
         attackPattern.removeIf(Objects::isNull); // Remove square if null (out of bounds)
 
         return attackPattern;
@@ -127,7 +115,6 @@ public class King extends Piece {
 
         // Evaluate Queen's side
         Piece queenSideRook = getBoard().getQueenSideRook(getColour());
-
         Square[] queenSideSquares = getColour().equals(Colour.WHITE)
                 ? new Square[]{Square.B1, Square.C1, Square.D1}
                 : new Square[]{Square.B8, Square.C8, Square.D8};
@@ -174,28 +161,17 @@ public class King extends Piece {
                     && getPosition().equals(kPos[0])) {
                 // Queen Side Rook
                 Piece qSR = getBoard().getQueenSideRook(getColour());
-                updateRookPositionOnBoardAndList(qSR, rPos[0]);
+                qSR.setPosition(rPos[0]);
                 return true;
-
             } else if (Objects.equals(getPreviousPosition(), kSquare)
                     && getPosition().equals(kPos[1])) {
                 // King Side Rook
                 Piece kSR = getBoard().getKingSideRook(getColour());
-                updateRookPositionOnBoardAndList(kSR, rPos[1]);
+                kSR.setPosition(rPos[1]);
                 return true;
-
             }
         }
-        return false;
-    }
 
-    private void updateRookPositionOnBoardAndList(Piece rook, Square newSquare) {
-        if (newSquare != null) {
-            // Update visual pos on board
-            rook.setLayoutX(newSquare.getX(getBoard().getSquareSize()));
-            rook.setLayoutY(newSquare.getY(getBoard().getSquareSize()));
-            // Update pos in list
-            rook.setPosition(newSquare);
-        }
+        return false;
     }
 }
